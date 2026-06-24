@@ -40,7 +40,7 @@ html, body {
   overflow-x: hidden; /* Evita scrolls horizontales indeseados */
 }
 
-/* Aseguramos que el contenido no colapse y permita ver el fondo */
+/* Aseguramos que el contenido no colapse y permita ver el fondo de manera adecuada */
 .app-main {
   width: 100%;
   min-height: 100vh;
