@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48" viewBox="0 0 128 48">
+  <g fill="none" stroke="#00E5A8" stroke-width="3">
+    <path d="M12 30c-1-8 9-12 13-6 2-6 12-6 14 0 6-2 11 2 9 6-2 4-8 4-18 4s-17 0-18-4z"/>
+  </g>
+  <text x="56" y="30" fill="#FFFFFF" font-family="Segoe UI, Roboto, Arial" font-size="18">Salesforce</text>
+</svg>

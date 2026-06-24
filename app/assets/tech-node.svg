@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48" viewBox="0 0 128 48">
+  <polygon points="22,8 34,16 34,32 22,40 10,32 10,16" fill="none" stroke="#00E5A8" stroke-width="3"/>
+  <text x="16" y="30" fill="#00E5A8" font-family="Menlo, Consolas, monospace" font-weight="700" font-size="18">n</text>
+  <text x="56" y="30" fill="#FFFFFF" font-family="Segoe UI, Roboto, Arial" font-size="18">Node</text>
+</svg>

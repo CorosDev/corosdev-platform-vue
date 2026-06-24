@@ -1,0 +1,128 @@
+<!-- HERO VISUAL (reemplaza tu <div class="relative"> ... </div> derecho del HERO con esto) -->
+<div class="relative">
+  <div class="absolute -inset-6 rounded-3xl blur-3xl opacity-40"
+       style="background: radial-gradient(600px 200px at 20% 30%, #1F7FFF, transparent),
+               radial-gradient(500px 300px at 80% 70%, #1F7FFF, transparent)"></div>
+
+  <!-- Card principal -->
+  <div class="relative glass w-full rounded-2xl border border-white/10 soft overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 md:px-6 py-4 text-xs">
+      <div class="inline-flex items-center gap-2 text-white/70">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-500"></span>
+        </span>
+        <span class="font-medium text-white/80">Live preview</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 text-white/70">
+        <span class="px-2 py-1 rounded-md bg-white/5 border border-white/10">Security-first</span>
+        <span class="px-2 py-1 rounded-md bg-white/5 border border-white/10">AI-ready</span>
+        <span class="px-2 py-1 rounded-md bg-white/5 border border-white/10">Integrations</span>
+      </div>
+    </div>
+
+    <!-- Paneles -->
+    <div class="px-5 md:px-6 pb-5">
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Línea (métrica) -->
+        <div class="col-span-2 bg-white/5 rounded-xl border border-white/10 p-4">
+          <svg viewBox="0 0 300 110" class="w-full h-32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deploys & latency">
+            <defs>
+              <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#7DBBFF" />
+                <stop offset="100%" stop-color="#1F7FFF" />
+              </linearGradient>
+            </defs>
+            <!-- Grid suave -->
+            <g opacity=".15" stroke="white">
+              <line x1="0" y1="90" x2="300" y2="90"/><line x1="0" y1="60" x2="300" y2="60"/><line x1="0" y1="30" x2="300" y2="30"/>
+            </g>
+            <!-- Línea animada -->
+            <path class="hero-line" stroke="url(#grad)" stroke-width="3" stroke-linecap="round"
+              d="M8 92 C 38 62, 62 62, 92 82 S 142 38, 172 66 S 218 92, 248 58 S 286 82, 296 50" />
+            <!-- Puntos -->
+            <g fill="#1F7FFF" opacity=".9">
+              <circle cx="92" cy="82" r="3"/><circle cx="172" cy="66" r="3"/><circle cx="248" cy="58" r="3"/>
+            </g>
+          </svg>
+          <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-white/60">
+            <span>Deploys ↑</span><span class="opacity-40">•</span><span>Latency ↓</span><span class="opacity-40">•</span><span>Uptime 99.9%</span>
+          </div>
+        </div>
+
+        <!-- Donut -->
+        <div class="space-y-4">
+          <div class="bg-white/5 rounded-xl border border-white/10 p-4 text-center">
+            <svg viewBox="0 0 60 60" class="w-20 h-20 mx-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="30" r="24" stroke="white" stroke-opacity=".15" stroke-width="6"/>
+              <circle class="hero-donut" cx="30" cy="30" r="24" stroke="#1F7FFF" stroke-width="6"
+                      stroke-linecap="round" transform="rotate(-90 30 30)" />
+            </svg>
+            <div class="mt-2 text-sm"><span class="text-white/80 font-semibold">84%</span> consent</div>
+            <div class="text-xs text-white/60">Policy coverage</div>
+          </div>
+
+          <!-- Barras -->
+          <div class="bg-white/5 rounded-xl border border-white/10 p-3">
+            <div class="flex items-end gap-2 h-20">
+              <div class="hero-bar h-full w-3 rounded bg-neon-500" style="--h:60%"></div>
+              <div class="hero-bar h-full w-3 rounded bg-neon-500/80" style="--h:85%"></div>
+              <div class="hero-bar h-full w-3 rounded bg-neon-500/70" style="--h:45%"></div>
+              <div class="hero-bar h-full w-3 rounded bg-neon-500/90" style="--h:75%"></div>
+              <div class="hero-bar h-full w-3 rounded bg-neon-500/60" style="--h:35%"></div>
+            </div>
+            <div class="mt-2 text-xs text-white/60">Blocked scripts / week</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Código / Integración -->
+      <div class="mt-4 bg-brand-800/30 rounded-xl border border-white/10 p-4 font-mono text-[11px] leading-5 text-white/80 relative shimmer">
+        <div>// Coros SDK — consent + integrations</div>
+        <div>import {"{"} Coros {"}"} from 'corosdev'</div>
+        <div>const sdk = new Coros({"{"} siteId: 'acme', env: 'prod' {"}"})</div>
+        <div>await sdk.consent.sync()</div>
+        <div>await sdk.integrations.connect(['Salesforce','Shopify','AEM'])</div>
+        <div>sdk.metrics.track('checkout_ready')</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partículas sutiles -->
+  <div class="pointer-events-none absolute inset-0 opacity-30">
+    <div class="absolute right-6 top-6 h-24 w-24 rounded-full border border-white/10 animate-spin-slow"></div>
+  </div>
+</div>
+
+<!-- Estilos del mockup -->
+<style>
+  /* Trazo que no cambia al escalar */
+  svg [stroke] { vector-effect: non-scaling-stroke; }
+
+  /* Línea animada */
+  .hero-line { stroke-dasharray: 560; stroke-dashoffset: 560; animation: hero-draw 3.2s ease-in-out infinite alternate; }
+  @keyframes hero-draw { to { stroke-dashoffset: 0; } }
+
+  /* Donut animado (84%) */
+  .hero-donut { stroke-dasharray: 150.72; stroke-dashoffset: calc(150.72 * (1 - 0.84)); transition: stroke-dashoffset 0.6s ease; }
+
+  /* Barras animadas */
+  .hero-bar { transform-origin: bottom; transform: scaleY(0.2); animation: hero-grow 2s ease-in-out infinite alternate; }
+  .hero-bar:nth-child(2){animation-delay:.1s}.hero-bar:nth-child(3){animation-delay:.2s}
+  .hero-bar:nth-child(4){animation-delay:.3s}.hero-bar:nth-child(5){animation-delay:.4s}
+  @keyframes hero-grow { to { transform: scaleY(var(--h)); } }
+
+  /* Partículas / contorno */
+  .animate-spin-slow { animation: spin 12s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Shimmer suave en el bloque de código */
+  .shimmer { position: relative; overflow: hidden; }
+  .shimmer::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.06) 40%, transparent 80%);
+    transform: translateX(-100%); animation: shimmer 5s linear infinite;
+  }
+  @keyframes shimmer { to { transform: translateX(100%); } }
+</style>

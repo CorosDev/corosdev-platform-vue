@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48" viewBox="0 0 128 48">
+  <path d="M26 12c6 0 10 4 10 10v10c0 2-2 4-4 4h-2c-2 0-4-2-4-4v-5c-3 1-6-1-6-4 0-6 4-10 10-11z" fill="none" stroke="#00E5A8" stroke-width="3"/>
+  <path d="M24 28 c2 0 4 1 6 3" stroke="#00E5A8" stroke-width="3" fill="none"/>
+  <text x="56" y="30" fill="#FFFFFF" font-family="Segoe UI, Roboto, Arial" font-size="18">Postgres</text>
+</svg>

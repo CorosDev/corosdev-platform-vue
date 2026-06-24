@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48" viewBox="0 0 128 48">
+  <g fill="none" stroke="#00E5A8" stroke-width="3">
+    <path d="M14 18h24l-3 18H17z"/>
+    <path d="M18 18c0-4 3-7 7-7s7 3 7 7"/>
+  </g>
+  <text x="56" y="30" fill="#FFFFFF" font-family="Segoe UI, Roboto, Arial" font-size="18">Shopify</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.4" flood-color="#3AA8E5" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Top straight trace -->
+  <g fill="none" stroke="#3AA8E5" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M70 40 H530"/>
+    <circle cx="70" cy="40" r="10" fill="#3AA8E5"/>
+    <circle cx="300" cy="40" r="9" fill="#3AA8E5"/>
+    <circle cx="530" cy="40" r="10" fill="#3AA8E5"/>
+
+    <!-- Center drop -->
+    <path d="M300 40 V92"/>
+
+    <!-- Lower angular trace with smooth elbow -->
+    <path d="M140 92 H285 Q300 92 305 104 L318 118 Q330 132 352 132 H480"/>
+
+    <!-- Lower nodes (left / elbow / right) -->
+    <circle cx="140" cy="92" r="9" fill="#3AA8E5"/>
+    <circle cx="318" cy="118" r="9" fill="#3AA8E5"/>
+    <circle cx="490" cy="132" r="10" fill="#3AA8E5"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="300" y="180" text-anchor="middle" fill="#FFFFFF"
+        font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="800"
+        font-size="84" letter-spacing="2.5">COROS</text>
+
+  <!-- Dev -->
+  <text x="438" y="204" fill="#FFFFFF"
+        font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="30">Dev</text>
+</svg>

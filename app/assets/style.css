@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Forzamos el rastreo de todos los componentes y vistas para el compilador v4 */
+@source "../../src/**/*.{vue,js,ts,jsx,tsx}";
+
+@theme {
+  /* Definición de colores de marca preservando el sistema de diseño */
+  --color-brand-900: #0a0a16;
+  --color-neon-500: #00f2ff;
+  --color-cobalt-500: #2d5cf7;
+}
+
+/* Utilidades personalizadas integradas en el pipeline de v4 */
+@utility glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@utility gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--color-neon-500), var(--color-cobalt-500));
+}

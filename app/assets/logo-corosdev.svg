@@ -1,0 +1,23 @@
+<svg class="h-16 md:h-20 w-auto" viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg" aria-label="COROS Dev">
+  <defs>
+    <filter id="corosGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.4" flood-color="#3AA8E5" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g fill="none" stroke="#3AA8E5" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#corosGlow)">
+    <path d="M120 44 H500"/>
+    <circle cx="120" cy="44" r="9" fill="#3AA8E5"/>
+    <circle cx="310" cy="44" r="7" fill="#3AA8E5"/>
+    <circle cx="500" cy="44" r="9" fill="#3AA8E5"/>
+    <path d="M310 44 V96"/>
+    <path d="M170 96 H285 Q305 96 315 110 L335 132 Q345 144 365 144 H460"/>
+    <circle cx="170" cy="96" r="8" fill="#3AA8E5"/>
+    <circle cx="335" cy="132" r="7" fill="#3AA8E5"/>
+    <circle cx="460" cy="144" r="8" fill="#3AA8E5"/>
+  </g>
+  <text x="310" y="175" text-anchor="middle" fill="#FFFFFF"
+        font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="700"
+        font-size="78" letter-spacing="3">COROS</text>
+  <text x="445" y="200" fill="#FFFFFF"
+        font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="28">Dev</text>
+</svg>
