@@ -28,7 +28,7 @@ useHead({
 </script>
 
 <style>
-/* Estilos globales y reset del Critical Rendering Path */
+/* Estilos globales, reset del Critical Rendering Path */
 html, body {
   scroll-behavior: smooth;
   margin: 0;
