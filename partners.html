@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-brand-900 scroll-smooth">
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BBYWL11BW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0BBYWL11BW');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partners - CorosDev</title>
+  <meta name="description"
+    content="Meet CorosDev's strategic partners across technology, capital, and data — EncryptedInfoWeb, SBC Capital, AUDELA Control Tower, Nolim Studios, and The Intellify." />
+  <link rel="icon" href="assets/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="locale.js?v=1.0.3" charset="UTF-8"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 900: '#070B1A', 800: '#0B1226', 700: '#0E1730', 600: '#121D3C' },
+            neon: { 100: '#D9EFFF', 300: '#7DBBFF', 500: '#1F7FFF', 700: '#114A99' },
+            cobalt: { 300: '#7DBBFF', 500: '#1F7FFF', 700: '#114A99' },
+          },
+          dropShadow: {
+            glow: '0 0 20px rgba(31,127,255,0.45)',
+            glowblue: '0 0 25px rgba(31,127,255,0.35)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      inset: -20%;
+      filter: blur(160px);
+      opacity: .07;
+      background: radial-gradient(circle at 50% 50%, #1F7FFF, transparent 60%);
+      pointer-events: none;
+    }
+
+    .glass {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      transform: translateZ(0);
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #7DBBFF, #1F7FFF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      margin: 0;
+      pointer-events: none;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Mobile responsive section spacing */
+    @media (max-width: 767px) {
+      section { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+      section:first-of-type { padding-top: 8rem !important; }
+    }
+
+    .soft {
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+    }
+
+    #stars {
+      max-width: 100vw;
+    }
+
+    .nav-glass {
+      background: rgba(7, 11, 26, 0.60);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .scrolled .nav-glass {
+      background: rgba(7, 11, 26, 0.85);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    @supports not ((-webkit-backdrop-filter: blur(0)) or (backdrop-filter: blur(0))) {
+      .nav-glass {
+        background: rgba(7, 11, 26, 0.85);
+      }
+    }
+
+    /* Scroll reveal transitions */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-item.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Mobile Hamburger Menu ── */
+    #mobile-menu-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    #mobile-menu-btn span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    #mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      opacity: 0;
+    }
+    #mobile-menu.open {
+      max-height: 400px;
+      opacity: 1;
+    }
+    #mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: color 0.2s;
+    }
+    #mobile-menu a:last-child { border-bottom: none; }
+    #mobile-menu a:hover { color: #1F7FFF; }
+
+    /* ── Partner card ── */
+    .partner-card {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(.25,.8,.25,1), box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    .partner-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 30px 80px rgba(31,127,255,0.16), 0 0 0 1px rgba(31,127,255,0.25);
+    }
+    .partner-logo-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    /* Logo chip: white backing for marks designed for light backgrounds.
+       Logos already built for dark backgrounds (AUDELA, The Intellify)
+       skip the white fill and sit directly on the card's glass surface. */
+    .partner-logo-chip img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  </style>
+  <link rel="stylesheet" href="cta-modal.css">
+</head>
+
+<body class="relative min-h-screen text-white font-sans bg-brand-900">
+
+  <!-- Interactive canvas star field background -->
+  <canvas id="stars" class="fixed inset-0 w-full h-full z-0 pointer-events-none"></canvas>
+
+  <!-- Giant background gradient orb -->
+  <div class="absolute top-[-10%] right-[-10%] w-[60vw] h-[60vw] z-0 bg-orb"></div>
+
+  <!-- NAV -->
+  <header id="site-nav" class="fixed top-0 left-0 right-0 z-50">
+    <div class="mx-auto max-w-7xl px-6 py-3 glass rounded-b-2xl shadow-2xl mt-0">
+      <div class="flex items-center justify-between">
+        <!-- Hamburger (mobile only) -->
+        <button id="mobile-menu-btn" class="md:hidden" onclick="toggleMobileMenu()" aria-label="Menu">
+          <span id="ham-1"></span>
+          <span id="ham-2"></span>
+          <span id="ham-3"></span>
+        </button>
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 group md:order-none">
+          <img src="assets/coros.png" alt="CorosDev" class="h-12 md:h-16 w-auto">
+          <div class="hidden sm:block h-6 w-[1px] bg-white/10 mx-2"></div>
+          <span class="hidden sm:block text-[10px] tracking-widest text-white font-bold uppercase opacity-80">AI
+            Driven Company</span>
+        </a>
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-8 text-sm text-white/80 uppercase tracking-widest font-semibold">
+          <a href="index.html" class="hover:text-neon-500" data-i18n="nav_home">Home</a>
+          <a href="ecosystem.html" class="hover:text-neon-500" data-i18n="nav_ecosystem">Ecosystem</a>
+          <a href="partners.html" class="text-neon-500 hover:text-neon-500" data-i18n="nav_partners">Partners</a>
+          <a href="services.html" class="hover:text-neon-500" data-i18n="nav_services">Services</a>
+          <a href="about.html" class="hover:text-neon-500" data-i18n="nav_about">About Us</a>
+          <a href="index.html#contact" class="hover:text-neon-500" data-i18n="nav_contact">Contact</a>
+        </nav>
+        <!-- Right side -->
+        <div class="flex items-center gap-3">
+          <button id="lang-toggle" onclick="cdToggleLang()" aria-label="Switch language" class="text-white/80 hover:text-white font-bold text-sm tracking-wider px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 transition-colors uppercase">ES</button>
+          <a href="https://calendly.com/corosdev-info/30min"
+            class="inline-block px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm rounded-xl bg-cobalt-500 text-brand-900 font-semibold drop-shadow-glow hover:scale-105 transition-transform" data-i18n="nav_cta">Book
+            a demo</a>
+        </div>
+      </div>
+      <!-- Mobile dropdown menu -->
+      <div id="mobile-menu" class="md:hidden px-2 pb-2">
+        <a href="index.html" data-i18n="nav_home">Home</a>
+        <a href="ecosystem.html" data-i18n="nav_ecosystem">Ecosystem</a>
+        <a href="partners.html" data-i18n="nav_partners">Partners</a>
+        <a href="services.html" data-i18n="nav_services">Services</a>
+        <a href="about.html" data-i18n="nav_about">About Us</a>
+        <a href="index.html#contact" data-i18n="nav_contact">Contact</a>
+        <a href="https://calendly.com/corosdev-info/30min"
+          class="!text-neon-500 !font-bold" data-i18n="nav_cta">Book a demo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative pt-44 pb-32 flex flex-col items-center text-center px-6 z-10 max-w-7xl mx-auto">
+    <div class="reveal-item active">
+      <span class="px-4 py-1.5 rounded-full glass border border-white/10 text-xs font-semibold uppercase tracking-widest text-neon-300 drop-shadow-glow" data-i18n="ptn_label">Strategic Alliances</span>
+      <h1 class="mt-8 text-5xl md:text-8xl font-black text-white tracking-tight leading-tight max-w-5xl mx-auto" data-i18n="ptn_title">
+        Our <span class="gradient-text drop-shadow-glow">Partners</span>
+      </h1>
+      <p class="mt-8 text-white/60 text-lg md:text-2xl max-w-3xl mx-auto leading-relaxed" data-i18n="ptn_subtitle">
+        We build alongside a trusted network of technology, capital, and data companies — extending what CorosDev can deliver for every client and venture.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PARTNERS GRID SECTION -->
+  <section id="partners" class="py-16 md:py-32 relative z-10">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <!-- PARTNER: EncryptedInfoWeb -->
+        <a href="https://encryptedinfoweb.com/" target="_blank" rel="noopener noreferrer"
+          class="partner-card group relative reveal-item active border-white/5 bg-white/[0.02] glass p-8 rounded-[2rem] border hover:border-neon-500/30 flex flex-col">
+          <div class="w-16 h-16 rounded-2xl bg-white border border-white/10 partner-logo-chip p-2.5">
+            <img src="assets/partners/encryptedinfoweb.webp" alt="EncryptedInfoWeb logo" loading="lazy"
+              decoding="async" onerror="this.closest('.partner-logo-chip').classList.add('bg-neon-500/10','border-neon-500/20');this.remove()">
+          </div>
+          <h2 class="mt-6 text-2xl font-black text-white" data-i18n="ptn_eiw_name">EncryptedInfoWeb</h2>
+          <span class="mt-2 inline-block w-fit px-3 py-1 rounded-lg bg-neon-500/10 text-neon-300 border border-neon-500/20 text-[11px] font-bold uppercase tracking-widest" data-i18n="ptn_eiw_sector">IT Solutions &amp; Software Development</span>
+          <p class="mt-4 text-white/60 text-sm leading-relaxed flex-1" data-i18n="ptn_eiw_desc">
+            Custom web development, mobile apps, and enterprise ERP/CRM software — delivering data-driven solutions across real estate, healthcare, finance, and e-commerce.
+          </p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 group-hover:text-neon-500 transition-colors" data-i18n="ptn_visit">Visit site &rarr;</span>
+        </a>
+
+        <!-- PARTNER: SBC Capital -->
+        <a href="https://www.sbc.capital/" target="_blank" rel="noopener noreferrer"
+          class="partner-card group relative reveal-item active border-white/5 bg-white/[0.02] glass p-8 rounded-[2rem] border hover:border-neon-500/30 flex flex-col">
+          <div class="w-16 h-16 rounded-2xl bg-white border border-white/10 partner-logo-chip p-1.5 overflow-hidden">
+            <img src="assets/partners/sbc-capital.png" alt="SBC Capital logo" loading="lazy"
+              decoding="async" onerror="this.closest('.partner-logo-chip').classList.add('bg-neon-500/10','border-neon-500/20');this.remove()">
+          </div>
+          <h2 class="mt-6 text-2xl font-black text-white" data-i18n="ptn_sbc_name">SBC Capital</h2>
+          <span class="mt-2 inline-block w-fit px-3 py-1 rounded-lg bg-neon-500/10 text-neon-300 border border-neon-500/20 text-[11px] font-bold uppercase tracking-widest" data-i18n="ptn_sbc_sector">Private Equity &amp; Acquisitions</span>
+          <p class="mt-4 text-white/60 text-sm leading-relaxed flex-1" data-i18n="ptn_sbc_desc">
+            A private acquisition firm investing in lower middle-market businesses across the U.S. and Europe, acting as permanent, long-term owners.
+          </p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 group-hover:text-neon-500 transition-colors" data-i18n="ptn_visit">Visit site &rarr;</span>
+        </a>
+
+        <!-- PARTNER: AUDELA Control Tower -->
+        <a href="https://audeladedonnees.fr/" target="_blank" rel="noopener noreferrer"
+          class="partner-card group relative reveal-item active border-white/5 bg-white/[0.02] glass p-8 rounded-[2rem] border hover:border-neon-500/30 flex flex-col">
+          <div class="w-16 h-16 rounded-2xl bg-neon-500/10 border border-neon-500/20 partner-logo-chip p-2.5">
+            <img src="assets/partners/audela.svg" alt="AUDELA Control Tower logo" loading="lazy"
+              decoding="async" onerror="this.remove()">
+          </div>
+          <h2 class="mt-6 text-2xl font-black text-white" data-i18n="ptn_audela_name">AUDELA Control Tower</h2>
+          <span class="mt-2 inline-block w-fit px-3 py-1 rounded-lg bg-neon-500/10 text-neon-300 border border-neon-500/20 text-[11px] font-bold uppercase tracking-widest" data-i18n="ptn_audela_sector">Business Intelligence &amp; LegalTech</span>
+          <p class="mt-4 text-white/60 text-sm leading-relaxed flex-1" data-i18n="ptn_audela_desc">
+            A French software company delivering Business Intelligence, ERP, and LegalTech solutions through its unified Control Tower platform.
+          </p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 group-hover:text-neon-500 transition-colors" data-i18n="ptn_visit">Visit site &rarr;</span>
+        </a>
+
+        <!-- PARTNER: Nolim Studios -->
+        <a href="https://www.nolimstudios.com/es" target="_blank" rel="noopener noreferrer"
+          class="partner-card group relative reveal-item active border-white/5 bg-white/[0.02] glass p-8 rounded-[2rem] border hover:border-neon-500/30 flex flex-col">
+          <div class="w-16 h-16 rounded-2xl bg-white border border-white/10 partner-logo-chip p-2">
+            <img src="assets/partners/nolim-studios.png" alt="Nolim Studios logo" loading="lazy"
+              decoding="async" onerror="this.closest('.partner-logo-chip').classList.add('bg-neon-500/10','border-neon-500/20');this.remove()">
+          </div>
+          <h2 class="mt-6 text-2xl font-black text-white" data-i18n="ptn_nolim_name">Nolim Studios</h2>
+          <span class="mt-2 inline-block w-fit px-3 py-1 rounded-lg bg-neon-500/10 text-neon-300 border border-neon-500/20 text-[11px] font-bold uppercase tracking-widest" data-i18n="ptn_nolim_sector">Software, AI &amp; AR/VR</span>
+          <p class="mt-4 text-white/60 text-sm leading-relaxed flex-1" data-i18n="ptn_nolim_desc">
+            A software development studio building custom software, AI systems, AR/VR experiences, SaaS platforms, and games — from air traffic systems to judicial education platforms.
+          </p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 group-hover:text-neon-500 transition-colors" data-i18n="ptn_visit">Visit site &rarr;</span>
+        </a>
+
+        <!-- PARTNER: The Intellify -->
+        <a href="https://theintellify.com/" target="_blank" rel="noopener noreferrer"
+          class="partner-card group relative reveal-item active border-white/5 bg-white/[0.02] glass p-8 rounded-[2rem] border hover:border-neon-500/30 flex flex-col">
+          <div class="w-16 h-16 rounded-2xl bg-neon-500/10 border border-neon-500/20 partner-logo-chip p-3">
+            <img src="assets/partners/the-intellify.svg" alt="The Intellify logo" loading="lazy"
+              decoding="async" onerror="this.remove()">
+          </div>
+          <h2 class="mt-6 text-2xl font-black text-white" data-i18n="ptn_intellify_name">The Intellify</h2>
+          <span class="mt-2 inline-block w-fit px-3 py-1 rounded-lg bg-neon-500/10 text-neon-300 border border-neon-500/20 text-[11px] font-bold uppercase tracking-widest" data-i18n="ptn_intellify_sector">AI &amp; Digital Product Engineering</span>
+          <p class="mt-4 text-white/60 text-sm leading-relaxed flex-1" data-i18n="ptn_intellify_desc">
+            An AI and digital product engineering company building intelligent automation, AI agents, and modernized platforms for enterprises across regulated industries.
+          </p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 group-hover:text-neon-500 transition-colors" data-i18n="ptn_visit">Visit site &rarr;</span>
+        </a>
+
+      </div>
+
+      <!-- Become a Partner CTA Section -->
+      <div class="mt-24 text-center p-12 rounded-[2.5rem] glass border border-white/10 reveal-item max-w-4xl mx-auto shadow-glow">
+        <h3 class="text-2xl md:text-4xl font-black text-white" data-i18n="ptn_cta">Interested in becoming a CorosDev partner?</h3>
+        <p class="mt-4 text-white/60 text-sm md:text-base" data-i18n="ptn_cta_sub">We are always looking to grow our network of strategic technology, capital, and data allies.</p>
+        <div class="mt-8">
+          <button onclick="openCtaModal('partners')" class="px-8 py-4 rounded-2xl bg-neon-500 text-brand-900 font-bold hover:scale-105 transition-all text-base uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer" data-i18n="ptn_cta_link">
+            Let's talk &rarr;
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-10 border-t border-white/10 relative z-10 bg-brand-900">
+    <div class="mx-auto max-w-7xl px-6 text-sm text-white/60 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span data-i18n="footer_copy">&copy; <span id="year"></span> CorosDev. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT BLOCK -->
+  <script>
+    // Scrolled Header Navigation Effect
+    const siteNav = document.getElementById('site-nav');
+    function toggleNavGlass() {
+      if (window.scrollY > 8) siteNav.classList.add('scrolled');
+      else siteNav.classList.remove('scrolled');
+    }
+    window.addEventListener('scroll', toggleNavGlass, { passive: true });
+    toggleNavGlass();
+
+    // Canvas Interactive Starfield
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    for (let i = 0; i < 150; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5,
+        d: Math.random() * 50,
+        speed: (Math.random() * 0.15) + 0.05
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.beginPath();
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        ctx.moveTo(s.x, s.y);
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2, true);
+      }
+      ctx.fill();
+      update();
+    }
+
+    let scrollYOffset = 0;
+    window.addEventListener('scroll', () => {
+      scrollYOffset = window.scrollY * 0.12;
+    }, { passive: true });
+
+    function update() {
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.y -= s.speed + (scrollYOffset * 0.02);
+        if (s.y < 0) {
+          stars[i] = { x: Math.random() * W, y: H, r: s.r, d: s.d, speed: s.speed };
+        }
+      }
+    }
+
+    function animateLoop() {
+      draw();
+      requestAnimationFrame(animateLoop);
+    }
+    animateLoop();
+
+    // Intersection Observer for Scroll Reveals
+    const revealCallback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    };
+    const revealObserver = new IntersectionObserver(revealCallback, {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    });
+    document.querySelectorAll('.reveal-item').forEach(el => revealObserver.observe(el));
+  </script>
+  <script src="cta-modal.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BBYWL11BW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0BBYWL11BW');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CorosDev - Engineering the Future of Global Innovation</title>
+  <meta name="description"
+    content="We empower innovative companies through world-class technology and intelligent growth systems - transforming ideas into scalable, profitable, and future-ready businesses." />
+  <link rel="icon" href="assets/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="locale.js?v=1.0.3" charset="UTF-8"></script>
+  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 900: '#070B1A', 800: '#0B1226', 700: '#0E1730', 600: '#121D3C' },
+            neon: { 100: '#D9EFFF', 300: '#7DBBFF', 500: '#1F7FFF', 700: '#114A99' },
+            cobalt: { 300: '#7DBBFF', 500: '#1F7FFF', 700: '#114A99' },
+          },
+          dropShadow: {
+            glow: '0 0 20px rgba(31,127,255,0.45)',
+            glowblue: '0 0 25px rgba(31,127,255,0.35)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    .bg-orb {
+      position: absolute;
+      inset: -20%;
+      filter: blur(160px);
+      opacity: .07;
+      background: radial-gradient(circle at 50% 50%, #1F7FFF, transparent 60%);
+      pointer-events: none;
+    }
+
+    .glass {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      transform: translateZ(0);
+      /* Force layer promotion */
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #7DBBFF, #1F7FFF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+
+
+    .tilt {
+      transform-style: preserve-3d;
+      transform: perspective(1000px);
+    }
+
+    .tilt>* {
+      transform: translateZ(30px);
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      margin: 0;
+      pointer-events: none;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Mobile responsive section spacing */
+    @media (max-width: 767px) {
+      section { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+      section:first-of-type { padding-top: 8rem !important; }
+    }
+
+    /* Floating logo animation */
+    @keyframes float-logo {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+    .animate-float {
+      animation: float-logo 5s ease-in-out infinite;
+    }
+
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    }
+
+    .marquee-track {
+      display: inline-block;
+      animation: scroll 24s linear infinite;
+    }
+
+    @keyframes scroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    .btn-primary {
+      background: #1F7FFF;
+      color: #0B1226;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-ghost {
+      border: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .btn-ghost:hover {
+      border-color: #1F7FFF;
+      color: #1F7FFF;
+    }
+
+    .soft {
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+    }
+
+    .tech-icon {
+      transition: all 0.3s ease;
+    }
+
+    .tech-icon:hover {
+      filter: drop-shadow(0 0 10px #1F7FFF);
+      transform: scale(1.1);
+    }
+
+    dotlottie-wc {
+      width: 250px;
+      height: 250px;
+    }
+
+    @media (min-width: 640px) {
+      dotlottie-wc {
+        width: 400px;
+        height: 400px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      dotlottie-wc {
+        width: 600px;
+        height: 600px;
+      }
+    }
+
+    /* Marquee Testimonials */
+    .marquee-container {
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .marquee-content {
+      display: flex;
+      gap: 2rem;
+      width: max-content;
+      animation: scroll-right 60s linear infinite;
+    }
+
+    .marquee-content:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes scroll-right {
+      0% {
+        transform: translateX(-50%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .testimonial-card {
+      width: 400px;
+      flex-shrink: 0;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
+    /* Optional: prevent rounding-caused bleed on fixed canvas */
+    #stars {
+      max-width: 100vw;
+    }
+
+    .nav-glass {
+      background: rgba(7, 11, 26, 0.60);
+      /* brand-900 ~60% */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Cuando hay scroll, aumenta opacidad para mejor lectura */
+    .scrolled .nav-glass {
+      background: rgba(7, 11, 26, 0.85);
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Fallback si no hay soporte de backdrop-filter (algunos Android viejos) */
+    @supports not ((-webkit-backdrop-filter: blur(0)) or (backdrop-filter: blur(0))) {
+      .nav-glass {
+        background: rgba(7, 11, 26, 0.85);
+      }
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes ping {
+      0% {
+        r: 3;
+        opacity: 1;
+      }
+
+      100% {
+        r: 12;
+        opacity: 0;
+      }
+    }
+
+    .map-line {
+      stroke-dasharray: 8;
+      stroke-dashoffset: 100;
+      animation: dash 3s linear infinite;
+    }
+
+    .map-ping {
+      animation: ping 2s ease-out infinite;
+    }
+
+    /* Ã¢&#8221;-Ã¢&#8221;- ECOSYSTEM SECTION Ã¢&#8221;-Ã¢&#8221;- */
+    .eco-card {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(.25, .8, .25, 1), box-shadow 0.4s ease;
+    }
+
+    .eco-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 30px 80px rgba(31, 127, 255, 0.18), 0 0 0 1px rgba(31, 127, 255, 0.25);
+    }
+
+    .eco-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(31, 127, 255, 0.07) 0%, transparent 60%);
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      opacity: 0;
+    }
+
+    .eco-card:hover::before {
+      opacity: 1;
+    }
+
+    .badge-early {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(31, 127, 255, 0.12);
+      border: 1px solid rgba(31, 127, 255, 0.35);
+      color: #7DBBFF;
+      white-space: nowrap;
+    }
+
+    .badge-early::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1F7FFF;
+      box-shadow: 0 0 6px #1F7FFF;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.7);
+      }
+    }
+
+    .eco-icon-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      transition: transform 0.4s ease;
+    }
+
+    .eco-card:hover .eco-icon-ring {
+      transform: scale(1.12) rotate(-4deg);
+    }
+
+    /* Lang toggle button */
+    #lang-toggle {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.7);
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+
+    #lang-toggle:hover {
+      border-color: #1F7FFF;
+      color: #7DBBFF;
+      background: rgba(31, 127, 255, 0.1);
+    }
+
+    /* ── Mobile Hamburger Menu ── */
+    #mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    @media (max-width: 767px) {
+      #mobile-menu-btn { display: flex; }
+    }
+    #mobile-menu-btn span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+    }
+    #mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+      opacity: 0;
+    }
+    #mobile-menu.open {
+      max-height: 400px;
+      opacity: 1;
+    }
+    #mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: color 0.2s;
+    }
+    #mobile-menu a:last-child { border-bottom: none; }
+    #mobile-menu a:hover { color: #1F7FFF; }
+  </style>
+  <link rel="stylesheet" href="cta-modal.css">
+  <link rel="stylesheet" href="global-presence.css">
+</head>
+
+<body
+  class="bg-brand-900 text-white antialiased selection:bg-neon-500 selection:text-brand-900 relative overflow-x-hidden">
+
+  <canvas id="stars" class="fixed inset-0 -z-10"></canvas>
+  <div class="bg-orb -z-20"></div>
+
+  <!-- NAV -->
+  <header id="site-nav" class="fixed top-0 left-0 right-0 z-50">
+    <div class="mx-auto max-w-7xl px-6 py-3 glass rounded-b-2xl shadow-2xl mt-0">
+      <div class="flex items-center justify-between">
+        <!-- Hamburger (mobile only) -->
+        <button id="mobile-menu-btn" class="md:hidden" onclick="toggleMobileMenu()" aria-label="Menu">
+          <span id="ham-1"></span>
+          <span id="ham-2"></span>
+          <span id="ham-3"></span>
+        </button>
+        <!-- Logo (centered on mobile) -->
+        <a href="#" class="flex items-center gap-3 group md:order-none">
+          <img src="assets/coros.png" alt="CorosDev" class="h-12 md:h-16 w-auto">
+          <div class="hidden sm:block h-6 w-[1px] bg-white/10 mx-2"></div>
+          <span class="hidden sm:block text-[10px] tracking-widest text-white font-bold uppercase opacity-80">AI
+            Driven Company</span>
+        </a>
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-8 text-sm text-white/80 uppercase tracking-widest font-semibold">
+          <a href="index.html" class="hover:text-neon-500" data-i18n="nav_home">Home</a>
+          <a href="ecosystem.html" class="hover:text-neon-500" data-i18n="nav_ecosystem">Ecosystem</a>
+          <a href="partners.html" class="hover:text-neon-500" data-i18n="nav_partners">Partners</a>
+          <a href="services.html" class="hover:text-neon-500" data-i18n="nav_services">Services</a>
+          <a href="about.html" class="hover:text-neon-500" data-i18n="nav_about">About Us</a>
+          <a href="#contact" class="hover:text-neon-500" data-i18n="nav_contact">Contact</a>
+        </nav>
+        <!-- Right side: lang + CTA -->
+        <div class="flex items-center gap-3">
+          <button id="lang-toggle" onclick="cdToggleLang()" aria-label="Switch language">ES</button>
+          <a href="https://calendly.com/corosdev-info/30min"
+            class="inline-block px-2.5 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm rounded-xl bg-cobalt-500 text-brand-900 font-semibold drop-shadow-glow hover:scale-105 transition-transform"
+            data-i18n="nav_cta">Book
+            a demo</a>
+        </div>
+      </div>
+      <!-- Mobile dropdown menu -->
+      <div id="mobile-menu" class="md:hidden px-2 pb-2">
+        <a href="index.html" data-i18n="nav_home">Home</a>
+        <a href="ecosystem.html" data-i18n="nav_ecosystem">Ecosystem</a>
+        <a href="partners.html" data-i18n="nav_partners">Partners</a>
+        <a href="services.html" data-i18n="nav_services">Services</a>
+        <a href="about.html" data-i18n="nav_about">About Us</a>
+        <a href="#contact" data-i18n="nav_contact">Contact</a>
+        <a href="https://calendly.com/corosdev-info/30min"
+          class="!text-neon-500 !font-bold" data-i18n="nav_cta">Book a demo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="pt-44 sm:pt-36 pb-12 sm:pb-20 relative">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="tilt">
+          <p class="text-white text-sm font-medium tracking-wide uppercase opacity-90" data-i18n="hero_tag">AI DRIVEN
+            COMPANY &middot; LATAM ENGINEERING &middot; US TIME &amp; EU TIME</p>
+          <h1 class="mt-4 text-5xl md:text-7xl font-extrabold leading-[1.1]" data-i18n="hero_h1">Building Tomorrow's <span
+              class="gradient-text drop-shadow-glow">Software</span> Today.</h1>
+          <p class="mt-5 text-white/80 text-lg max-w-xl" data-i18n="hero_sub">We transform ambitious ideas into
+            scalable, profitable, and
+            future-ready businesses through world-class technology systems.</p>
+          <div class="mt-8 flex items-center gap-3">
+            <a href="https://calendly.com/corosdev-info/30min"
+              class="px-6 py-3 rounded-xl btn-primary font-semibold drop-shadow-glow" data-i18n="hero_cta1">Book a
+              30-min discovery</a>
+            <a href="#work" class="px-6 py-3 rounded-xl btn-ghost" data-i18n="hero_cta2">See our work</a>
+          </div>
+          <div class="mt-6 flex items-center gap-6 text-white/60 text-sm">
+            <span data-i18n="hero_pill1">Security-first</span><span class="opacity-50">&bull;</span><span
+              data-i18n="hero_pill2">Design-led</span><span class="opacity-50">&bull;</span><span
+              data-i18n="hero_pill3">Measurable impact</span>
+          </div>
+        </div>
+        <div id="hero-globe-stage" class="relative w-full min-w-0 max-w-2xl mx-auto">
+          <!-- Square globe box: the only part of the stage forced to aspect-square -->
+          <div class="relative w-full aspect-square overflow-visible">
+            <!-- Perfectly circular ambient glow (replaces the old rectangular box-shadow glow) -->
+            <div class="gp-ambient-glow" aria-hidden="true"></div>
+
+            <!-- Subtle overhead label (kept from the previous static map) -->
+            <p class="gp-hero-label text-white/70 tracking-[0.5em] font-bold uppercase text-[11px] sm:text-[12px]"
+              data-i18n="hero_map">Our impact in the world</p>
+
+            <!-- Interactive 3D globe -->
+            <div id="gp-globe-wrap" class="gp-globe-wrap relative z-10 w-full h-full">
+              <div id="gp-globe-canvas" class="gp-globe-canvas" role="img"
+                data-aria-key="gp_globe_aria"
+                aria-label="Interactive 3D globe showing CorosDev locations in Honduras, the United States and the Czech Republic"></div>
+              <p id="gp-fallback-note" class="gp-fallback-note" data-i18n="gp_fallback_note" hidden>Interactive globe
+                unavailable — showing our locations below.</p>
+            </div>
+          </div>
+
+          <!-- Location chips: floating over the globe on desktop, scrollable row below it on mobile -->
+          <div id="gp-selector" class="gp-selector" aria-label="Select a CorosDev location"
+            data-aria-key="gp_selector_aria">
+            <button type="button" class="gp-selector-btn" data-loc="honduras" aria-pressed="false">
+              <span class="gp-selector-flag" aria-hidden="true">HN</span>
+              <span data-i18n="gp_loc_honduras_short">Honduras</span>
+            </button>
+            <button type="button" class="gp-selector-btn" data-loc="miami" aria-pressed="false">
+              <span class="gp-selector-flag" aria-hidden="true">US</span>
+              <span data-i18n="gp_loc_miami_short">Miami</span>
+            </button>
+            <button type="button" class="gp-selector-btn" data-loc="wyoming" aria-pressed="false">
+              <span class="gp-selector-flag" aria-hidden="true">US</span>
+              <span data-i18n="gp_loc_wyoming_short">Wyoming</span>
+            </button>
+            <button type="button" class="gp-selector-btn" data-loc="prague" aria-pressed="false">
+              <span class="gp-selector-flag" aria-hidden="true">CZ</span>
+              <span data-i18n="gp_loc_prague_short">Praha</span>
+            </button>
+          </div>
+
+          <!-- Floating office card (hidden until a location is selected; stacks below the chips on mobile) -->
+          <div id="gp-card" class="gp-card" aria-live="polite" hidden>
+            <button type="button" id="gp-card-close" class="gp-card-close" aria-label="Close">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+                aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span class="sr-only" data-i18n="gp_card_close">Close</span>
+            </button>
+
+            <div class="gp-card-banner">
+              <img id="gp-card-banner-img" src="assets/Cities/sps.jpg" alt="" loading="lazy" decoding="async"
+                width="280" height="140">
+              <div class="gp-card-banner-overlay"></div>
+              <div class="gp-card-flag-badge" id="gp-card-flag" aria-hidden="true">HN</div>
+            </div>
+
+            <div class="gp-card-body">
+              <p class="gp-card-type" id="gp-card-type" data-i18n="gp_loc_honduras_type">GLOBAL HEADQUARTERS</p>
+              <h3 class="gp-card-title" id="gp-card-title" data-i18n="gp_loc_honduras_title">Honduras Headquarters</h3>
+
+              <div class="gp-card-info">
+                <p class="gp-card-info-row">
+                  <svg class="gp-card-info-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                    stroke-width="1.6" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M10 18s6-5.686 6-10a6 6 0 10-12 0c0 4.314 6 10 6 10z" />
+                    <circle cx="10" cy="8" r="2" />
+                  </svg>
+                  <span id="gp-card-location" data-i18n="gp_loc_honduras_location">San Pedro Sula, Honduras</span>
+                </p>
+                <p class="gp-card-info-row">
+                  <svg class="gp-card-info-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                    stroke-width="1.6" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M4 17V5a1 1 0 011-1h6a1 1 0 011 1v12M4 17h12M4 17H3m13 0h1M7 8h1m3 0h1M7 11h1m3 0h1M7 14h1m3 0h1" />
+                  </svg>
+                  <span id="gp-card-company" data-i18n="gp_loc_honduras_company">CorosDev S.A.</span>
+                </p>
+                <p class="gp-card-info-row">
+                  <svg class="gp-card-info-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+                    stroke-width="1.6" aria-hidden="true">
+                    <rect x="3" y="5" width="14" height="10" rx="1.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 6l6.5 5 6.5-5" />
+                  </svg>
+                  <span id="gp-card-address"
+                    data-i18n="gp_loc_honduras_full_address">Boulevard Michelleti<br>3era Etapa, 5th Street<br>San
+                    Pedro Sula 21101<br>Honduras</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- Logo marquee -->
+      <!-- <div class="mt-16 marquee py-4">
+        <div class="marquee-track">
+          <span class="mx-10 inline-flex items-center gap-3 opacity-80"><img src="assets/logo1.svg" class="h-7">Trusted by teams in US & LATAM</span>
+          <img src="assets/logo2.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo3.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo4.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo5.svg" class="h-7 mx-10 opacity-80">
+          <span class="mx-10 inline-flex items-center gap-3 opacity-80"><img src="assets/logo1.svg" class="h-7">Trusted by teams in US & LATAM</span>
+          <img src="assets/logo2.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo3.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo4.svg" class="h-7 mx-10 opacity-80">
+          <img src="assets/logo5.svg" class="h-7 mx-10 opacity-80">
+        </div>
+      </div> -->
+    </div>
+  </section>
+
+  <div id="video-divider" class="divider"></div>
+
+  <!-- METHODOLOGY PRESENTATION VIDEO -->
+  <section id="presentation" class="py-12 md:py-20 relative overflow-hidden">
+    <div class="mx-auto max-w-5xl px-6 relative">
+      <div class="text-center mb-8 md:mb-12">
+        <h2 class="text-3xl md:text-5xl font-black text-white" data-i18n="video_title">
+          See Our <span class="gradient-text drop-shadow-glow">Methodology in Action</span>
+        </h2>
+        <p class="mt-4 text-white/50 text-base md:text-lg max-w-2xl mx-auto" data-i18n="video_desc">
+          Experience how we design, build, and scale digital products. Learn how our ecosystem and elite engineering teams bring future-ready systems to life.
+        </p>
+      </div>
+
+      <!-- Gorgeous interactive glassmorphic video frame with a neon glow (Landscape 16:9 Layout) -->
+      <div class="mx-auto max-w-3xl group relative rounded-[2rem] glass p-3 border border-white/10 shadow-[0_0_50px_rgba(31,127,255,0.15)] hover:border-neon-500/30 transition-all duration-700 ease-out hover:shadow-[0_0_60px_rgba(31,127,255,0.25)] hover:-translate-y-1">
+        <div class="relative aspect-video w-full overflow-hidden rounded-[1.5rem] bg-brand-900 border border-white/5">
+          <iframe id="presentation-video" class="absolute inset-0 w-full h-full"
+            src="https://www.youtube.com/embed/haRpSox-c1Q"
+            title="CorosDev Presentation Video"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- MISSION -->
+  <section id="mission" class="py-12 md:py-24 relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-6 text-center relative">
+      <h2 class="text-4xl md:text-6xl font-black text-white mb-6 md:mb-8" data-i18n="mission_h2">Our <span
+          class="gradient-text drop-shadow-glow">Mission</span></h2>
+      <p class="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed font-medium" data-i18n="mission_p">
+        At CorosDev, we empower innovative companies worldwide through world-class technology and intelligent growth
+        systems&mdash;transforming ideas into scalable, profitable, and future-ready businesses.
+      </p>
+
+      <p class="mt-8 md:mt-16 text-cobalt-500 tracking-[0.3em] font-bold uppercase text-sm opacity-80"
+        data-i18n="mission_label">To accomplish this, we:
+      </p>
+
+      <div class="mt-6 md:mt-10 grid md:grid-cols-3 gap-5 md:gap-8">
+        <!-- Block 1: Build Technology That Scales -->
+        <div class="group relative">
+          <div
+            class="glass p-10 rounded-3xl soft border border-white/5 hover:border-neon-500/30 transition-all duration-500 h-full flex flex-col items-center">
+            <div
+              class="w-16 h-16 rounded-2xl bg-neon-500/10 flex items-center justify-center text-neon-500 mb-8 group-hover:scale-110 transition-transform duration-500">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-4" data-i18n="mission_b1_h">Build Technology That Scales</h4>
+            <p class="text-white/50 text-sm leading-relaxed" data-i18n="mission_b1_p">
+              We design and develop high-performance digital solutions engineered for global growth. We don&#39;t just
+              build
+              products that work today. We build platforms prepared to lead tomorrow.
+            </p>
+          </div>
+        </div>
+
+        <!-- Block 2: Create Intelligent Growth Systems -->
+        <div class="group relative">
+          <div
+            class="glass p-6 md:p-10 rounded-3xl soft border border-white/5 hover:border-neon-500/30 transition-all duration-500 h-full flex flex-col items-center">
+            <div
+              class="w-16 h-16 rounded-2xl bg-neon-500/10 flex items-center justify-center text-neon-500 mb-4 md:mb-8 group-hover:scale-110 transition-transform duration-500">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-4" data-i18n="mission_b2_h">Create Intelligent Growth Systems
+            </h4>
+            <p class="text-white/50 text-sm leading-relaxed" data-i18n="mission_b2_p">
+              We integrate software development, digital marketing, SEO, strategic content, automation, and performance
+              analytics to turn traffic into customers, and customers into predictable revenue.
+            </p>
+          </div>
+        </div>
+
+        <!-- Block 3: Deliver Measurable & Sustainable Impact -->
+        <div class="group relative">
+          <div
+            class="glass p-6 md:p-10 rounded-3xl soft border border-white/5 hover:border-neon-500/30 transition-all duration-500 h-full flex flex-col items-center">
+            <div
+              class="w-16 h-16 rounded-2xl bg-neon-500/10 flex items-center justify-center text-neon-500 mb-4 md:mb-8 group-hover:scale-110 transition-transform duration-500">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-4" data-i18n="mission_b3_h">Deliver Measurable &amp; Sustainable
+              Impact</h4>
+            <p class="text-white/50 text-sm leading-relaxed" data-i18n="mission_b3_p">
+              We operate with clear KPIs, data-driven optimization, and ROI-focused execution to ensure consistent
+              growth, competitive advantage, and long-term success.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 md:mt-20">
+        <a href="about.html"
+          class="px-10 py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 hover:border-neon-500 transition-all duration-300 shadow-[0_0_30px_rgba(31,127,255,0.05)]"
+          data-i18n="mission_btn">
+          READ ABOUT US
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- OUR ECOSYSTEM -->
+  <section id="ecosystem" class="py-12 md:py-24 relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-6 relative">
+
+      <!-- Section Header -->
+      <div class="mb-8 md:mb-16">
+        <p class="text-[11px] tracking-[0.35em] text-neon-500 font-bold uppercase mb-4 opacity-70"
+          data-i18n="eco_label">Internal Ventures</p>
+        <h2 class="text-4xl md:text-6xl font-black text-white" data-i18n="eco_title">Our <span
+            class="gradient-text drop-shadow-glow">Ecosystem</span></h2>
+        <p class="mt-4 text-white/50 text-lg max-w-2xl" data-i18n="eco_subtitle">Beyond client work&mdash;we build our
+          own products. These are the ventures born inside CorosDev, each solving a real problem at scale.</p>
+      </div>
+
+      <!-- Product Cards Grid -->
+      <div class="grid md:grid-cols-3 gap-8">
+
+        <!-- Card 1: Accesorios TRD -->
+        <div class="eco-card glass rounded-3xl p-8 border border-white/5 flex flex-col gap-6 group">
+          <div class="flex items-start justify-between">
+            <div class="w-32 h-16 flex items-center justify-start animate-float">
+              <img src="assets/LOGO TRD SVG.svg" class="h-16 w-auto max-w-full object-contain drop-shadow-glow" alt="Accesorios TRD Logo">
+            </div>
+            <span class="badge-early" data-i18n="eco_badge">Early Access</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-black text-white mb-3">Accesorios TRD</h3>
+            <p class="text-white/55 text-sm leading-relaxed" data-i18n="eco_trd_desc">Premium automotive accessories
+              e-commerce platform built for performance enthusiasts across LATAM and North America. Curated catalog,
+              fast logistics, and a seamless buying experience.</p>
+          </div>
+          <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+            <span class="text-[11px] text-white/30 uppercase tracking-widest font-semibold"
+              data-i18n="eco_sector">Sector</span>
+            <span class="text-[11px] text-neon-300 font-bold uppercase tracking-widest">E-Commerce &middot; Auto</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Snapay -->
+        <div class="eco-card glass rounded-3xl p-8 border border-white/5 flex flex-col gap-6 group"
+          style="border-color: rgba(31,127,255,0.15);">
+          <!-- Featured glow ring -->
+          <div
+            class="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            style="background: radial-gradient(ellipse at 50% 0%, rgba(31,127,255,0.12), transparent 70%);"></div>
+          <div class="flex items-start justify-between">
+            <div class="w-32 h-16 flex items-center justify-start animate-float">
+              <img src="assets/Logo Snapay.svg" class="h-16 w-auto max-w-full object-contain drop-shadow-glow" alt="Snapay Logo">
+            </div>
+            <span class="badge-early" data-i18n="eco_badge">Early Access</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-black text-white mb-3">Snapay</h3>
+            <p class="text-white/55 text-sm leading-relaxed" data-i18n="eco_snapay_desc">A next-generation payment
+              infrastructure for SMEs in emerging markets. Instant settlements, multi-currency support, and AI-powered
+              fraud prevention - built to democratize fintech.</p>
+          </div>
+          <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+            <span class="text-[11px] text-white/30 uppercase tracking-widest font-semibold"
+              data-i18n="eco_sector">Sector</span>
+            <span class="text-[11px] text-neon-300 font-bold uppercase tracking-widest">Fintech &middot; Payments</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Vorzana -->
+        <div class="eco-card glass rounded-3xl p-5 md:p-8 border border-white/5 flex flex-col gap-4 md:gap-6 group">
+          <div class="flex items-start justify-between">
+            <div class="w-40 h-20 flex items-center justify-start animate-float">
+              <img src="assets/Logo Vorzana SVG (2).svg" class="h-20 w-auto max-w-full object-contain drop-shadow-glow" alt="Vorzana Logo">
+            </div>
+            <span class="badge-early" data-i18n="eco_badge">Early Access</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-2xl font-black text-white mb-3">Vorzana</h3>
+            <p class="text-white/55 text-sm leading-relaxed" data-i18n="eco_vorzana_desc">An AI-powered business
+              intelligence platform that transforms raw operational data into strategic insights. Custom dashboards,
+              predictive analytics, and automated reporting at enterprise grade.</p>
+          </div>
+          <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+            <span class="text-[11px] text-white/30 uppercase tracking-widest font-semibold"
+              data-i18n="eco_sector">Sector</span>
+            <span class="text-[11px] text-neon-300 font-bold uppercase tracking-widest">AI &middot; Analytics</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="mt-8 md:mt-14 flex items-center gap-4">
+        <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <p class="text-white/30 text-xs tracking-widest uppercase font-semibold px-4">
+          <span data-i18n="eco_cta">Interested in partnering or investing?</span>
+          <a href="#contact" class="text-neon-500 hover:underline ml-1" data-i18n="eco_cta_link">Let's talk &rarr;</a>
+        </p>
+        <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      </div>
+
+      <!-- Early Tester CTA -->
+      <div class="mt-6 md:mt-12 text-center">
+        <button onclick="openCtaModal('ecosystem')" class="px-8 py-4 rounded-2xl bg-neon-500 text-brand-900 font-bold hover:scale-105 transition-all text-base uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer shadow-glow animate-pulse" data-i18n="eco_early_tester_btn">
+          Want to be an early Tester? &rarr;
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SNAPAY SPOTLIGHT -->
+  <section id="snapay-spotlight" class="py-16 md:py-28 relative overflow-hidden">
+    <!-- Ambient glow background -->
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(31,127,255,0.07), transparent);"></div>
+    <!-- Top accent line -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style="background: linear-gradient(90deg, transparent, rgba(31,127,255,0.45), transparent);"></div>
+    <!-- Bottom accent line -->
+    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style="background: linear-gradient(90deg, transparent, rgba(31,127,255,0.2), transparent);"></div>
+
+    <div class="mx-auto max-w-5xl px-6 relative text-center">
+
+      <!-- Venture badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neon-500/30 bg-neon-500/10 mb-10">
+        <span class="w-2 h-2 rounded-full bg-neon-500" style="animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></span>
+        <span class="text-xs font-bold uppercase tracking-widest text-neon-300" data-i18n="snapay_badge">A CorosDev Venture</span>
+      </div>
+
+      <!-- Logo -->
+      <div class="flex justify-center mb-8 md:mb-10">
+        <img src="assets/Logo Snapay.svg" class="h-20 md:h-28 w-auto drop-shadow-glow animate-float" alt="Snapay Logo">
+      </div>
+
+      <!-- Tagline -->
+      <h2 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight" data-i18n="snapay_title">
+        The Future of Payments<br><span class="gradient-text drop-shadow-glow">for Emerging Markets</span>
+      </h2>
+
+      <!-- Description -->
+      <p class="text-white/55 text-base md:text-xl max-w-2xl mx-auto mb-12 md:mb-16 leading-relaxed" data-i18n="snapay_desc">
+        Next-generation payment infrastructure built for SMEs. Instant settlements, multi-currency support, and AI-powered fraud prevention — democratizing fintech across borders.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-3 gap-4 md:gap-8 max-w-xl mx-auto mb-12 md:mb-16">
+        <div class="glass rounded-2xl p-4 md:p-6 border border-white/5 hover:border-neon-500/20 transition-colors duration-300">
+          <div class="text-3xl md:text-4xl font-black gradient-text drop-shadow-glow" data-i18n="snapay_stat1_val">10K+</div>
+          <div class="text-white/40 text-xs md:text-sm mt-1 uppercase tracking-wider font-semibold" data-i18n="snapay_stat1_lbl">SMEs Onboarded</div>
+        </div>
+        <div class="glass rounded-2xl p-4 md:p-6 border border-white/5 hover:border-neon-500/20 transition-colors duration-300">
+          <div class="text-3xl md:text-4xl font-black gradient-text drop-shadow-glow" data-i18n="snapay_stat2_val">12+</div>
+          <div class="text-white/40 text-xs md:text-sm mt-1 uppercase tracking-wider font-semibold" data-i18n="snapay_stat2_lbl">Currencies</div>
+        </div>
+        <div class="glass rounded-2xl p-4 md:p-6 border border-white/5 hover:border-neon-500/20 transition-colors duration-300">
+          <div class="text-3xl md:text-4xl font-black gradient-text drop-shadow-glow" data-i18n="snapay_stat3_val">AI</div>
+          <div class="text-white/40 text-xs md:text-sm mt-1 uppercase tracking-wider font-semibold" data-i18n="snapay_stat3_lbl">Fraud Prevention</div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <a href="https://snapay.ai" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-neon-500 text-brand-900 font-bold text-base md:text-lg hover:scale-105 hover:brightness-110 transition-all duration-300 shadow-glow uppercase tracking-wide">
+        <span data-i18n="snapay_cta">Visit Snapay.ai &rarr;</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SOLUTIONS -->
+  <section id="solutions" class="py-12 md:py-24 relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-6 relative">
+      <div class="mb-8 md:mb-16">
+        <h2 class="text-4xl md:text-6xl font-black text-white" data-i18n="sol_title">Solutions that <span
+            class="gradient-text drop-shadow-glow">move the needle</span></h2>
+        <p class="mt-4 text-white/50 text-lg" data-i18n="sol_subtitle">Start small or go big - each can ship as a sprint or part of a program.</p>
+      </div>
+      <div class="mt-6 md:mt-10 grid md:grid-cols-3 gap-5 md:gap-8">
+        <!-- MVP -->
+        <div class="group relative">
+          <div
+            class="glass p-8 rounded-3xl soft relative h-full border border-white/5 hover:border-neon-500/50 transition-all duration-500 overflow-hidden flex flex-col">
+            <div
+              class="absolute bottom-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+              <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <div class="text-[10px] tracking-widest text-neon-500 font-bold uppercase mb-4 opacity-60" data-i18n="sol_badge_gtm">Go-to-Market</div>
+            <h3
+              class="text-3xl font-black text-white mb-4 group-hover:gradient-text transition-colors min-h-[80px] flex items-center" data-i18n="sol_card1_title">
+              MVP in 6&mdash;8 Weeks</h3>
+            <p class="text-white/60 leading-relaxed mb-8 min-h-[120px]" data-i18n="sol_card1_desc">From prototype to a production-ready engine. We
+              engineer scalable MVPs designed to validate your business model and lead the market from day one.</p>
+            <div class="mt-auto">
+              <a href="#contact"
+                class="inline-flex items-center gap-2 text-cobalt-300 font-bold group-hover:text-neon-500 transition-colors">
+                <span data-i18n="sol_card1_cta">Get timeline</span> <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scaling -->
+        <div class="group relative">
+          <div
+            class="glass p-5 md:p-8 rounded-3xl soft relative h-full border border-white/5 hover:border-neon-500/50 transition-all duration-500 overflow-hidden flex flex-col">
+            <div
+              class="absolute bottom-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+              <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5">
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <div class="text-[10px] tracking-widest text-neon-500 font-bold uppercase mb-4 opacity-60" data-i18n="sol_badge_scale">Scaling</div>
+            <h3
+              class="text-3xl font-black text-white mb-4 group-hover:gradient-text transition-colors min-h-[80px] flex items-center" data-i18n="sol_card2_title">
+              Hyper-Growth Blueprint</h3>
+            <p class="text-white/60 leading-relaxed mb-8 min-h-[120px]" data-i18n="sol_card2_desc">Strategic acquisition systems engineered for
+              global expansion. We turn traffic into predictable revenue through intelligent marketing and
+              authority-driven positioning.</p>
+            <div class="mt-auto">
+              <a href="#contact"
+                class="inline-flex items-center gap-2 text-cobalt-300 font-bold group-hover:text-neon-500 transition-colors">
+                <span data-i18n="sol_card2_cta">Get growth plan</span> <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ops -->
+        <div class="group relative">
+          <div
+            class="glass p-5 md:p-8 rounded-3xl soft relative h-full border border-white/5 hover:border-neon-500/50 transition-all duration-500 overflow-hidden flex flex-col">
+            <div
+              class="absolute bottom-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+              <svg class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div class="text-[10px] tracking-widest text-neon-500 font-bold uppercase mb-4 opacity-60" data-i18n="sol_badge_ops">Ops</div>
+            <h3
+              class="text-3xl font-black text-white mb-4 group-hover:gradient-text transition-colors min-h-[80px] flex items-center" data-i18n="sol_card3_title">
+              Workflow Automation</h3>
+            <p class="text-white/60 leading-relaxed mb-8 min-h-[120px]" data-i18n="sol_card3_desc">Automating complexities into seamless
+              operational flow. We replace spreadsheet friction with intelligent systems to ensure sustainable growth
+              and measurable ROI.</p>
+            <div class="mt-auto">
+              <a href="#contact"
+                class="inline-flex items-center gap-2 text-cobalt-300 font-bold group-hover:text-neon-500 transition-colors">
+                <span data-i18n="sol_card3_cta">See examples</span> <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials" class="py-12 md:py-24 relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-6 relative mb-8 md:mb-16">
+      <h2 class="text-4xl md:text-6xl font-black text-white" data-i18n="testi_h2">What our <span
+          class="gradient-text drop-shadow-glow">clients say</span></h2>
+      <p class="mt-4 text-white/50 text-lg max-w-2xl" data-i18n="testi_sub">Proven results delivered to industry leaders through dedicated
+        engineering and design discipline.</p>
+    </div>
+
+    <!-- Marquee Wrapper -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+
+        <!-- Testimonial Set (10 unique boxes) -->
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card1">"CorosDev delivered exactly what we needed, on time and with excellent quality."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Aftermath</p>
+                <p class="text-white/40 text-xs">Strategy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card2">"Proposed scalable solutions that solved our most complex infrastructure challenges."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Dell Technologies</p>
+                <p class="text-white/40 text-xs">Infrastructure</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card3">"Complex integrations, handled with great communication. True engineering partners."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Beehiiv</p>
+                <p class="text-white/40 text-xs">Engineering</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card4">"The most robust Shopify Plus integration we've seen. Flawless execution."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Luxury Brand</p>
+                <p class="text-white/40 text-xs">Commerce</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card5">"They built our fintech app from scratch. Security and speed were top notch."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Fintech Global</p>
+                <p class="text-white/40 text-xs">Product</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card6">"Exceptional technical talent. Their design-led approach makes a real difference."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Velocity VC</p>
+                <p class="text-white/40 text-xs">Portfolio</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicated set for seamless loop -->
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card1">"CorosDev delivered exactly what we needed, on time and with excellent quality."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Aftermath</p>
+                <p class="text-white/40 text-xs">Strategy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card2">"Proposed scalable solutions that solved our most complex infrastructure challenges."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Dell Technologies</p>
+                <p class="text-white/40 text-xs">Infrastructure</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card3">"Complex integrations, handled with great communication. True engineering partners."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Beehiiv</p>
+                <p class="text-white/40 text-xs">Engineering</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card group relative">
+          <div
+            class="glass p-8 rounded-3xl soft h-full flex flex-col justify-between border border-white/5 group-hover:border-cobalt-500/50 transition-all duration-500">
+            <div><svg class="w-8 h-8 text-cobalt-500 mb-6 opacity-40" fill="currentColor" viewBox="0 0 32 32">
+                <path
+                  d="M10 8c-3.3 0-6 2.7-6 6v10h10V14H6.3c.5-1.7 2-3 3.7-3V8zm12 0c-3.3 0-6 2.7-6 6v10h10V14h-7.7c.5-1.7 2-3 3.7-3V8z" />
+              </svg>
+              <p class="text-white/90 italic leading-relaxed" data-i18n="testi_card6">"Exceptional technical talent. Their design-led approach makes a real difference."</p>
+            </div>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="h-8 w-1 bg-cobalt-500 rounded-full"></div>
+              <div>
+                <p class="font-bold text-white text-sm">Velocity VC</p>
+                <p class="text-white/40 text-xs">Portfolio</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+
+  <div class="divider"></div>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-10 md:py-20">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <h2 class="text-3xl md:text-5xl font-bold" data-i18n="contact_h2">Tell us what you're building</h2>
+          <p class="mt-3 text-white/70" data-i18n="contact_sub">Get a roadmap, estimate, and risk assessment in 72
+            hours.</p>
+          <ul class="mt-6 space-y-3 text-white/80">
+            <li>&bull; Email: <a class="text-neon-500 hover:underline"
+                href="mailto:info@corosdev.com">info@corosdev.com</a>
+            </li>
+            <li>&bull; WhatsApp: <a class="text-neon-500 hover:underline" href="https://wa.me/50431750453">+504
+                3175-0453</a>
+            </li>
+            <li>&bull; San Pedro Sula, Honduras &middot; Prague, Czech Republic</li>
+            <li>&bull; Remote / Nearshore &middot; Global Engineering</li>
+          </ul>
+        </div>
+        <form id="coros-brevo-form" class="glass rounded-2xl p-6" onsubmit="enviarFormularioBrevo(event)">
+          <div class="grid gap-4">
+            <input type="text" id="NOMBRE" placeholder="Tu nombre completo" data-i18n="form_name" class="w-full rounded-md bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500" required />
+            <input type="email" id="EMAIL" placeholder="Tu correo corporativo" data-i18n="form_email" class="w-full rounded-md bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500" required />
+            
+            <select id="INTEREST" data-i18n="form_interest" class="w-full rounded-md bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500 text-white/70 bg-brand-800">
+              <option value="Inversor de Capital">Inversor de Capital</option>
+              <option value="Socio Estratégico / Cliente">Socio Estratégico / Cliente</option>
+              <option value="Testes de Accesso Anticipado / Usuario" selected>Tester de Acceso Anticipado / Usuario</option>
+            </select>
+            
+            <textarea rows="4" id="MESSAGE" placeholder="Cuéntanos un poco sobre tus objetivos..." data-i18n="form_msg" class="w-full rounded-md bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"></textarea>
+            
+            <button type="submit" id="btn-submit-form" style="cursor: pointer; display: flex; justify-content: center; align-items: center; width: 100%;" class="mt-2 px-5 py-3 rounded-xl btn-primary font-semibold drop-shadow-glow" data-i18n="form_cta">Enviar Solicitud</button>
+            <p id="form-response-msg" class="text-xs text-center mt-2 hidden"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-10 border-t border-white/10">
+    <div class="mx-auto max-w-7xl px-6 text-sm text-white/60 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+
+        <span><span id="year"></span> CorosDev. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* --•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•--
+       i18n loaded dynamically from locale.js
+    --•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•----•-- */
+
+    /* --&#8221;---&#8221;- Existing JS --&#8221;---&#8221;- */
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.querySelectorAll('.tilt').forEach(el => {
+      let rafId = null;
+      el.addEventListener('mousemove', (e) => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+          const r = el.getBoundingClientRect();
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          const rx = ((y / r.height) - .5) * -8;
+          const ry = ((x / r.width) - .5) * 8;
+          el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          rafId = null;
+        });
+      });
+      el.addEventListener('mouseleave', () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        el.style.transform = 'perspective(1000px)';
+      });
+    });
+    const siteNav = document.getElementById('site-nav');
+    function toggleNavGlass() {
+      if (window.scrollY > 8) siteNav.classList.add('scrolled');
+      else siteNav.classList.remove('scrolled');
+    }
+    window.addEventListener('scroll', toggleNavGlass, { passive: true });
+    toggleNavGlass(); // estado inicial
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    for (let i = 0; i < 160; i++) {
+      stars.push({ x: Math.random() * W, y: Math.random() * H, z: Math.random() * 2 + 0.2 });
+    }
+
+    let currentScroll = window.scrollY;
+    window.addEventListener('scroll', () => { currentScroll = window.scrollY; }, { passive: true });
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const scrollFactor = 1.5 + (currentScroll / 2000);
+
+      // Pre-calculate stars to update positions
+      for (const s of stars) {
+        s.x -= s.z * scrollFactor;
+        if (s.x < 0) { s.x = W; s.y = Math.random() * H; }
+      }
+
+      // Group stars by brightness to minimize globalAlpha changes
+      // Low brightness
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = 'white';
+      for (const s of stars) {
+        if (s.z < 1) ctx.fillRect(s.x, s.y, s.z, s.z);
+      }
+
+      // High brightness
+      ctx.globalAlpha = 0.9;
+      for (const s of stars) {
+        if (s.z >= 1) ctx.fillRect(s.x, s.y, s.z, s.z);
+      }
+
+      ctx.globalAlpha = 1.0;
+      requestAnimationFrame(draw);
+    } draw();
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('opacity-100', 'translate-y-0');
+          io.unobserve(e.target); // Dejamos de observar una vez animado para liberar recursos
+        }
+      });
+    }, { threshold: .1 });
+
+    document.querySelectorAll('section .glass, section img, section h2').forEach(el => {
+      // Avoid will-change-transform here as it promotes to layer too early
+      el.classList.add('opacity-0', 'translate-y-6', 'transition-all', 'duration-700');
+      io.observe(el);
+    });
+
+    function enviarFormularioBrevo(event) {
+      event.preventDefault();
+      const btn = document.getElementById('btn-submit-form');
+      const responseMsg = document.getElementById('form-response-msg');
+      
+      btn.disabled = true;
+      btn.innerText = "Enviando...";
+
+      const formData = new FormData();
+      formData.append('NOMBRE', document.getElementById('NOMBRE').value);
+      formData.append('EMAIL', document.getElementById('EMAIL').value);
+      formData.append('MULT_SLCT[]', document.getElementById('INTEREST').value);
+      formData.append('MESSAGE', document.getElementById('MESSAGE').value);
+      formData.append('locale', 'es');
+      formData.append('html_type', 'simple');
+
+      fetch('https://8756b6e9.sibforms.com/serve/MUIFAKSh8xNxNu1k68CAUrSU-1pe6vuWPW7xwKd7CGDHHotwq4IrmYi4rmHXxIdPaUK9KrS9GkA8byZFdcgEXVmcuvpknY91tw4rl1QFgz2m2Dnkli1ietzEY80T98-1orF65YgnA86SG1HqVEkdqGQrDv6O6dj6R-uaW4-qJ5a_5pFTBIIDTFQm7_qVBIlphY3l7SZNkk3Brz5qlg==', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors' // Evita bloqueos de seguridad del navegador al disparar de forma externa
+      })
+      .then(() => {
+        responseMsg.innerText = "¡Solicitud enviada con éxito! Revisa tu correo.";
+        responseMsg.className = "text-xs text-center mt-2 text-green-400 block";
+        btn.innerText = "Enviado";
+        document.getElementById('coros-brevo-form').reset();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        responseMsg.innerText = "Hubo un problema. Por favor intenta de nuevo.";
+        responseMsg.className = "text-xs text-center mt-2 text-red-400 block";
+        btn.disabled = false;
+        btn.innerText = "Enviar Solicitud";
+      });
+    }
+  </script>
+  <script src="cta-modal.js"></script>
+  <script src="global-presence-data.js"></script>
+  <script src="global-presence.js"></script>
+</body>
+
+</html>
