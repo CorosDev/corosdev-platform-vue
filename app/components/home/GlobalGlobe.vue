@@ -89,6 +89,14 @@ const cardOpen = ref(false)
 const fallback = ref(false)
 const bannerError = ref(false)
 
+// Mobile/small-screen or reduced-motion visitors get GlobeStaticPoster.vue
+// (an inline-SVG stand-in) instead of ever importing globe.gl/three.js —
+// `activateGlobe()` is the only path that flips this off, in response to an
+// explicit tap. Desktop never sets this true, so its existing idle+viewport
+// auto-init below is unaffected.
+const showPoster = ref(false)
+const isActivating = ref(false)
+
 const currentLocation = computed(() => {
   const geo = findGeo(currentId.value ?? '')
   if (!geo) return null
@@ -106,6 +114,10 @@ let viewportObserver: IntersectionObserver | null = null
 let idleTimer: ReturnType<typeof setTimeout> | null = null
 let animationToken = 0
 let reducedMotion = false
+// Set by activateGlobe(id) when the tap that requested the globe also named
+// a location (a selector chip, tapped while still in poster mode) — consumed
+// once buildGlobe() resolves and the real `world` instance exists.
+let pendingSelection: string | null = null
 
 function pauseAutoRotate() {
   if (idleTimer) clearTimeout(idleTimer)
@@ -147,6 +159,15 @@ function animateCameraTo(loc: GpGeo, token: number, done: () => void) {
 }
 
 function selectLocation(id: string) {
+  // Location chips stay rendered (and functional-looking) even while the
+  // poster is showing — tapping one is just as valid an "activate" gesture
+  // as tapping the poster itself, it just also carries which office to
+  // focus once the real globe exists.
+  if (showPoster.value) {
+    activateGlobe(id)
+    return
+  }
+
   const loc = findGeo(id)
   if (!loc || id === currentId.value) return
 
@@ -182,6 +203,46 @@ function handleClose() {
     world.pointOfView({ lat: current.lat, lng: current.lng, altitude: ALT_DEFAULT }, 700)
   }
   scheduleIdleResume()
+}
+
+// Only reachable from the poster's tap target / a chip tapped while the
+// poster is showing (see selectLocation() above) — never auto-called. Keeps
+// `showPoster` true (now in its `isActivating` spinner state) for the
+// duration of the build, so a second tap during that window queues into
+// `pendingSelection` above instead of racing a duplicate buildGlobe() call
+// or briefly exposing an empty/unbuilt canvas.
+function activateGlobe(focusId?: string) {
+  if (world) {
+    if (focusId) selectLocation(focusId)
+    return
+  }
+  if (isActivating.value) {
+    if (focusId) pendingSelection = focusId
+    return
+  }
+  if (!globeMount.value) {
+    fallback.value = true
+    return
+  }
+
+  isActivating.value = true
+  pendingSelection = focusId ?? null
+
+  buildGlobe(globeMount.value)
+    .then(() => {
+      isActivating.value = false
+      showPoster.value = false
+      if (pendingSelection) {
+        const id = pendingSelection
+        pendingSelection = null
+        selectLocation(id)
+      }
+    })
+    .catch(() => {
+      isActivating.value = false
+      showPoster.value = false
+      fallback.value = true
+    })
 }
 
 watch(currentId, (id) => {
@@ -346,6 +407,22 @@ onMounted(() => {
     return
   }
 
+  // Mobile/small-screen or reduced-motion visitors never get globe.gl/three.js
+  // auto-loaded at all — that ~1.9MB chunk's parse+init cost (confirmed via a
+  // real Lighthouse report at ~4s of mobile CPU time) is the single largest
+  // contributor to mobile TBT/LCP-simulation, dwarfing every other fix from
+  // the perf sprint combined. GlobeStaticPoster.vue stands in until the
+  // visitor explicitly taps it (see activateGlobe()) — desktop is completely
+  // unaffected and keeps the existing idle+viewport auto-init below.
+  const isSmallOrReducedPower =
+    reducedMotion || (window.matchMedia?.('(max-width: 767px)').matches ?? window.innerWidth < 768)
+
+  if (isSmallOrReducedPower) {
+    showPoster.value = true
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return
+  }
+
   // Defer the heavy globe.gl import + WebGL init until BOTH conditions hold:
   // the browser is idle after load (so it never competes with the hero
   // text/CTA for load time) AND the stage has actually scrolled into the
@@ -421,12 +498,20 @@ onBeforeUnmount(() => {
       </p>
 
       <div class="gp-globe-wrap relative z-10 h-full w-full">
+        <!-- Always mounted (even while the poster is showing) so buildGlobe()
+             has a real, correctly-sized container to read the moment
+             activateGlobe() calls it — no nextTick/DOM-timing dance needed.
+             It just sits visually underneath the poster overlay below until
+             showPoster flips off once the build actually resolves. -->
         <div
           ref="globeMount"
           class="gp-globe-canvas"
           role="img"
           :aria-label="t('home.hero.globe.globeAria')"
         />
+        <div v-if="showPoster" class="gp-globe-canvas">
+          <HomeGlobeStaticPoster :loading="isActivating" @activate="activateGlobe()" />
+        </div>
         <p v-if="fallback" class="gp-fallback-note">
           {{ t('home.hero.globe.fallbackNote') }}
         </p>
