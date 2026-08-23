@@ -16,7 +16,7 @@ type Context = 'general' | 'ecosystem' | 'services' | 'partners'
 interface CtaForm {
   name: string
   email: string
-  role: string
+  role: LeadInterest
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
@@ -29,21 +29,28 @@ interface SubscribeResponse {
 // Role values stay pinned to their canonical Spanish string (matching
 // server/api/subscribe.post.ts's zod enum) regardless of the active UI
 // locale — same convention as ContactSection.vue's `interestOptions`. Only
-// the displayed <option> label is translated.
-const ROLE_TESTER = 'Tester de Acceso Anticipado / Usuario'
-const ROLE_INVESTOR = 'Inversor de Capital'
-const ROLE_PARTNER = 'Socio Estratégico / Cliente'
+// the displayed <option> label is translated. LEAD_INTEREST_OPTIONS (and its
+// order) comes from shared/utils/leadSchemas.ts — the single source of truth
+// both this drawer and ContactSection.vue's "interest" select share.
+const DEFAULT_ROLE: LeadInterest = 'Tester de Acceso Anticipado / Usuario'
 
 const { t } = useI18n()
 
-const roleOptions = computed(() => [
-  { value: ROLE_TESTER, label: t('ctaDrawer.form.roleTester') },
-  { value: ROLE_INVESTOR, label: t('ctaDrawer.form.roleInvestor') },
-  { value: ROLE_PARTNER, label: t('ctaDrawer.form.rolePartner') },
-])
+const roleLabelKeys: Record<LeadInterest, string> = {
+  'Tester de Acceso Anticipado / Usuario': 'ctaDrawer.form.roleTester',
+  'Inversor de Capital': 'ctaDrawer.form.roleInvestor',
+  'Socio Estratégico / Cliente': 'ctaDrawer.form.rolePartner',
+}
+
+// Deliberately NOT just `LEAD_INTEREST_OPTIONS.map(...)` — this drawer lists
+// its default (Tester) first, unlike ContactSection.vue's ordering. The
+// `LeadInterest` typing still guarantees every value here is one of the
+// shared enum's, so this can't silently drift from the server's zod enum.
+const roleOrder: LeadInterest[] = [DEFAULT_ROLE, 'Inversor de Capital', 'Socio Estratégico / Cliente']
+const roleOptions = computed(() => roleOrder.map((value) => ({ value, label: t(roleLabelKeys[value]) })))
 
 function emptyForm(): CtaForm {
-  return { name: '', email: '', role: ROLE_TESTER, message: '', honeypot: '' }
+  return { name: '', email: '', role: DEFAULT_ROLE, message: '', honeypot: '' }
 }
 
 const isOpen = ref(false)
@@ -163,7 +170,9 @@ onBeforeUnmount(() => {
 
         <div class="flex-1 overflow-y-auto p-6">
           <form v-if="status !== 'success'" class="grid gap-4" novalidate @submit.prevent="handleSubmit">
+            <label for="cta-drawer-name" class="sr-only">{{ t('ctaDrawer.form.name') }}</label>
             <input
+              id="cta-drawer-name"
               v-model="form.name"
               type="text"
               name="name"
@@ -172,7 +181,10 @@ onBeforeUnmount(() => {
               required
               class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
             />
+
+            <label for="cta-drawer-email" class="sr-only">{{ t('ctaDrawer.form.email') }}</label>
             <input
+              id="cta-drawer-email"
               v-model="form.email"
               type="email"
               name="email"
@@ -182,7 +194,9 @@ onBeforeUnmount(() => {
               class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
             />
 
+            <label for="cta-drawer-role" class="sr-only">{{ t('ctaDrawer.form.role') }}</label>
             <select
+              id="cta-drawer-role"
               v-model="form.role"
               name="role"
               class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
@@ -192,7 +206,9 @@ onBeforeUnmount(() => {
               </option>
             </select>
 
+            <label for="cta-drawer-message" class="sr-only">{{ t('ctaDrawer.form.message') }}</label>
             <textarea
+              id="cta-drawer-message"
               v-model="form.message"
               name="message"
               rows="3"

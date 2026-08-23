@@ -111,14 +111,22 @@ export default defineNuxtConfig({
     '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
 
-  // Server-only (no `public` key here, so it never reaches the client bundle
-  // — CLAUDE.md's "Cero API Keys en el cliente"). This is the Brevo form
-  // endpoint the legacy floating CTA drawer (_legacy_html/cta-modal.js) used
-  // to call directly from the browser; server/api/subscribe.post.ts now
-  // proxies it server-side instead. Overridable via NUXT_BREVO_FORM_URL.
+  // Server-only (no `public.` prefix, so none of these reach the client
+  // bundle — CLAUDE.md's "Cero API Keys en el cliente"). Both
+  // server/api/contact.post.ts and server/api/subscribe.post.ts (the
+  // FloatingCtaDrawer) go through server/utils/brevo.ts's official Brevo
+  // Contacts API client — the earlier `brevoFormUrl` (proxying a public
+  // sibforms form-embed URL) has been fully replaced by this and is gone.
+  // Real values must come from the environment — see the matching
+  // NUXT_BREVO_* vars below; a blank/zero default fails loudly in
+  // server/utils/brevo.ts rather than silently posting to nowhere.
   runtimeConfig: {
-    brevoFormUrl:
-      'https://8756b6e9.sibforms.com/serve/MUIFAKSh8xNxNu1k68CAUrSU-1pe6vuWPW7xwKd7CGDHHotwq4IrmYi4rmHXxIdPaUK9KrS9GkA8byZFdcgEXVmcuvpknY91tw4rl1QFgz2m2Dnkli1ietzEY80T98-1orF65YgnA86SG1HqVEkdqGQrDv6O6dj6R-uaW4-qJ5a_5pFTBIIDTFQm7_qVBIlphY3l7SZNkk3Brz5qlg==',
+    // NUXT_BREVO_API_KEY
+    brevoApiKey: '',
+    // NUXT_BREVO_CONTACT_LIST_ID — the full Contact-section form (name/email/company/interest/message)
+    brevoContactListId: 0,
+    // NUXT_BREVO_CTA_LIST_ID — the lighter-weight FloatingCtaDrawer widget
+    brevoCtaListId: 0,
   },
 
   css: ['~/assets/css/main.css'],

@@ -1,18 +1,25 @@
 <script setup lang="ts">
 /**
- * Mirrors the zod schema in server/api/contact.post.ts. Keeping the two in sync
- * by hand is intentional here (no shared schema package yet) — if the endpoint's
- * contactSchema changes, update this shape and the `interestOptions` list too.
+ * Validates against the exact same `contactSchema` server/api/contact.post.ts
+ * uses (shared/utils/leadSchemas.ts, auto-imported on both sides) — this is
+ * a UX nicety (surface errors before a round-trip), the server's own
+ * `safeParse` on the same schema is what's actually authoritative.
  *
  * The `interest` option VALUES stay pinned to their canonical Spanish string
- * (matching the server's zod enum) regardless of the active UI locale — only
- * the displayed <option> label is translated. Changing the submitted value
- * per-locale would require updating the server's enum too.
+ * (LEAD_INTEREST_OPTIONS, matching the server's zod enum) regardless of the
+ * active UI locale — only the displayed <option> label is translated.
+ *
+ * Success/error UI mirrors FloatingCtaDrawer.vue's pattern (full-form swap
+ * on success, not just an inline line of text) for consistency between the
+ * two lead-capture surfaces in the app.
  */
+type ContactField = 'name' | 'email' | 'company' | 'interest' | 'message'
+
 interface ContactForm {
   name: string
   email: string
-  interest: string
+  company: string
+  interest: LeadInterest
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
@@ -22,20 +29,25 @@ interface ContactResponse {
   success: boolean
 }
 
-const DEFAULT_INTEREST = 'Tester de Acceso Anticipado / Usuario'
+const DEFAULT_INTEREST: LeadInterest = 'Tester de Acceso Anticipado / Usuario'
 
 const { t } = useI18n()
 
-const interestOptions = computed(() => [
-  { value: 'Inversor de Capital', label: t('home.contact.form.interestInvestor') },
-  { value: 'Socio Estratégico / Cliente', label: t('home.contact.form.interestPartner') },
-  { value: DEFAULT_INTEREST, label: t('home.contact.form.interestTester') },
-])
+const interestLabelKeys: Record<LeadInterest, string> = {
+  'Inversor de Capital': 'home.contact.form.interestInvestor',
+  'Socio Estratégico / Cliente': 'home.contact.form.interestPartner',
+  'Tester de Acceso Anticipado / Usuario': 'home.contact.form.interestTester',
+}
+
+const interestOptions = computed(() =>
+  LEAD_INTEREST_OPTIONS.map((value) => ({ value, label: t(interestLabelKeys[value]) })),
+)
 
 function emptyForm(): ContactForm {
   return {
     name: '',
     email: '',
+    company: '',
     interest: DEFAULT_INTEREST,
     message: '',
     honeypot: '',
@@ -44,11 +56,42 @@ function emptyForm(): ContactForm {
 
 const form = reactive<ContactForm>(emptyForm())
 
+// Only fields a visitor has blurred (or tried to submit) show an error —
+// nothing appears red before they've interacted with the form.
+const fieldErrors = reactive<Partial<Record<ContactField, string>>>({})
+
+const errorMessageKeys: Record<ContactField, string> = {
+  name: 'home.contact.form.errors.name',
+  email: 'home.contact.form.errors.email',
+  company: 'home.contact.form.errors.company',
+  interest: 'home.contact.form.errors.interest',
+  message: 'home.contact.form.errors.message',
+}
+
+function validateField(field: ContactField) {
+  const result = contactSchema.safeParse(form)
+  if (result.success) {
+    delete fieldErrors[field]
+    return
+  }
+  const hasIssue = result.error.issues.some((issue) => issue.path[0] === field)
+  if (hasIssue) {
+    fieldErrors[field] = t(errorMessageKeys[field])
+  } else {
+    delete fieldErrors[field]
+  }
+}
+
+const hasVisibleErrors = computed(() => Object.keys(fieldErrors).length > 0)
+
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 const status = ref<Status>('idle')
 
 async function handleSubmit() {
   if (status.value === 'submitting') return
+
+  ;(Object.keys(errorMessageKeys) as ContactField[]).forEach(validateField)
+  if (hasVisibleErrors.value) return
 
   status.value = 'submitting'
 
@@ -58,10 +101,15 @@ async function handleSubmit() {
       body: form,
     })
     status.value = 'success'
-    Object.assign(form, emptyForm())
   } catch {
     status.value = 'error'
   }
+}
+
+function resetForm() {
+  Object.assign(form, emptyForm())
+  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as ContactField])
+  status.value = 'idle'
 }
 </script>
 
@@ -86,44 +134,108 @@ async function handleSubmit() {
           </ul>
         </div>
 
-        <form class="glass rounded-2xl p-6" novalidate @submit.prevent="handleSubmit">
-          <div class="grid gap-4">
-            <input
-              v-model="form.name"
-              type="text"
-              name="name"
-              :placeholder="t('home.contact.form.namePlaceholder')"
-              autocomplete="name"
-              required
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
-            <input
-              v-model="form.email"
-              type="email"
-              name="email"
-              :placeholder="t('home.contact.form.emailPlaceholder')"
-              autocomplete="email"
-              required
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
+        <div class="glass rounded-2xl p-6">
+          <form v-if="status !== 'success'" class="grid gap-4" novalidate @submit.prevent="handleSubmit">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="contact-name" class="sr-only">{{ t('home.contact.form.nameLabel') }}</label>
+                <input
+                  id="contact-name"
+                  v-model="form.name"
+                  type="text"
+                  name="name"
+                  :placeholder="t('home.contact.form.namePlaceholder')"
+                  autocomplete="name"
+                  required
+                  :aria-invalid="!!fieldErrors.name"
+                  :aria-describedby="fieldErrors.name ? 'contact-name-error' : undefined"
+                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
+                  :class="fieldErrors.name ? 'border-red-500/60' : 'border-white/10'"
+                  @blur="validateField('name')"
+                />
+                <p v-if="fieldErrors.name" id="contact-name-error" class="mt-1 text-xs text-red-400">
+                  {{ fieldErrors.name }}
+                </p>
+              </div>
 
-            <select
-              v-model="form.interest"
-              name="interest"
-              class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            >
-              <option v-for="option in interestOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
+              <div>
+                <label for="contact-email" class="sr-only">{{ t('home.contact.form.emailLabel') }}</label>
+                <input
+                  id="contact-email"
+                  v-model="form.email"
+                  type="email"
+                  name="email"
+                  :placeholder="t('home.contact.form.emailPlaceholder')"
+                  autocomplete="email"
+                  required
+                  :aria-invalid="!!fieldErrors.email"
+                  :aria-describedby="fieldErrors.email ? 'contact-email-error' : undefined"
+                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
+                  :class="fieldErrors.email ? 'border-red-500/60' : 'border-white/10'"
+                  @blur="validateField('email')"
+                />
+                <p v-if="fieldErrors.email" id="contact-email-error" class="mt-1 text-xs text-red-400">
+                  {{ fieldErrors.email }}
+                </p>
+              </div>
+            </div>
 
-            <textarea
-              v-model="form.message"
-              name="message"
-              rows="4"
-              :placeholder="t('home.contact.form.messagePlaceholder')"
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="contact-company" class="sr-only">{{ t('home.contact.form.companyLabel') }}</label>
+                <input
+                  id="contact-company"
+                  v-model="form.company"
+                  type="text"
+                  name="company"
+                  :placeholder="t('home.contact.form.companyPlaceholder')"
+                  autocomplete="organization"
+                  :aria-invalid="!!fieldErrors.company"
+                  :aria-describedby="fieldErrors.company ? 'contact-company-error' : undefined"
+                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
+                  :class="fieldErrors.company ? 'border-red-500/60' : 'border-white/10'"
+                  @blur="validateField('company')"
+                />
+                <p v-if="fieldErrors.company" id="contact-company-error" class="mt-1 text-xs text-red-400">
+                  {{ fieldErrors.company }}
+                </p>
+              </div>
+
+              <div>
+                <label for="contact-interest" class="sr-only">{{ t('home.contact.form.interestLabel') }}</label>
+                <select
+                  id="contact-interest"
+                  v-model="form.interest"
+                  name="interest"
+                  :aria-invalid="!!fieldErrors.interest"
+                  class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
+                  @change="validateField('interest')"
+                >
+                  <option v-for="option in interestOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="contact-message" class="sr-only">{{ t('home.contact.form.messageLabel') }}</label>
+              <textarea
+                id="contact-message"
+                v-model="form.message"
+                name="message"
+                rows="4"
+                :placeholder="t('home.contact.form.messagePlaceholder')"
+                :aria-invalid="!!fieldErrors.message"
+                :aria-describedby="fieldErrors.message ? 'contact-message-error' : undefined"
+                class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
+                :class="fieldErrors.message ? 'border-red-500/60' : 'border-white/10'"
+                @blur="validateField('message')"
+              />
+              <p v-if="fieldErrors.message" id="contact-message-error" class="mt-1 text-xs text-red-400">
+                {{ fieldErrors.message }}
+              </p>
+            </div>
 
             <!-- Honeypot: hidden from real visitors, validated server-side in contact.post.ts. -->
             <div class="absolute left-[-9999px] opacity-0" aria-hidden="true">
@@ -140,27 +252,55 @@ async function handleSubmit() {
 
             <button
               type="submit"
-              :disabled="status === 'submitting'"
-              class="mt-2 flex w-full items-center justify-center rounded-xl bg-neon-500 px-5 py-3 font-semibold text-brand-900 drop-shadow-glow transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
+              :disabled="status === 'submitting' || hasVisibleErrors"
+              class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-neon-500 px-5 py-3 font-semibold text-brand-900 drop-shadow-glow transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
             >
+              <span v-if="status === 'submitting'" class="contact-spinner" aria-hidden="true" />
               {{ status === 'submitting' ? t('home.contact.form.submitting') : t('home.contact.form.submit') }}
             </button>
 
-            <p
-              v-if="status === 'success'"
-              class="mt-2 text-center text-xs text-green-400"
-            >
-              {{ t('home.contact.form.success') }}
-            </p>
-            <p
-              v-else-if="status === 'error'"
-              class="mt-2 text-center text-xs text-red-400"
-            >
+            <p v-if="status === 'error'" role="alert" class="mt-2 text-center text-xs text-red-400">
               {{ t('home.contact.form.error') }}
             </p>
+          </form>
+
+          <div v-else class="flex flex-col items-center py-10 text-center">
+            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-neon-500/15 text-neon-300">
+              <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h4 class="mt-5 text-xl font-bold text-white">{{ t('home.contact.form.successTitle') }}</h4>
+            <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">{{ t('home.contact.form.successDesc') }}</p>
+            <button type="button" class="mt-6 text-xs font-semibold text-neon-300 hover:underline" @click="resetForm">
+              {{ t('home.contact.form.sendAnother') }}
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.contact-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgb(7 11 26 / 0.25);
+  border-top-color: rgb(7 11 26 / 0.85);
+  animation: contact-spin 0.8s linear infinite;
+}
+
+@keyframes contact-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-spinner {
+    animation-duration: 1.6s;
+  }
+}
+</style>

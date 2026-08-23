@@ -186,16 +186,31 @@
       "location": "San Pedro Sula, Honduras · Prague, Czech Republic",
       "remote": "Remote / Nearshore · Global Engineering",
       "form": {
+        "nameLabel": "Full name",
         "namePlaceholder": "Your full name",
+        "emailLabel": "Email address",
         "emailPlaceholder": "Your corporate email",
+        "companyLabel": "Company",
+        "companyPlaceholder": "Your company name (optional)",
+        "interestLabel": "How can we help you?",
         "interestInvestor": "Capital Investor",
         "interestPartner": "Strategic Partner / Client",
         "interestTester": "Early Access Tester / User",
+        "messageLabel": "Message",
         "messagePlaceholder": "Tell us a bit about your goals...",
         "submit": "Submit request",
         "submitting": "Sending...",
-        "success": "Request sent successfully! We'll be in touch soon.",
-        "error": "There was a problem. Please try again."
+        "successTitle": "Request sent!",
+        "successDesc": "Thanks for reaching out — we'll be in touch within the next 72 hours.",
+        "sendAnother": "Send another message",
+        "error": "There was a problem. Please try again.",
+        "errors": {
+          "name": "Enter a valid name (at least 2 characters).",
+          "email": "Enter a valid email address.",
+          "company": "Company name is too long.",
+          "interest": "Select an option.",
+          "message": "Message is too long."
+        }
       }
     }
   },

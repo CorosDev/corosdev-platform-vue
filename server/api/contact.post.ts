@@ -1,27 +1,15 @@
-import { z } from 'zod'
-
 /**
- * Mirrors the ContactSection.vue form fields.
- * `honeypot` is a hidden input real visitors never fill in — bot traffic protection
- * per CLAUDE.md ("Validación obligatoria de tokens Cloudflare Turnstile / Honeypot
- * antes de procesar envíos"). Swap/extend with Cloudflare Turnstile verification
- * once a site key + secret are provisioned.
+ * Mirrors ContactSection.vue's form. `contactSchema` lives in
+ * shared/utils/leadSchemas.ts (auto-imported here and in the component) so
+ * both sides validate against the exact same rules instead of two hand-kept
+ * copies drifting apart.
+ *
+ * `honeypot` is a hidden input real visitors never fill in — bot traffic
+ * protection per CLAUDE.md ("Validación obligatoria de tokens Cloudflare
+ * Turnstile / Honeypot antes de procesar envíos"). Turnstile itself is
+ * deferred to the production-prep pass (needs a Cloudflare site key/secret
+ * provisioned first) — tracked, not forgotten.
  */
-const contactSchema = z.object({
-  name: z.string().trim().min(2, 'El nombre es demasiado corto.').max(120),
-  email: z.email('Correo electrónico inválido.').max(180),
-  interest: z.enum([
-    'Inversor de Capital',
-    'Socio Estratégico / Cliente',
-    'Tester de Acceso Anticipado / Usuario',
-  ]),
-  message: z.string().trim().max(2000).optional().default(''),
-  // No length constraint here on purpose: a filled-in value must still pass
-  // validation so the bot-trap check below can run and respond as if nothing
-  // happened, instead of leaking a 422 that would tip the bot off.
-  honeypot: z.string().max(500).optional().default(''),
-})
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const parsed = contactSchema.safeParse(body)
@@ -34,7 +22,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const { name, email, interest, message, honeypot } = parsed.data
+  const { name, email, company, interest, message, honeypot } = parsed.data
 
   // Bots that fill the trap field silently succeed without being processed.
   if (honeypot) {
@@ -42,13 +30,26 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // TODO: forward the lead to the CRM/email provider (e.g. Brevo) here.
-    // Any third-party API key must stay server-side (runtimeConfig), never in the client bundle.
-    // await sendToBrevo({ name, email, interest, message })
+    const { brevoContactListId } = useRuntimeConfig()
+
+    await upsertBrevoContact({
+      email,
+      listId: brevoContactListId,
+      attributes: {
+        FIRSTNAME: name,
+        COMPANY: company,
+        INTEREST: interest,
+        MESSAGE: message,
+        SOURCE: 'contact_section',
+      },
+    })
 
     return { success: true }
-  } catch {
-    // Never expose raw server/provider errors to the client.
+  } catch (error) {
+    // Never expose raw server/provider errors to the client — but do log
+    // server-side so a misconfigured list id / API key / missing Brevo
+    // attribute (see server/utils/brevo.ts) is actually diagnosable.
+    console.error('[contact.post] Brevo upsert failed:', error)
     throw createError({
       statusCode: 502,
       message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.',
