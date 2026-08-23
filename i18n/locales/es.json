@@ -41,7 +41,11 @@
         "selectorAria": "Selecciona una ubicación de CorosDev",
         "globeAria": "Globo terráqueo 3D interactivo que muestra las ubicaciones de CorosDev en Honduras, Estados Unidos y República Checa",
         "cardClose": "Cerrar",
-        "fallbackNote": "El globo interactivo no está disponible — mostrando nuestras ubicaciones a continuación."
+        "fallbackNote": "El globo interactivo no está disponible — mostrando nuestras ubicaciones a continuación.",
+        "posterCta": "Toca para explorar el globo 3D",
+        "posterCtaAria": "Cargar la vista interactiva del globo 3D",
+        "posterLoading": "Cargando vista interactiva…",
+        "posterLoadingAria": "Cargando la vista interactiva del globo 3D"
       },
       "globeLocations": {
         "honduras": {

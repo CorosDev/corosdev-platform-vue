@@ -53,6 +53,19 @@ export default defineNuxtConfig({
       xl: 1280,
       xxl: 1536,
     },
+    // The local `ipx` provider's file-storage layer sets its own
+    // `cache-control: max-age=60` on every transformed response — confirmed
+    // via a real Lighthouse report and by curling a built `/_ipx/...` URL
+    // directly, where it overrides whatever the `/_ipx/**` routeRule below
+    // sets (that route rule is kept as defense-in-depth, but this is the
+    // setting IPX actually reads). Source images are static and content
+    // changes should ship under a new filename, same reasoning as the
+    // routeRules above.
+    ipx: {
+      fs: {
+        maxAge: 31536000,
+      },
+    },
   },
 
   i18n: {
@@ -80,6 +93,14 @@ export default defineNuxtConfig({
   // replace its content" — acceptable here since these are static brand/city
   // assets that change rarely and deliberately (a real content change should
   // ship under a new filename anyway, e.g. `cities/miami-2027.jpg`).
+  // `/_ipx/**` is the separate route @nuxt/image's runtime transform proxy
+  // actually serves resized/re-encoded (AVIF/WebP) images through — it isn't
+  // covered by the raw `/public` paths above, so it was still falling back to
+  // IPX's own short-lived default cache (60s), confirmed via a real Lighthouse
+  // report flagging the transformed `coros.png` variant specifically. Same
+  // immutable-for-a-year trade-off as the raw paths: a genuine content change
+  // should ship as a new source filename, which naturally produces a new
+  // `/_ipx/<params>/<newfile>` URL anyway.
   routeRules: {
     '/cities/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/globe/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
@@ -87,6 +108,7 @@ export default defineNuxtConfig({
     '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/favicon.svg': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/coros.png': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
 
   // Server-only (no `public` key here, so it never reaches the client bundle
@@ -100,6 +122,26 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+
+  // Pre-compresses every built static asset (hashed `_nuxt/*` chunks, images,
+  // fonts) to `.gz`+`.br` at build time; Nitro's static handler negotiates
+  // `Content-Encoding` against the request's `Accept-Encoding` automatically
+  // — no runtime compression CPU cost per request. Confirmed via a real
+  // Lighthouse report flagging zero compression on `npm run preview`'s
+  // responses (~39KB estimated savings) — this is also the main lever on the
+  // render-blocking `entry.*.css` finding: that file alone drops from 58.3KB
+  // to ~7.5KB over the wire with Brotli. Doesn't cover the SSR'd HTML
+  // document itself (that's rendered dynamically per request, not a static
+  // asset) — in a real deployment that's normally handled by the
+  // platform/reverse-proxy in front of Nitro (Vercel, Netlify, Cloudflare,
+  // nginx), which is also why this specific gap only shows up testing
+  // directly against the bare `npm run preview` server.
+  nitro: {
+    compressPublicAssets: {
+      gzip: true,
+      brotli: true,
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],

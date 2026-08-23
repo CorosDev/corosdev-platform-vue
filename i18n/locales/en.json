@@ -41,7 +41,11 @@
         "selectorAria": "Select a CorosDev location",
         "globeAria": "Interactive 3D globe showing CorosDev locations in Honduras, the United States and the Czech Republic",
         "cardClose": "Close",
-        "fallbackNote": "Interactive globe unavailable — showing our locations below."
+        "fallbackNote": "Interactive globe unavailable — showing our locations below.",
+        "posterCta": "Tap to explore the 3D globe",
+        "posterCtaAria": "Load the interactive 3D globe view",
+        "posterLoading": "Loading interactive view…",
+        "posterLoadingAria": "Loading the interactive 3D globe view"
       },
       "globeLocations": {
         "honduras": {
