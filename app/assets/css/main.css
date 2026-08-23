@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* Design tokens (Tailwind v4 CSS-first theming — no tailwind.config.js allowed). */
+@theme {
+  --color-brand-900: #070b1a;
+  --color-brand-800: #0b1226;
+  --color-brand-700: #0e1730;
+  --color-brand-600: #121d3c;
+
+  --color-neon-100: #d9efff;
+  --color-neon-300: #7dbbff;
+  --color-neon-500: #1f7fff;
+  --color-neon-700: #114a99;
+
+  --color-cobalt-300: #7dbbff;
+  --color-cobalt-500: #1f7fff;
+  --color-cobalt-700: #114a99;
+}
+
+/* Glassmorphism panel used by the Navbar and other floating surfaces. */
+@utility glass {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  @apply border border-white/10;
+}
+
+/* Neon glow used on primary CTAs and the logo. */
+@utility drop-shadow-glow {
+  filter: drop-shadow(0 0 20px rgb(31 127 255 / 0.45));
+}
