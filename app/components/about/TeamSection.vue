@@ -16,21 +16,19 @@ interface MemberMeta {
 // Names and C-level role abbreviations aren't translated — only each
 // member's description is (see i18n/locales/*.json under about.team.*_desc).
 //
-// NOTE: Emerson Medina moved CTO → CIO and Douglas Pineda joins as the new
-// CTO, which leaves two members both titled CIO (John Vanegas + Emerson)
-// for now — left as-is on purpose per the request that a full profile
-// cleanup pass comes later; flagging here so it isn't mistaken for an
-// oversight.
+// CEO + CTO lead the array on purpose (per the profile-cleanup request) so
+// they read as the section's headline pair, with the rest of the leadership
+// team following. John Vanegas (formerly CIO) was removed — Emerson Medina
+// is now the sole CIO.
 const teamMeta: MemberMeta[] = [
   { id: 'carlos', name: 'Carlos Hernandez', role: 'CEO', linkedinUrl: '#' },
+  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: '#' },
   { id: 'kriscia', name: 'Kriscia Cornejo', role: 'CFO', linkedinUrl: '#' },
   { id: 'arturo', name: 'Arturo Guzman', role: 'COO', linkedinUrl: '#' },
   { id: 'jafet', name: 'Jafet Mourra', role: 'CPO', linkedinUrl: '#' },
   { id: 'salvador', name: 'Salvador Reynaud', role: 'CMO', linkedinUrl: '#' },
   { id: 'jeremy', name: 'Jeremy Rápalo', role: 'CCO', linkedinUrl: '#' },
-  { id: 'john', name: 'John Vanegas', role: 'CIO', linkedinUrl: '#' },
   { id: 'emerson', name: 'Emerson Medina', role: 'CIO', linkedinUrl: '#' },
-  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: '#' },
 ]
 
 const team = computed(() =>
