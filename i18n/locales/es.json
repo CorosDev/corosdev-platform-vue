@@ -374,5 +374,38 @@
       "p": "Siempre estamos buscando ampliar nuestra red de aliados estratégicos en tecnología, capital y datos.",
       "link": "Hablemos →"
     }
+  },
+  "ctaDrawer": {
+    "floatingLabel": "Socio / Inversor",
+    "title": {
+      "general": "Únete al Ecosistema",
+      "ecosystem": "Explora el Ecosistema",
+      "services": "Construye Tu Plataforma",
+      "partners": "Sé un Partner de CorosDev"
+    },
+    "subtitle": {
+      "general": "Aplica para ser un tester de acceso anticipado o inversor en nuestros proyectos internos.",
+      "ecosystem": "¿Interesado en asociarte, invertir o probar versiones beta de nuestras startups?",
+      "services": "Diseñemos y desarrollemos tu sistema de crecimiento de alto rendimiento.",
+      "partners": "Cuéntanos sobre tu empresa y cómo podríamos colaborar."
+    },
+    "form": {
+      "name": "Nombre completo",
+      "namePlaceholder": "Tu nombre completo",
+      "email": "Correo corporativo",
+      "emailPlaceholder": "Tu correo corporativo",
+      "role": "Me interesa como...",
+      "roleTester": "Tester de Acceso Anticipado / Usuario",
+      "roleInvestor": "Inversor de Capital",
+      "rolePartner": "Socio Estratégico / Cliente",
+      "message": "¿Cómo podemos ayudarte?",
+      "messagePlaceholder": "Cuéntanos un poco sobre tus objetivos...",
+      "submit": "Enviar Solicitud",
+      "submitting": "Enviando...",
+      "successTitle": "¡Solicitud Recibida!",
+      "successDesc": "¡Gracias! Nuestro equipo revisará tu perfil y te contactará pronto.",
+      "error": "Hubo un problema. Por favor intenta de nuevo."
+    },
+    "close": "Cerrar"
   }
 }

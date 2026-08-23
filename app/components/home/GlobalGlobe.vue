@@ -249,17 +249,28 @@ function tuneGlobeMaterial() {
   material.specular?.set?.('#223a55')
 }
 
+// Yields back to the browser between initialization steps below — a single
+// `requestIdleCallback` around the *entire* buildGlobe() body used to be one
+// long main-thread task (three.js scene/renderer bootstrap + arcs + markers +
+// lighting + controls, all synchronous). TBT counts the portion of each task
+// beyond 50ms, so splitting that one large task into several smaller ones
+// directly reduces it, even though the total work is unchanged.
+function idle(timeout = 500): Promise<void> {
+  return new Promise((resolve) => {
+    const ric = window.requestIdleCallback ?? ((cb: IdleRequestCallback) => setTimeout(() => cb({} as IdleDeadline), 0))
+    ric(() => resolve(), { timeout })
+  })
+}
+
 async function buildGlobe(container: HTMLElement) {
   const { default: Globe } = await import('globe.gl')
-
-  const arcs = connections.map((conn) => {
-    const from = findGeo(conn.from)!
-    const to = findGeo(conn.to)!
-    return { startLat: from.lat, startLng: from.lng, endLat: to.lat, endLng: to.lng }
-  })
+  await idle()
 
   // globe.gl v2's `Globe` is a class (`new Globe(container)`), not the older
   // Kapsule factory call (`Globe()(container)`) the legacy vanilla JS used.
+  // This constructor call alone bootstraps the three.js scene/camera/renderer
+  // — the single heaviest atomic chunk of work here, can't be split further
+  // without reaching into globe.gl internals.
   world = new Globe(container)
     .width(container.clientWidth)
     .height(container.clientHeight)
@@ -269,8 +280,16 @@ async function buildGlobe(container: HTMLElement) {
     .showAtmosphere(true)
     .atmosphereColor('#5fb0ff')
     .atmosphereAltitude(0.16)
+
+  await idle()
+  const arcs = connections.map((conn) => {
+    const from = findGeo(conn.from)!
+    const to = findGeo(conn.to)!
+    return { startLat: from.lat, startLng: from.lng, endLat: to.lat, endLng: to.lng }
+  })
+  world
     .htmlElementsData(geoLocations)
-    .htmlElement((d) => buildMarkerElement(d as GpGeo))
+    .htmlElement((d: GpGeo) => buildMarkerElement(d))
     .arcsData(arcs)
     .arcColor(() => ['rgba(125,187,255,0.35)', 'rgba(31,127,255,0.6)'])
     .arcStroke(0.32)
@@ -280,12 +299,13 @@ async function buildGlobe(container: HTMLElement) {
     .arcAltitudeAutoScale(0.28)
     .pointOfView({ lat: 15, lng: -42, altitude: ALT_DEFAULT }, 0)
 
+  await idle()
   const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1.5 : 2)
   if (world.renderer) world.renderer().setPixelRatio(dpr)
-
   tuneLighting()
   tuneGlobeMaterial()
 
+  await idle()
   const controls = world.controls()
   if (controls) {
     controls.autoRotate = !reducedMotion
@@ -326,16 +346,31 @@ onMounted(() => {
     return
   }
 
-  // The globe sits in the hero, already in the first viewport, so there's
-  // nothing to lazy-load-on-scroll — instead defer the heavy globe.gl
-  // import + WebGL init until the browser is idle, so it never competes
-  // with the hero text/CTA for load time.
+  // Defer the heavy globe.gl import + WebGL init until BOTH conditions hold:
+  // the browser is idle after load (so it never competes with the hero
+  // text/CTA for load time) AND the stage has actually scrolled into the
+  // viewport. The hero usually *is* the first viewport, so on a typical
+  // desktop load this behaves exactly as before (idle right after load) —
+  // but on layouts where it isn't (short mobile viewports, a deep link
+  // further down the page), the WebGL cost is only ever paid once it's
+  // actually going to be seen.
+  let initStarted = false
+  let idleReady = false
+  let inViewport = false
+
+  const tryInit = () => {
+    if (initStarted || !idleReady || !inViewport) return
+    initStarted = true
+    if (globeMount.value) buildGlobe(globeMount.value).catch(() => (fallback.value = true))
+  }
+
   const ric =
     window.requestIdleCallback ?? ((cb: IdleRequestCallback) => setTimeout(() => cb({} as IdleDeadline), 400))
   const kickoff = () =>
     ric(
       () => {
-        if (globeMount.value) buildGlobe(globeMount.value).catch(() => (fallback.value = true))
+        idleReady = true
+        tryInit()
       },
       { timeout: 2000 },
     )
@@ -349,13 +384,22 @@ onMounted(() => {
     viewportObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) resumeRendering()
-          else pauseRendering()
+          if (entry.isIntersecting) {
+            inViewport = true
+            resumeRendering()
+            tryInit()
+          } else {
+            inViewport = false
+            pauseRendering()
+          }
         })
       },
       { threshold: 0 },
     )
     viewportObserver.observe(stage.value)
+  } else {
+    // No stage ref to observe (shouldn't happen) — fall back to idle-only.
+    inViewport = true
   }
 })
 

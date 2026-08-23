@@ -18,6 +18,19 @@
 
   --animate-float: float 5s ease-in-out infinite;
   --animate-marquee: marquee 60s linear infinite;
+
+  /* Brand typeface (CLAUDE.md §4) — self-hosted by @nuxt/fonts (nuxt.config.ts),
+     which injects the @font-face rules + font-display: swap automatically. */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Tailwind's preflight resets font-family to the browser default and stops
+   there — it never opts elements into `--font-sans` on its own, so the
+   brand typeface above only takes effect once something actually applies it. */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
 }
 
 @keyframes float {
