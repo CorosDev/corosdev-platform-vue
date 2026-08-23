@@ -1,8 +1,9 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Ecosystem - CorosDev',
-  description:
-    'Explore the CorosDev ecosystem. We build our own high-tech internal ventures alongside our client services: Accesorios TRD, Snapay, and Vorzana.',
+  title: () => t('ecosystem.seo.title'),
+  description: () => t('ecosystem.seo.description'),
 })
 </script>
 

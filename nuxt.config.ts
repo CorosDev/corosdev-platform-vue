@@ -10,7 +10,36 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  modules: ['nuxt-security'],
+  // Explicit favicon links — without these the browser falls back to a bare
+  // GET /favicon.ico request that Nitro has no route for, surfacing as
+  // net::ERR_CONNECTION_REFUSED in devtools. Both files live in /public.
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'shortcut icon', href: '/favicon.ico' },
+      ],
+    },
+  },
+
+  modules: ['nuxt-security', '@nuxtjs/i18n'],
+
+  i18n: {
+    locales: [
+      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+    ],
+    defaultLocale: 'es',
+    strategy: 'prefix_except_default', // es lives at '/', en at '/en/...'
+    // Production domain, from _legacy_html/CNAME — needed for useLocaleHead()'s
+    // hreflang alternate <link> tags in app/layouts/default.vue to be fully-qualified.
+    baseUrl: 'https://corosdev.com',
+    // Locale is decided by the URL prefix + the Navbar's explicit toggle
+    // (see AppNavbar.vue's setLocale() call) — no surprise auto-redirects
+    // based on the visitor's browser/Accept-Language.
+    detectBrowserLanguage: false,
+  },
 
   css: ['~/assets/css/main.css'],
 

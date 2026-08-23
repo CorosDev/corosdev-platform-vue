@@ -1,55 +1,29 @@
 <script setup lang="ts">
-interface Testimonial {
-  quote: string
-  name: string
-  role: string
-}
+const { t } = useI18n()
 
-const testimonials: Testimonial[] = [
-  {
-    quote: 'CorosDev delivered exactly what we needed, on time and with excellent quality.',
-    name: 'Aftermath',
-    role: 'Strategy',
-  },
-  {
-    quote: 'Proposed scalable solutions that solved our most complex infrastructure challenges.',
-    name: 'Dell Technologies',
-    role: 'Infrastructure',
-  },
-  {
-    quote: 'Complex integrations, handled with great communication. True engineering partners.',
-    name: 'Beehiiv',
-    role: 'Engineering',
-  },
-  {
-    quote: "The most robust Shopify Plus integration we've seen. Flawless execution.",
-    name: 'Luxury Brand',
-    role: 'Commerce',
-  },
-  {
-    quote: 'They built our fintech app from scratch. Security and speed were top notch.',
-    name: 'Fintech Global',
-    role: 'Product',
-  },
-  {
-    quote: 'Exceptional technical talent. Their design-led approach makes a real difference.',
-    name: 'Velocity VC',
-    role: 'Portfolio',
-  },
-]
+const cardIds = ['card1', 'card2', 'card3', 'card4', 'card5', 'card6'] as const
+
+const testimonials = computed(() =>
+  cardIds.map((id) => ({
+    id,
+    quote: t(`home.testimonials.${id}_quote`),
+    name: t(`home.testimonials.${id}_name`),
+    role: t(`home.testimonials.${id}_role`),
+  })),
+)
 
 // Duplicated for a seamless CSS marquee loop (animate-marquee scrolls exactly -50%).
-const track = [...testimonials, ...testimonials]
+const track = computed(() => [...testimonials.value, ...testimonials.value])
 </script>
 
 <template>
   <section id="testimonials" class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto mb-8 max-w-7xl px-6 md:mb-16">
       <h2 class="text-4xl font-black text-white md:text-6xl">
-        What our <span class="gradient-text drop-shadow-glow">clients say</span>
+        {{ t('home.testimonials.h2_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.testimonials.h2_span') }}</span>
       </h2>
       <p class="mt-4 max-w-2xl text-lg text-white/50">
-        Proven results delivered to industry leaders through dedicated engineering and design discipline.
+        {{ t('home.testimonials.sub') }}
       </p>
     </div>
 
@@ -57,7 +31,7 @@ const track = [...testimonials, ...testimonials]
       <div class="animate-marquee flex w-max gap-8 hover:[animation-play-state:paused]">
         <div
           v-for="(testimonial, index) in track"
-          :key="`${testimonial.name}-${index}`"
+          :key="`${testimonial.id}-${index}`"
           class="group w-[400px] shrink-0"
         >
           <div

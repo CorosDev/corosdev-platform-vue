@@ -1,12 +1,15 @@
 <script setup lang="ts">
-const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Ecosystem', to: '/ecosystem' },
-  { label: 'Partners', to: '/partners' },
-  { label: 'Services', to: '/services' },
-  { label: 'About Us', to: '/about' },
-  { label: 'Contact', to: '/#contact' },
-]
+const { t, locale, setLocale } = useI18n()
+const localePath = useLocalePath()
+
+const navLinks = computed(() => [
+  { key: 'home', label: t('nav.home'), to: localePath('/') },
+  { key: 'ecosystem', label: t('nav.ecosystem'), to: localePath('/ecosystem') },
+  { key: 'partners', label: t('nav.partners'), to: localePath('/partners') },
+  { key: 'services', label: t('nav.services'), to: localePath('/services') },
+  { key: 'about', label: t('nav.about'), to: localePath('/about') },
+  { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact` },
+])
 
 const bookingUrl = 'https://calendly.com/corosdev-info/30min'
 
@@ -19,6 +22,12 @@ function toggleMobileMenu() {
 
 function closeMobileMenu() {
   mobileMenuOpen.value = false
+}
+
+// Toggles between the two configured locales — shows the language you'd
+// switch TO (e.g. while browsing in Spanish, the button reads "EN").
+function toggleLocale() {
+  setLocale(locale.value === 'es' ? 'en' : 'es')
 }
 
 function handleScroll() {
@@ -65,11 +74,11 @@ onUnmounted(() => {
         </button>
 
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-3" @click="closeMobileMenu">
+        <NuxtLink :to="localePath('/')" class="flex items-center gap-3" @click="closeMobileMenu">
           <img src="/coros.png" alt="CorosDev" width="361" height="220" class="h-12 w-auto md:h-16" />
           <div class="mx-2 hidden h-6 w-px bg-white/10 sm:block" />
           <span class="hidden text-[10px] font-bold uppercase tracking-widest text-white opacity-80 sm:block">
-            AI Driven Company
+            {{ t('nav.aiDrivenCompany') }}
           </span>
         </NuxtLink>
 
@@ -77,7 +86,7 @@ onUnmounted(() => {
         <nav class="hidden items-center gap-8 text-sm font-semibold uppercase tracking-widest text-white/80 md:flex">
           <NuxtLink
             v-for="link in navLinks"
-            :key="link.to"
+            :key="link.key"
             :to="link.to"
             class="transition-colors hover:text-neon-500"
           >
@@ -90,9 +99,10 @@ onUnmounted(() => {
           <button
             type="button"
             class="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300"
-            aria-label="Switch language"
+            :aria-label="t('nav.langToggle')"
+            @click="toggleLocale"
           >
-            ES
+            {{ locale === 'es' ? 'EN' : 'ES' }}
           </button>
           <a
             :href="bookingUrl"
@@ -100,7 +110,7 @@ onUnmounted(() => {
             rel="noopener"
             class="drop-shadow-glow inline-block rounded-xl bg-cobalt-500 px-2.5 py-1.5 text-xs font-semibold text-brand-900 transition-transform hover:scale-105 sm:px-4 sm:py-2 sm:text-sm"
           >
-            Book a demo
+            {{ t('nav.cta') }}
           </a>
         </div>
       </div>
@@ -117,7 +127,7 @@ onUnmounted(() => {
         <nav v-if="mobileMenuOpen" class="overflow-hidden px-2 pb-2 md:hidden">
           <NuxtLink
             v-for="link in navLinks"
-            :key="link.to"
+            :key="link.key"
             :to="link.to"
             class="block border-b border-white/5 py-3 text-sm font-semibold uppercase tracking-widest text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
             @click="closeMobileMenu"
@@ -131,7 +141,7 @@ onUnmounted(() => {
             class="block py-3 text-sm font-bold uppercase tracking-widest text-neon-500"
             @click="closeMobileMenu"
           >
-            Book a demo
+            {{ t('nav.cta') }}
           </a>
         </nav>
       </Transition>

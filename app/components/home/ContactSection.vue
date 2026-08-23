@@ -3,6 +3,11 @@
  * Mirrors the zod schema in server/api/contact.post.ts. Keeping the two in sync
  * by hand is intentional here (no shared schema package yet) — if the endpoint's
  * contactSchema changes, update this shape and the `interestOptions` list too.
+ *
+ * The `interest` option VALUES stay pinned to their canonical Spanish string
+ * (matching the server's zod enum) regardless of the active UI locale — only
+ * the displayed <option> label is translated. Changing the submitted value
+ * per-locale would require updating the server's enum too.
  */
 interface ContactForm {
   name: string
@@ -17,17 +22,21 @@ interface ContactResponse {
   success: boolean
 }
 
-const interestOptions = [
-  'Inversor de Capital',
-  'Socio Estratégico / Cliente',
-  'Tester de Acceso Anticipado / Usuario',
-] as const
+const DEFAULT_INTEREST = 'Tester de Acceso Anticipado / Usuario'
+
+const { t } = useI18n()
+
+const interestOptions = computed(() => [
+  { value: 'Inversor de Capital', label: t('home.contact.form.interestInvestor') },
+  { value: 'Socio Estratégico / Cliente', label: t('home.contact.form.interestPartner') },
+  { value: DEFAULT_INTEREST, label: t('home.contact.form.interestTester') },
+])
 
 function emptyForm(): ContactForm {
   return {
     name: '',
     email: '',
-    interest: 'Tester de Acceso Anticipado / Usuario',
+    interest: DEFAULT_INTEREST,
     message: '',
     honeypot: '',
   }
@@ -37,13 +46,11 @@ const form = reactive<ContactForm>(emptyForm())
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 const status = ref<Status>('idle')
-const errorMessage = ref('')
 
 async function handleSubmit() {
   if (status.value === 'submitting') return
 
   status.value = 'submitting'
-  errorMessage.value = ''
 
   try {
     await $fetch<ContactResponse>('/api/contact', {
@@ -54,7 +61,6 @@ async function handleSubmit() {
     Object.assign(form, emptyForm())
   } catch {
     status.value = 'error'
-    errorMessage.value = 'Hubo un problema. Por favor intenta de nuevo.'
   }
 }
 </script>
@@ -64,19 +70,19 @@ async function handleSubmit() {
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-center gap-10 md:grid-cols-2">
         <div>
-          <h2 class="text-3xl font-bold md:text-5xl">Tell us what you're building</h2>
-          <p class="mt-3 text-white/70">Get a roadmap, estimate, and risk assessment in 72 hours.</p>
+          <h2 class="text-3xl font-bold md:text-5xl">{{ t('home.contact.h2') }}</h2>
+          <p class="mt-3 text-white/70">{{ t('home.contact.sub') }}</p>
           <ul class="mt-6 space-y-3 text-white/80">
             <li>
-              &bull; Email:
+              &bull; {{ t('home.contact.emailLabel') }}:
               <a class="text-neon-500 hover:underline" href="mailto:info@corosdev.com">info@corosdev.com</a>
             </li>
             <li>
-              &bull; WhatsApp:
+              &bull; {{ t('home.contact.whatsappLabel') }}:
               <a class="text-neon-500 hover:underline" href="https://wa.me/50431750453">+504 3175-0453</a>
             </li>
-            <li>&bull; San Pedro Sula, Honduras &middot; Prague, Czech Republic</li>
-            <li>&bull; Remote / Nearshore &middot; Global Engineering</li>
+            <li>&bull; {{ t('home.contact.location') }}</li>
+            <li>&bull; {{ t('home.contact.remote') }}</li>
           </ul>
         </div>
 
@@ -86,7 +92,7 @@ async function handleSubmit() {
               v-model="form.name"
               type="text"
               name="name"
-              placeholder="Tu nombre completo"
+              :placeholder="t('home.contact.form.namePlaceholder')"
               autocomplete="name"
               required
               class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
@@ -95,7 +101,7 @@ async function handleSubmit() {
               v-model="form.email"
               type="email"
               name="email"
-              placeholder="Tu correo corporativo"
+              :placeholder="t('home.contact.form.emailPlaceholder')"
               autocomplete="email"
               required
               class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
@@ -106,8 +112,8 @@ async function handleSubmit() {
               name="interest"
               class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
             >
-              <option v-for="option in interestOptions" :key="option" :value="option">
-                {{ option }}
+              <option v-for="option in interestOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
               </option>
             </select>
 
@@ -115,7 +121,7 @@ async function handleSubmit() {
               v-model="form.message"
               name="message"
               rows="4"
-              placeholder="Cuéntanos un poco sobre tus objetivos..."
+              :placeholder="t('home.contact.form.messagePlaceholder')"
               class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
             />
 
@@ -137,20 +143,20 @@ async function handleSubmit() {
               :disabled="status === 'submitting'"
               class="mt-2 flex w-full items-center justify-center rounded-xl bg-neon-500 px-5 py-3 font-semibold text-brand-900 drop-shadow-glow transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {{ status === 'submitting' ? 'Enviando...' : 'Enviar Solicitud' }}
+              {{ status === 'submitting' ? t('home.contact.form.submitting') : t('home.contact.form.submit') }}
             </button>
 
             <p
               v-if="status === 'success'"
               class="mt-2 text-center text-xs text-green-400"
             >
-              ¡Solicitud enviada con éxito! Te contactaremos pronto.
+              {{ t('home.contact.form.success') }}
             </p>
             <p
               v-else-if="status === 'error'"
               class="mt-2 text-center text-xs text-red-400"
             >
-              {{ errorMessage }}
+              {{ t('home.contact.form.error') }}
             </p>
           </div>
         </form>

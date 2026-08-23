@@ -1,15 +1,17 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <template>
   <section id="presentation" class="relative overflow-hidden py-12 md:py-20">
     <div class="mx-auto max-w-5xl px-6">
       <div class="mb-8 text-center md:mb-12">
         <h2 class="text-3xl font-black text-white md:text-5xl">
-          See Our <span class="gradient-text drop-shadow-glow">Methodology in Action</span>
+          {{ t('home.presentation.title_1') }}
+          <span class="gradient-text drop-shadow-glow">{{ t('home.presentation.title_span') }}</span>
         </h2>
         <p class="mx-auto mt-4 max-w-2xl text-base text-white/50 md:text-lg">
-          Experience how we design, build, and scale digital products. Learn how our ecosystem and elite
-          engineering teams bring future-ready systems to life.
+          {{ t('home.presentation.desc') }}
         </p>
       </div>
 

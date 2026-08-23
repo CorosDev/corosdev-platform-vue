@@ -1,14 +1,16 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 interface LocationChip {
   code: string
-  label: string
+  labelKey: 'honduras' | 'miami' | 'wyoming' | 'prague'
 }
 
-const locations: LocationChip[] = [
-  { code: 'HN', label: 'Honduras' },
-  { code: 'US', label: 'Miami' },
-  { code: 'US', label: 'Wyoming' },
-  { code: 'CZ', label: 'Praha' },
+const locationChips: LocationChip[] = [
+  { code: 'HN', labelKey: 'honduras' },
+  { code: 'US', labelKey: 'miami' },
+  { code: 'US', labelKey: 'wyoming' },
+  { code: 'CZ', labelKey: 'prague' },
 ]
 
 const bookingUrl = 'https://calendly.com/corosdev-info/30min'
@@ -21,14 +23,14 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
         <!-- Copy -->
         <div>
           <p class="text-sm font-medium uppercase tracking-wide text-white opacity-90">
-            AI Driven Company &middot; LATAM Engineering &middot; US Time &amp; EU Time
+            {{ t('home.hero.tag') }}
           </p>
           <h1 class="mt-4 text-5xl font-extrabold leading-[1.1] md:text-7xl">
-            Building Tomorrow's <span class="gradient-text drop-shadow-glow">Software</span> Today.
+            {{ t('home.hero.h1_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.hero.h1_span') }}</span>
+            {{ t('home.hero.h1_2') }}
           </h1>
           <p class="mt-5 max-w-xl text-lg text-white/80">
-            We transform ambitious ideas into scalable, profitable, and future-ready businesses through
-            world-class technology systems.
+            {{ t('home.hero.sub') }}
           </p>
           <div class="mt-8 flex items-center gap-3">
             <a
@@ -37,21 +39,21 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
               rel="noopener"
               class="rounded-xl bg-neon-500 px-6 py-3 font-semibold text-brand-900 drop-shadow-glow transition-transform hover:scale-105"
             >
-              Book a 30-min discovery
+              {{ t('home.hero.cta1') }}
             </a>
             <a
               href="#ecosystem"
               class="rounded-xl border border-white/18 px-6 py-3 transition-colors hover:border-neon-500 hover:text-neon-500"
             >
-              See our work
+              {{ t('home.hero.cta2') }}
             </a>
           </div>
           <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
-            <span>Security-first</span>
+            <span>{{ t('home.hero.pill1') }}</span>
             <span class="opacity-50">&bull;</span>
-            <span>Design-led</span>
+            <span>{{ t('home.hero.pill2') }}</span>
             <span class="opacity-50">&bull;</span>
-            <span>Measurable impact</span>
+            <span>{{ t('home.hero.pill3') }}</span>
           </div>
         </div>
 
@@ -69,7 +71,7 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
               />
 
               <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
-                Our impact in the world
+                {{ t('home.hero.globeLabel') }}
               </p>
 
               <div class="glass mt-6 flex flex-col items-center rounded-3xl p-8 text-center sm:p-12">
@@ -80,17 +82,17 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
                   CD
                 </div>
                 <p class="mt-6 max-w-xs text-sm text-white/60">
-                  Engineering teams across three continents, working in your timezone.
+                  {{ t('home.hero.fallbackDesc') }}
                 </p>
 
                 <div class="mt-8 flex flex-wrap justify-center gap-2" aria-label="CorosDev locations">
                   <span
-                    v-for="loc in locations"
-                    :key="`${loc.code}-${loc.label}`"
+                    v-for="loc in locationChips"
+                    :key="loc.labelKey"
                     class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70"
                   >
                     <span class="text-[10px] font-bold uppercase text-neon-300">{{ loc.code }}</span>
-                    {{ loc.label }}
+                    {{ t(`home.hero.locations.${loc.labelKey}`) }}
                   </span>
                 </div>
               </div>
