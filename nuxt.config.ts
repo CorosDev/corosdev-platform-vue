@@ -61,6 +61,15 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // Silences Vite's >500kB chunk warning for one specific, expected chunk:
+      // globe.gl + three.js + three-globe, dynamically `import()`-ed only when
+      // HomeGlobalGlobe.vue actually mounts (see its buildGlobe()) — verified
+      // in the built output that it's a true async chunk, not part of the
+      // initial/blocking bundle. A 3D WebGL engine is inherently this size;
+      // raising the threshold (~2MB) accepts that instead of chasing it.
+      chunkSizeWarningLimit: 2000,
+    },
   },
 
   // OWASP-strict headers via nuxt-security (see CLAUDE.md, Protocolo de Seguridad Enterprise).
@@ -82,6 +91,17 @@ export default defineNuxtConfig({
         'frame-src': ["'self'", 'https://www.youtube.com'],
       },
     },
+    // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`
+    // to strip console/debugger in production — but Vite 8's default minifier
+    // here is `oxc`, not esbuild, and there's no oxc-native equivalent option
+    // yet, so that setting is silently ignored and `npm run build` warns
+    // "Both esbuild and oxc options were set. oxc options will be used...".
+    // Turned off rather than left in place producing a no-op warning: we ship
+    // zero first-party `console.*`/`debugger` statements (verified against the
+    // built bundle — the only console call left is inside three.js itself), so
+    // there's nothing this was actually stripping. Revisit if nuxt-security
+    // adds oxc support, or if console statements are ever added to app/server.
+    removeLoggers: false,
   },
 
   compatibilityDate: '2026-08-22',
