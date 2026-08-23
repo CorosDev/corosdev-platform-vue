@@ -1,61 +1,30 @@
 <script setup lang="ts">
-interface Partner {
-  name: string
+const { t } = useI18n()
+
+interface PartnerMeta {
+  id: 'eiw' | 'sbc' | 'audela' | 'nolim' | 'intellify'
   url: string
-  sector: string
-  description: string
   logo: string
   /** Logos designed for light backgrounds get a white chip; dark-ready marks sit on a neon-tinted chip. */
   lightBg: boolean
 }
 
-const partners: Partner[] = [
-  {
-    name: 'EncryptedInfoWeb',
-    url: 'https://encryptedinfoweb.com/',
-    sector: 'IT Solutions & Software Development',
-    description:
-      'Custom web development, mobile apps, and enterprise ERP/CRM software — delivering data-driven solutions across real estate, healthcare, finance, and e-commerce.',
-    logo: '/logos/partners/encryptedinfoweb.webp',
-    lightBg: true,
-  },
-  {
-    name: 'SBC Capital',
-    url: 'https://www.sbc.capital/',
-    sector: 'Private Equity & Acquisitions',
-    description:
-      'A private acquisition firm investing in lower middle-market businesses across the U.S. and Europe, acting as permanent, long-term owners.',
-    logo: '/logos/partners/sbc-capital.png',
-    lightBg: true,
-  },
-  {
-    name: 'AUDELA Control Tower',
-    url: 'https://audeladedonnees.fr/',
-    sector: 'Business Intelligence & LegalTech',
-    description:
-      'A French software company delivering Business Intelligence, ERP, and LegalTech solutions through its unified Control Tower platform.',
-    logo: '/logos/partners/audela.svg',
-    lightBg: false,
-  },
-  {
-    name: 'Nolim Studios',
-    url: 'https://www.nolimstudios.com/es',
-    sector: 'Software, AI & AR/VR',
-    description:
-      'A software development studio building custom software, AI systems, AR/VR experiences, SaaS platforms, and games — from air traffic systems to judicial education platforms.',
-    logo: '/logos/partners/nolim-studios.png',
-    lightBg: true,
-  },
-  {
-    name: 'The Intellify',
-    url: 'https://theintellify.com/',
-    sector: 'AI & Digital Product Engineering',
-    description:
-      'An AI and digital product engineering company building intelligent automation, AI agents, and modernized platforms for enterprises across regulated industries.',
-    logo: '/logos/partners/the-intellify.svg',
-    lightBg: false,
-  },
+const partnerMeta: PartnerMeta[] = [
+  { id: 'eiw', url: 'https://encryptedinfoweb.com/', logo: '/logos/partners/encryptedinfoweb.webp', lightBg: true },
+  { id: 'sbc', url: 'https://www.sbc.capital/', logo: '/logos/partners/sbc-capital.png', lightBg: true },
+  { id: 'audela', url: 'https://audeladedonnees.fr/', logo: '/logos/partners/audela.svg', lightBg: false },
+  { id: 'nolim', url: 'https://www.nolimstudios.com/es', logo: '/logos/partners/nolim-studios.png', lightBg: true },
+  { id: 'intellify', url: 'https://theintellify.com/', logo: '/logos/partners/the-intellify.svg', lightBg: false },
 ]
+
+const partners = computed(() =>
+  partnerMeta.map((partner) => ({
+    ...partner,
+    name: t(`partners.grid.${partner.id}_name`),
+    sector: t(`partners.grid.${partner.id}_sector`),
+    description: t(`partners.grid.${partner.id}_desc`),
+  })),
+)
 </script>
 
 <template>
@@ -64,7 +33,7 @@ const partners: Partner[] = [
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <a
           v-for="partner in partners"
-          :key="partner.name"
+          :key="partner.id"
           :href="partner.url"
           target="_blank"
           rel="noopener noreferrer"
@@ -74,7 +43,16 @@ const partners: Partner[] = [
             class="flex h-16 w-16 items-center justify-center rounded-2xl border p-2.5"
             :class="partner.lightBg ? 'border-white/10 bg-white' : 'border-neon-500/20 bg-neon-500/10'"
           >
-            <img :src="partner.logo" :alt="`${partner.name} logo`" width="64" height="64" class="h-full w-full object-contain" loading="lazy" decoding="async" />
+            <NuxtPicture
+              :src="partner.logo"
+              :alt="`${partner.name} logo`"
+              width="64"
+              height="64"
+              loading="lazy"
+              decoding="async"
+              class="block h-full w-full"
+              :img-attrs="{ class: 'h-full w-full object-contain' }"
+            />
           </div>
           <h2 class="mt-6 text-2xl font-black text-white">{{ partner.name }}</h2>
           <span
@@ -84,7 +62,7 @@ const partners: Partner[] = [
           </span>
           <p class="mt-4 flex-1 text-sm leading-relaxed text-white/60">{{ partner.description }}</p>
           <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 transition-colors group-hover:text-neon-500">
-            Visit site &rarr;
+            {{ t('partners.grid.visit') }}
           </span>
         </a>
       </div>

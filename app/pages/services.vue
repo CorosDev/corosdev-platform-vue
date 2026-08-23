@@ -1,8 +1,9 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Services - CorosDev',
-  description:
-    'Explore the elite technology services and strategic frameworks of CorosDev - AI automation, custom software, digital growth, and scalable systems.',
+  title: () => t('services.seo.title'),
+  description: () => t('services.seo.description'),
 })
 </script>
 

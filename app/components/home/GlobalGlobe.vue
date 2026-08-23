@@ -8,73 +8,23 @@
  * `<ClientOnly>` by its parent since WebGL/DOM APIs aren't SSR-safe.
  */
 
-interface GpLocation {
+// Only the geometric/static fields the globe engine itself needs — display
+// text (name, office type, address...) is looked up reactively from the i18n
+// dictionary via `locationText` below, so it switches with the locale
+// without having to rebuild the WebGL globe.
+interface GpGeo {
   id: string
   lat: number
   lng: number
   countryCode: string
-  short: string
   banner: string
-  type: string
-  title: string
-  location: string
-  company: string
-  address: string[]
 }
 
-const locations: GpLocation[] = [
-  {
-    id: 'honduras',
-    lat: 15.5,
-    lng: -88.03,
-    countryCode: 'HN',
-    short: 'Honduras',
-    banner: '/cities/honduras.jpg',
-    type: 'GLOBAL HEADQUARTERS',
-    title: 'Honduras Headquarters',
-    location: 'San Pedro Sula, Honduras',
-    company: 'CorosDev S.A.',
-    address: ['Boulevard Michelleti', '3era Etapa, 5th Street', 'San Pedro Sula 21101', 'Honduras'],
-  },
-  {
-    id: 'miami',
-    lat: 25.76,
-    lng: -80.19,
-    countryCode: 'US',
-    short: 'Miami',
-    banner: '/cities/miami.jpg',
-    type: 'BUSINESS PRESENCE',
-    title: 'Miami Office',
-    location: 'Miami, Florida, United States',
-    company: 'CorosDev LLC',
-    address: ['100 SE 2nd Street', 'Suite 2000', 'Miami, FL 33131', 'United States'],
-  },
-  {
-    id: 'wyoming',
-    lat: 43.08,
-    lng: -107.29,
-    countryCode: 'US',
-    short: 'Wyoming',
-    banner: '/cities/wyoming.jpg',
-    type: 'REGISTERED OFFICE',
-    title: 'Wyoming Registered Office',
-    location: 'Sheridan, Wyoming, United States',
-    company: 'CorosDev LLC',
-    address: ['30 N Gould St', 'Sheridan, WY 82801', 'United States'],
-  },
-  {
-    id: 'prague',
-    lat: 50.08,
-    lng: 14.44,
-    countryCode: 'CZ',
-    short: 'Praha',
-    banner: '/cities/prague.jpg',
-    type: 'EUROPEAN HEADQUARTERS',
-    title: 'Prague Headquarters',
-    location: 'Praha, Czech Republic',
-    company: 'CorosDev S.R.O.',
-    address: ['Plzeňská 3352/156', 'Praha 5, 150 00', 'Czech Republic'],
-  },
+const geoLocations: GpGeo[] = [
+  { id: 'honduras', lat: 15.5, lng: -88.03, countryCode: 'HN', banner: '/cities/honduras.jpg' },
+  { id: 'miami', lat: 25.76, lng: -80.19, countryCode: 'US', banner: '/cities/miami.jpg' },
+  { id: 'wyoming', lat: 43.08, lng: -107.29, countryCode: 'US', banner: '/cities/wyoming.jpg' },
+  { id: 'prague', lat: 50.08, lng: 14.44, countryCode: 'CZ', banner: '/cities/prague.jpg' },
 ]
 
 const connections = [
@@ -84,9 +34,41 @@ const connections = [
   { from: 'miami', to: 'prague' },
 ]
 
-function findLocation(id: string) {
-  return locations.find((loc) => loc.id === id) ?? null
+function findGeo(id: string) {
+  return geoLocations.find((loc) => loc.id === id) ?? null
 }
+
+const { t } = useI18n()
+
+interface LocationText {
+  short: string
+  type: string
+  title: string
+  location: string
+  company: string
+  address: string[]
+}
+
+// Office titles, categories, legal company names and mailing addresses are
+// kept identical in en/es on purpose (see i18n/locales/*.json) — legal
+// entity names and postal addresses aren't translated.
+const locationText = computed<Record<string, LocationText>>(() => {
+  const result: Record<string, LocationText> = {}
+  for (const geo of geoLocations) {
+    const base = `home.hero.globeLocations.${geo.id}`
+    result[geo.id] = {
+      short: t(`home.hero.locations.${geo.id}`),
+      type: t(`${base}.type`),
+      title: t(`${base}.title`),
+      location: t(`${base}.location`),
+      company: t(`${base}.company`),
+      address: [t(`${base}.address1`), t(`${base}.address2`), t(`${base}.address3`), t(`${base}.address4`)].filter(
+        Boolean,
+      ),
+    }
+  }
+  return result
+})
 
 // Camera choreography timings — see animateCameraTo().
 const ALT_DEFAULT = 2.5
@@ -107,7 +89,11 @@ const cardOpen = ref(false)
 const fallback = ref(false)
 const bannerError = ref(false)
 
-const currentLocation = computed(() => findLocation(currentId.value ?? ''))
+const currentLocation = computed(() => {
+  const geo = findGeo(currentId.value ?? '')
+  if (!geo) return null
+  return { ...geo, ...locationText.value[geo.id] }
+})
 
 // Everything below is imperative vendor-API glue (globe.gl / three.js), kept
 // outside Vue's reactivity on purpose — `world` is a Kapsule instance, not
@@ -134,7 +120,7 @@ function scheduleIdleResume() {
   }, IDLE_RESUME_MS)
 }
 
-function animateCameraTo(loc: GpLocation, token: number, done: () => void) {
+function animateCameraTo(loc: GpGeo, token: number, done: () => void) {
   if (!world) {
     done()
     return
@@ -161,7 +147,7 @@ function animateCameraTo(loc: GpLocation, token: number, done: () => void) {
 }
 
 function selectLocation(id: string) {
-  const loc = findLocation(id)
+  const loc = findGeo(id)
   if (!loc || id === currentId.value) return
 
   const needsCardSwitch = cardOpen.value && currentId.value !== null
@@ -205,7 +191,7 @@ watch(currentId, (id) => {
   })
 })
 
-function buildMarkerElement(loc: GpLocation) {
+function buildMarkerElement(loc: GpGeo) {
   const btn = document.createElement('button')
   btn.type = 'button'
   btn.className = 'gp-marker'
@@ -267,8 +253,8 @@ async function buildGlobe(container: HTMLElement) {
   const { default: Globe } = await import('globe.gl')
 
   const arcs = connections.map((conn) => {
-    const from = findLocation(conn.from)!
-    const to = findLocation(conn.to)!
+    const from = findGeo(conn.from)!
+    const to = findGeo(conn.to)!
     return { startLat: from.lat, startLng: from.lng, endLat: to.lat, endLng: to.lng }
   })
 
@@ -283,8 +269,8 @@ async function buildGlobe(container: HTMLElement) {
     .showAtmosphere(true)
     .atmosphereColor('#5fb0ff')
     .atmosphereAltitude(0.16)
-    .htmlElementsData(locations)
-    .htmlElement((d) => buildMarkerElement(d as GpLocation))
+    .htmlElementsData(geoLocations)
+    .htmlElement((d) => buildMarkerElement(d as GpGeo))
     .arcsData(arcs)
     .arcColor(() => ['rgba(125,187,255,0.35)', 'rgba(31,127,255,0.6)'])
     .arcStroke(0.32)
@@ -387,7 +373,7 @@ onBeforeUnmount(() => {
       <div class="gp-ambient-glow" aria-hidden="true" />
 
       <p class="gp-hero-label text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
-        Our impact in the world
+        {{ t('home.hero.globeLabel') }}
       </p>
 
       <div class="gp-globe-wrap relative z-10 h-full w-full">
@@ -395,17 +381,17 @@ onBeforeUnmount(() => {
           ref="globeMount"
           class="gp-globe-canvas"
           role="img"
-          aria-label="Interactive 3D globe showing CorosDev locations in Honduras, the United States and the Czech Republic"
+          :aria-label="t('home.hero.globe.globeAria')"
         />
         <p v-if="fallback" class="gp-fallback-note">
-          Interactive globe unavailable — showing our locations below.
+          {{ t('home.hero.globe.fallbackNote') }}
         </p>
       </div>
     </div>
 
-    <div class="gp-selector" aria-label="Select a CorosDev location">
+    <div class="gp-selector" :aria-label="t('home.hero.globe.selectorAria')">
       <button
-        v-for="loc in locations"
+        v-for="loc in geoLocations"
         :key="loc.id"
         type="button"
         class="gp-selector-btn"
@@ -413,7 +399,7 @@ onBeforeUnmount(() => {
         @click="selectLocation(loc.id)"
       >
         <span class="gp-selector-flag" aria-hidden="true">{{ loc.countryCode }}</span>
-        <span>{{ loc.short }}</span>
+        <span>{{ locationText[loc.id]?.short }}</span>
       </button>
     </div>
 
@@ -426,14 +412,14 @@ onBeforeUnmount(() => {
       leave-to-class="opacity-0 translate-y-3.5 scale-[0.98]"
     >
       <div v-if="cardOpen && currentLocation" class="gp-card" aria-live="polite">
-        <button type="button" class="gp-card-close" aria-label="Close" @click="handleClose">
+        <button type="button" class="gp-card-close" :aria-label="t('home.hero.globe.cardClose')" @click="handleClose">
           <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
         <div class="gp-card-banner">
-          <img
+          <NuxtPicture
             v-if="!bannerError"
             :src="currentLocation.banner"
             alt=""
@@ -441,6 +427,8 @@ onBeforeUnmount(() => {
             decoding="async"
             width="280"
             height="140"
+            class="block h-full w-full"
+            :img-attrs="{ class: 'h-full w-full' }"
             @error="bannerError = true"
           />
           <div class="gp-card-banner-overlay" />
@@ -475,8 +463,8 @@ onBeforeUnmount(() => {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 6l6.5 5 6.5-5" />
               </svg>
               <span>
-                <template v-for="(line, i) in currentLocation.address" :key="i">
-                  {{ line }}<br v-if="i < currentLocation.address.length - 1" />
+                <template v-for="(line, i) in currentLocation?.address ?? []" :key="i">
+                  {{ line }}<br v-if="i < (currentLocation?.address?.length ?? 0) - 1" />
                 </template>
               </span>
             </p>

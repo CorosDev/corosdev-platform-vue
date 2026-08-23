@@ -1,38 +1,26 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 interface Solution {
-  badge: string
-  title: string
-  description: string
-  cta: string
+  id: 'card1' | 'card2' | 'card3'
   icon: string
 }
 
-const solutions: Solution[] = [
-  {
-    badge: 'Go-to-Market',
-    title: 'MVP in 6—8 Weeks',
-    description:
-      'From prototype to a production-ready engine. We engineer scalable MVPs designed to validate your business model and lead the market from day one.',
-    cta: 'Get timeline',
-    icon: 'M13 10V3L4 14h7v7l9-11h-7z',
-  },
-  {
-    badge: 'Scaling',
-    title: 'Hyper-Growth Blueprint',
-    description:
-      'Strategic acquisition systems engineered for global expansion. We turn traffic into predictable revenue through intelligent marketing and authority-driven positioning.',
-    cta: 'Get growth plan',
-    icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-  },
-  {
-    badge: 'Ops',
-    title: 'Workflow Automation',
-    description:
-      'Automating complexities into seamless operational flow. We replace spreadsheet friction with intelligent systems to ensure sustainable growth and measurable ROI.',
-    cta: 'See examples',
-    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
-  },
+const solutionMeta: Solution[] = [
+  { id: 'card1', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  { id: 'card2', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
+  { id: 'card3', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
 ]
+
+const solutions = computed(() =>
+  solutionMeta.map((solution) => ({
+    ...solution,
+    badge: t(`home.solutions.${solution.id}_badge`),
+    title: t(`home.solutions.${solution.id}_title`),
+    description: t(`home.solutions.${solution.id}_desc`),
+    cta: t(`home.solutions.${solution.id}_cta`),
+  })),
+)
 </script>
 
 <template>
@@ -40,17 +28,17 @@ const solutions: Solution[] = [
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-8 md:mb-16">
         <h2 class="text-4xl font-black text-white md:text-6xl">
-          Solutions that <span class="gradient-text drop-shadow-glow">move the needle</span>
+          {{ t('home.solutions.title_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.solutions.title_span') }}</span>
         </h2>
         <p class="mt-4 text-lg text-white/50">
-          Start small or go big - each can ship as a sprint or part of a program.
+          {{ t('home.solutions.subtitle') }}
         </p>
       </div>
 
       <div class="mt-6 grid gap-5 md:mt-10 md:grid-cols-3 md:gap-8">
         <div
           v-for="solution in solutions"
-          :key="solution.title"
+          :key="solution.id"
           class="group glass soft relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/5 p-8 transition-all duration-500 hover:border-neon-500/50"
         >
           <div class="pointer-events-none absolute bottom-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">

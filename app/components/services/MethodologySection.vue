@@ -1,54 +1,39 @@
 <script setup lang="ts">
-interface Step {
-  number: string
-  title: string
-  description: string
+const { t } = useI18n()
+
+const stepIds = ['step1', 'step2', 'step3', 'step4'] as const
+const stepNumbers: Record<(typeof stepIds)[number], string> = {
+  step1: '01',
+  step2: '02',
+  step3: '03',
+  step4: '04',
 }
 
-const steps: Step[] = [
-  {
-    number: '01',
-    title: 'Diagnose',
-    description:
-      'We begin with a deep technical and business audit. We identify bottlenecks, opportunities, and your competitive moat before writing a single line of code.',
-  },
-  {
-    number: '02',
-    title: 'Architect',
-    description:
-      'We design scalable systems with future growth in mind. Architecture decisions are driven by data, not trends — ensuring your tech stack remains an asset, not a liability.',
-  },
-  {
-    number: '03',
-    title: 'Execute',
-    description:
-      'Agile sprints. Dedicated teams. Transparent communication. We ship fast without sacrificing quality, giving you a competitive edge in days, not months.',
-  },
-  {
-    number: '04',
-    title: 'Scale',
-    description:
-      'Post-launch is where we differentiate. Continuous optimization, performance monitoring, and strategic growth ensure your platform evolves ahead of the market.',
-  },
-]
+const steps = computed(() =>
+  stepIds.map((id) => ({
+    id,
+    number: stepNumbers[id],
+    title: t(`services.methodology.${id}_title`),
+    description: t(`services.methodology.${id}_desc`),
+  })),
+)
 </script>
 
 <template>
   <section id="methodology" class="relative z-10 py-16 md:py-32">
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-12 text-center md:mb-24">
-        <span class="text-xs font-bold uppercase tracking-widest text-neon-500">How We Operate</span>
+        <span class="text-xs font-bold uppercase tracking-widest text-neon-500">{{ t('services.methodology.label') }}</span>
         <h2 class="mt-4 text-4xl font-black text-white md:text-6xl">
-          The CorosDev <span class="gradient-text drop-shadow-glow">Framework</span>
+          {{ t('services.methodology.h2_1') }} <span class="gradient-text drop-shadow-glow">{{ t('services.methodology.h2_span') }}</span>
         </h2>
         <p class="mx-auto mt-6 max-w-2xl text-xl text-white/50">
-          Our methodology is what separates us from a typical software agency. We operate as a strategic
-          partner, not a vendor.
+          {{ t('services.methodology.sub') }}
         </p>
       </div>
 
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
-        <div v-for="step in steps" :key="step.number" class="group relative">
+        <div v-for="step in steps" :key="step.id" class="group relative">
           <div
             class="glass relative flex h-full flex-col rounded-3xl border border-white/5 p-8 transition-all duration-500 group-hover:border-neon-500/40"
           >

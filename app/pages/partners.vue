@@ -1,8 +1,9 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Partners - CorosDev',
-  description:
-    "Meet CorosDev's strategic partners across technology, capital, and data — EncryptedInfoWeb, SBC Capital, AUDELA Control Tower, Nolim Studios, and The Intellify.",
+  title: () => t('partners.seo.title'),
+  description: () => t('partners.seo.description'),
 })
 </script>
 

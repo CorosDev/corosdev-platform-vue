@@ -1,18 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <template>
   <section class="relative z-10 mx-auto flex max-w-7xl flex-col items-center px-6 pb-32 pt-44 text-center">
     <span
       class="glass rounded-full border border-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-neon-300 drop-shadow-glow"
     >
-      Strategic Alliances
+      {{ t('partners.hero.label') }}
     </span>
     <h1 class="mx-auto mt-8 max-w-5xl text-5xl font-black leading-tight tracking-tight text-white md:text-8xl">
-      Our <span class="gradient-text drop-shadow-glow">Partners</span>
+      {{ t('partners.hero.h1_1') }} <span class="gradient-text drop-shadow-glow">{{ t('partners.hero.h1_span') }}</span>
     </h1>
     <p class="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-white/60 md:text-2xl">
-      We build alongside a trusted network of technology, capital, and data companies — extending what
-      CorosDev can deliver for every client and venture.
+      {{ t('partners.hero.sub') }}
     </p>
   </section>
 </template>

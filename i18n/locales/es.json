@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "ecosystem": "Ecosistema",
+    "partners": "Aliados",
+    "services": "Servicios",
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "cta": "Agenda una demo",
+    "langToggle": "Cambiar idioma",
+    "aiDrivenCompany": "Empresa impulsada por IA"
+  },
+  "footer": {
+    "rights": "CorosDev. Todos los derechos reservados."
+  },
+  "home": {
+    "seo": {
+      "title": "CorosDev - Ingeniería para el futuro de la innovación global",
+      "description": "Empoderamos a empresas innovadoras a través de tecnología de clase mundial y sistemas inteligentes de crecimiento, transformando ideas en negocios escalables, rentables y preparados para el futuro."
+    },
+    "hero": {
+      "tag": "Empresa impulsada por IA · Ingeniería LATAM · Horario de EE. UU. y Europa",
+      "h1_1": "Construyendo el",
+      "h1_span": "Software",
+      "h1_2": "del mañana, hoy.",
+      "sub": "Transformamos ideas ambiciosas en negocios escalables, rentables y preparados para el futuro a través de sistemas tecnológicos de clase mundial.",
+      "cta1": "Agenda una consultoría de 30 min",
+      "cta2": "Ve nuestro trabajo",
+      "pill1": "Seguridad primero",
+      "pill2": "Impulsado por diseño",
+      "pill3": "Impacto medible",
+      "globeLabel": "Nuestro impacto en el mundo",
+      "fallbackDesc": "Equipos de ingeniería en tres continentes, trabajando en tu zona horaria.",
+      "locations": {
+        "honduras": "Honduras",
+        "miami": "Miami",
+        "wyoming": "Wyoming",
+        "prague": "Praga"
+      },
+      "globe": {
+        "selectorAria": "Selecciona una ubicación de CorosDev",
+        "globeAria": "Globo terráqueo 3D interactivo que muestra las ubicaciones de CorosDev en Honduras, Estados Unidos y República Checa",
+        "cardClose": "Cerrar",
+        "fallbackNote": "El globo interactivo no está disponible — mostrando nuestras ubicaciones a continuación."
+      },
+      "globeLocations": {
+        "honduras": {
+          "type": "GLOBAL HEADQUARTERS",
+          "title": "Honduras Headquarters",
+          "location": "San Pedro Sula, Honduras",
+          "company": "CorosDev S.A.",
+          "address1": "Boulevard Michelleti",
+          "address2": "3era Etapa, 5th Street",
+          "address3": "San Pedro Sula 21101",
+          "address4": "Honduras"
+        },
+        "miami": {
+          "type": "BUSINESS PRESENCE",
+          "title": "Miami Office",
+          "location": "Miami, Florida, United States",
+          "company": "CorosDev LLC",
+          "address1": "100 SE 2nd Street",
+          "address2": "Suite 2000",
+          "address3": "Miami, FL 33131",
+          "address4": "United States"
+        },
+        "wyoming": {
+          "type": "REGISTERED OFFICE",
+          "title": "Wyoming Registered Office",
+          "location": "Sheridan, Wyoming, United States",
+          "company": "CorosDev LLC",
+          "address1": "30 N Gould St",
+          "address2": "Sheridan, WY 82801",
+          "address3": "United States",
+          "address4": ""
+        },
+        "prague": {
+          "type": "EUROPEAN HEADQUARTERS",
+          "title": "Prague Headquarters",
+          "location": "Praha, Czech Republic",
+          "company": "CorosDev S.R.O.",
+          "address1": "Plzeňská 3352/156",
+          "address2": "Praha 5, 150 00",
+          "address3": "Czech Republic",
+          "address4": ""
+        }
+      }
+    },
+    "presentation": {
+      "title_1": "Mira nuestra",
+      "title_span": "metodología en acción",
+      "desc": "Descubre cómo diseñamos, construimos y escalamos productos digitales. Conoce cómo nuestro ecosistema y equipos de ingeniería de élite dan vida a sistemas preparados para el futuro."
+    },
+    "mission": {
+      "h2_1": "Nuestra",
+      "h2_span": "Misión",
+      "p": "En CorosDev, empoderamos a empresas innovadoras en todo el mundo a través de tecnología de clase mundial y sistemas inteligentes de crecimiento, transformando ideas en negocios escalables, rentables y preparados para el futuro.",
+      "label": "Para lograrlo, nosotros:",
+      "block1_title": "Construimos tecnología que escala",
+      "block1_desc": "Diseñamos y desarrollamos soluciones digitales de alto rendimiento, pensadas para el crecimiento global. No solo construimos productos que funcionan hoy. Construimos plataformas preparadas para liderar el mañana.",
+      "block2_title": "Creamos sistemas inteligentes de crecimiento",
+      "block2_desc": "Integramos desarrollo de software, marketing digital, SEO, contenido estratégico, automatización y analítica de desempeño para convertir tráfico en clientes, y clientes en ingresos predecibles.",
+      "block3_title": "Entregamos impacto medible y sostenible",
+      "block3_desc": "Operamos con KPIs claros, optimización basada en datos y ejecución enfocada en el ROI para asegurar crecimiento constante, ventaja competitiva y éxito a largo plazo.",
+      "btn": "Conoce más sobre nosotros"
+    },
+    "ecosystem": {
+      "label": "Emprendimientos internos",
+      "title_1": "Nuestro",
+      "title_span": "Ecosistema",
+      "subtitle": "Más allá del trabajo con clientes, construimos nuestros propios productos. Estos son los emprendimientos nacidos dentro de CorosDev, cada uno resolviendo un problema real a escala.",
+      "badge": "Acceso anticipado",
+      "trd_desc": "Plataforma de e-commerce de accesorios automotrices premium, creada para entusiastas del rendimiento en LATAM y Norteamérica. Catálogo curado, logística rápida y una experiencia de compra fluida.",
+      "trd_sector": "E-commerce · Automotriz",
+      "snapay_desc": "Infraestructura de pagos de nueva generación para pymes en mercados emergentes. Liquidaciones instantáneas, soporte multi-moneda y prevención de fraude con IA, construida para democratizar las fintech.",
+      "snapay_sector": "Fintech · Pagos",
+      "vorzana_desc": "Plataforma de inteligencia de negocios impulsada por IA que transforma datos operativos crudos en insights estratégicos. Dashboards personalizados, analítica predictiva y reportes automatizados de nivel empresarial.",
+      "vorzana_sector": "IA · Analítica",
+      "sectorLabel": "Sector",
+      "ctaText": "¿Interesado en asociarte o invertir?",
+      "ctaLink": "Hablemos →",
+      "earlyTester": "¿Quieres ser tester de acceso anticipado? →"
+    },
+    "snapay": {
+      "badge": "Un emprendimiento de CorosDev",
+      "title_1": "El futuro de los pagos",
+      "title_span": "para mercados emergentes",
+      "desc": "Infraestructura de pagos de nueva generación creada para pymes. Liquidaciones instantáneas, soporte multi-moneda y prevención de fraude con IA, democratizando las fintech sin fronteras.",
+      "stat1_value": "10K+",
+      "stat1_label": "Pymes registradas",
+      "stat2_value": "12+",
+      "stat2_label": "Monedas",
+      "stat3_value": "IA",
+      "stat3_label": "Prevención de fraude",
+      "cta": "Visita Snapay.ai →"
+    },
+    "solutions": {
+      "title_1": "Soluciones que",
+      "title_span": "marcan la diferencia",
+      "subtitle": "Empieza pequeño o ve a lo grande: cada una puede ejecutarse como un sprint o como parte de un programa.",
+      "card1_badge": "Salida al mercado",
+      "card1_title": "MVP en 6 a 8 semanas",
+      "card1_desc": "Del prototipo a un motor listo para producción. Diseñamos MVPs escalables pensados para validar tu modelo de negocio y liderar el mercado desde el primer día.",
+      "card1_cta": "Solicita el cronograma",
+      "card2_badge": "Escalamiento",
+      "card2_title": "Plan de crecimiento acelerado",
+      "card2_desc": "Sistemas estratégicos de adquisición diseñados para la expansión global. Convertimos tráfico en ingresos predecibles a través de marketing inteligente y posicionamiento de autoridad.",
+      "card2_cta": "Solicita el plan de crecimiento",
+      "card3_badge": "Operaciones",
+      "card3_title": "Automatización de flujos de trabajo",
+      "card3_desc": "Automatizamos la complejidad en un flujo operativo fluido. Reemplazamos la fricción de las hojas de cálculo con sistemas inteligentes para asegurar un crecimiento sostenible y un ROI medible.",
+      "card3_cta": "Ver ejemplos"
+    },
+    "testimonials": {
+      "h2_1": "Lo que dicen",
+      "h2_span": "nuestros clientes",
+      "sub": "Resultados comprobados entregados a líderes de la industria a través de disciplina dedicada en ingeniería y diseño.",
+      "card1_quote": "CorosDev entregó exactamente lo que necesitábamos, a tiempo y con excelente calidad.",
+      "card1_name": "Aftermath",
+      "card1_role": "Estrategia",
+      "card2_quote": "Propusieron soluciones escalables que resolvieron nuestros desafíos de infraestructura más complejos.",
+      "card2_name": "Dell Technologies",
+      "card2_role": "Infraestructura",
+      "card3_quote": "Integraciones complejas, manejadas con excelente comunicación. Verdaderos socios de ingeniería.",
+      "card3_name": "Beehiiv",
+      "card3_role": "Ingeniería",
+      "card4_quote": "La integración con Shopify Plus más robusta que hemos visto. Ejecución impecable.",
+      "card4_name": "Luxury Brand",
+      "card4_role": "Comercio",
+      "card5_quote": "Construyeron nuestra app fintech desde cero. La seguridad y la velocidad fueron excepcionales.",
+      "card5_name": "Fintech Global",
+      "card5_role": "Producto",
+      "card6_quote": "Talento técnico excepcional. Su enfoque impulsado por diseño marca una diferencia real.",
+      "card6_name": "Velocity VC",
+      "card6_role": "Portafolio"
+    },
+    "contact": {
+      "h2": "Cuéntanos qué estás construyendo",
+      "sub": "Obtén una hoja de ruta, una cotización y una evaluación de riesgos en 72 horas.",
+      "emailLabel": "Correo",
+      "whatsappLabel": "WhatsApp",
+      "location": "San Pedro Sula, Honduras · Praga, República Checa",
+      "remote": "Remoto / Nearshore · Ingeniería global",
+      "form": {
+        "namePlaceholder": "Tu nombre completo",
+        "emailPlaceholder": "Tu correo corporativo",
+        "interestInvestor": "Inversor de Capital",
+        "interestPartner": "Socio Estratégico / Cliente",
+        "interestTester": "Tester de Acceso Anticipado / Usuario",
+        "messagePlaceholder": "Cuéntanos un poco sobre tus objetivos...",
+        "submit": "Enviar solicitud",
+        "submitting": "Enviando...",
+        "success": "¡Solicitud enviada con éxito! Te contactaremos pronto.",
+        "error": "Hubo un problema. Por favor intenta de nuevo."
+      }
+    }
+  },
+  "about": {
+    "seo": {
+      "title": "Nosotros | CorosDev — Ingeniería para el futuro",
+      "description": "Las mentes visionarias detrás de CorosDev, impulsando la innovación a través de tecnología de clase mundial y sistemas inteligentes."
+    },
+    "hero": {
+      "h1_1": "Las mentes detrás de la",
+      "h1_span": "innovación global.",
+      "p": "Somos un colectivo de ingenieros, diseñadores y estrategas dedicados a cerrar la brecha entre el talento latinoamericano y la excelencia tecnológica global."
+    },
+    "team": {
+      "h2_1": "Nuestro equipo de",
+      "h2_span": "Liderazgo",
+      "h2_2": "",
+      "carlos_desc": "Líder visionario que impulsa la dirección estratégica y el crecimiento de CorosDev a nivel mundial.",
+      "kriscia_desc": "Líder financiera estratégica que gestiona el capital y el desempeño para una innovación sostenible.",
+      "arturo_desc": "Arquitecto de la excelencia operativa, asegurando una entrega impecable en todos los proyectos globales.",
+      "jafet_desc": "Dirige la innovación de producto y las arquitecturas centradas en el usuario para software de alto impacto.",
+      "salvador_desc": "Experto en gestión estratégica enfocado en escalar negocios y posicionar marcas mediante análisis de mercado de alto impacto.",
+      "jeremy_desc": "Gestiona los flujos internos y externos para asegurar claridad e impacto en todos los canales.",
+      "john_desc": "Lidera la estrategia de datos y la integración tecnológica para impulsar insights de negocio inteligentes.",
+      "emerson_desc": "Mente maestra técnica que diseña sistemas de alto rendimiento y soluciones impulsadas por IA."
+    },
+    "cta": {
+      "h2_1": "¿Quieres trabajar con",
+      "h2_span": "nosotros?",
+      "p": "Siempre estamos buscando talento visionario y socios ambiciosos.",
+      "btn": "Ponte en contacto"
+    }
+  },
+  "services": {
+    "seo": {
+      "title": "Servicios - CorosDev",
+      "description": "Explora los servicios tecnológicos de élite y los frameworks estratégicos de CorosDev: automatización con IA, software a medida, crecimiento digital y sistemas escalables."
+    },
+    "hero": {
+      "tag": "Metodología · Estrategia · Ejecución",
+      "h1_1": "Servicios de élite.",
+      "h1_span": "Sistemas estratégicos.",
+      "sub": "No solo entregamos servicios. Diseñamos ventajas competitivas. Cada proyecto está impulsado por un framework propio que conecta tecnología, crecimiento y escala.",
+      "cta1": "Solicita una propuesta",
+      "cta2": "Detalles de la plataforma"
+    },
+    "methodology": {
+      "label": "Cómo operamos",
+      "h2_1": "El framework",
+      "h2_span": "CorosDev",
+      "sub": "Nuestra metodología es lo que nos diferencia de una agencia de software típica. Operamos como un socio estratégico, no como un proveedor.",
+      "step1_title": "Diagnosticar",
+      "step1_desc": "Comenzamos con una auditoría técnica y de negocio profunda. Identificamos cuellos de botella, oportunidades y tu ventaja competitiva antes de escribir una sola línea de código.",
+      "step2_title": "Diseñar",
+      "step2_desc": "Diseñamos sistemas escalables pensando en el crecimiento futuro. Las decisiones de arquitectura se basan en datos, no en tendencias, asegurando que tu stack tecnológico sea un activo, no un pasivo.",
+      "step3_title": "Ejecutar",
+      "step3_desc": "Sprints ágiles. Equipos dedicados. Comunicación transparente. Entregamos rápido sin sacrificar la calidad, dándote una ventaja competitiva en días, no meses.",
+      "step4_title": "Escalar",
+      "step4_desc": "El post-lanzamiento es donde marcamos la diferencia. Optimización continua, monitoreo de desempeño y crecimiento estratégico aseguran que tu plataforma evolucione por delante del mercado."
+    },
+    "engagements": {
+      "label": "Nuestros servicios",
+      "h2_1": "Servicios que",
+      "h2_span": "escalan",
+      "sub": "Soluciones tecnológicas de élite diseñadas para adaptarse a la etapa única de tu negocio. Elige tu nivel de impacto.",
+      "item1_tag": "01 / Innovación",
+      "item1_title": "IA y automatización de flujos",
+      "item1_desc": "Aumenta la eficiencia operativa en un 40% con agentes inteligentes e integraciones de GPT personalizadas para tus datos.",
+      "item1_f1": "Agentes de IA personalizados",
+      "item1_f2": "Optimización de flujos de trabajo",
+      "item1_f3": "Entrenamiento y ajuste fino de LLMs",
+      "item2_tag": "02 / Ingeniería",
+      "item2_title": "Desarrollo Full-Stack",
+      "item2_desc": "Creación de producto de principio a fin, desde el MVP hasta la escala empresarial. Construimos software que se siente como el futuro.",
+      "item2_f1": "Apps web y móviles",
+      "item2_f2": "PM y QA dedicados",
+      "item2_f3": "React / Node / Python",
+      "item3_tag": "03 / Marketing Tech",
+      "item3_title": "Marketing y conversión",
+      "item3_desc": "Domina el mercado con landing pages de alta conversión y sistemas de marketing multicanal automatizados.",
+      "item3_f1": "UI/UX de alta conversión",
+      "item3_f2": "Integraciones Ad-Tech",
+      "item3_f3": "Analítica de desempeño",
+      "item4_tag": "04 / Autoridad",
+      "item4_title": "SEO y autoridad digital",
+      "item4_desc": "Convierte los buscadores en tu mayor fuente de ingresos con SEO técnico agresivo y estrategia de contenido.",
+      "item4_f1": "Auditorías técnicas de SEO",
+      "item4_f2": "Dominio de palabras clave",
+      "item4_f3": "Arquitectura de backlinks",
+      "item5_tag": "05 / Infraestructura",
+      "item5_title": "Nube y escalabilidad",
+      "item5_desc": "Escala a millones de usuarios sin tiempo de inactividad. Optimizamos tu nube para velocidad, seguridad y costo.",
+      "item5_f1": "AWS / Azure / GCP",
+      "item5_f2": "Automatización DevOps",
+      "item5_f3": "Fortalecimiento de ciberseguridad",
+      "item6_tag": "06 / Innovación total",
+      "item6_title": "Escuadrón de innovación de élite",
+      "item6_desc": "Un equipo dedicado de alto rendimiento que cubre todos los frentes: IA, desarrollo, crecimiento e infraestructura. Tu socio tecnológico para el dominio global.",
+      "item6_f1": "Desarrolladores C-Level dedicados",
+      "item6_f2": "Soporte prioritario 24/7",
+      "item6_f3": "Escalabilidad ilimitada",
+      "getStarted": "Comenzar",
+      "custom": "¿Buscas algo personalizado? Todos los planes pueden adaptarse a tus necesidades específicas."
+    }
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Ecosistema - CorosDev",
+      "description": "Descubre el ecosistema de CorosDev. Construimos nuestros propios emprendimientos de alta tecnología junto a nuestros servicios para clientes: Accesorios TRD, Snapay y Vorzana."
+    },
+    "hero": {
+      "label": "Emprendimientos internos",
+      "h1_1": "Nuestro",
+      "h1_span": "Ecosistema",
+      "sub": "Más allá del trabajo con clientes, construimos nuestros propios productos. Estos son los emprendimientos nacidos dentro de CorosDev, cada uno resolviendo un problema real a escala."
+    },
+    "ventures": {
+      "trd_sector": "E-commerce · Automotriz",
+      "trd_name": "Accesorios TRD",
+      "trd_desc": "Plataforma de e-commerce de accesorios automotrices premium, creada para entusiastas del rendimiento en LATAM y Norteamérica. Catálogo curado, logística rápida y una experiencia de compra fluida.",
+      "trd_detail": "Accesorios TRD nació de una brecha real en el mercado LATAM: repuestos automotrices premium sin un destino en línea confiable. Construimos toda la plataforma —tienda, integraciones logísticas y gestión de inventario— internamente.",
+      "trd_stage": "Crecimiento y escala",
+      "trd_sectorValue": "E-commerce",
+      "snapay_sector": "Fintech · Pagos",
+      "snapay_name": "Snapay",
+      "snapay_desc": "Infraestructura de pagos de nueva generación para pymes en mercados emergentes. Liquidaciones instantáneas, soporte multi-moneda y prevención de fraude con IA, construida para democratizar las fintech.",
+      "snapay_detail": "Snapay aborda el panorama de pagos fragmentado en LATAM, donde el 60% de las pymes sigue desatendido por la banca tradicional. Nuestra arquitectura API-first permite que cualquier comercio acepte pagos en menos de 10 minutos.",
+      "snapay_stage": "Validación beta",
+      "snapay_sectorValue": "Fintech",
+      "vorzana_sector": "IA · Analítica",
+      "vorzana_name": "Vorzana",
+      "vorzana_desc": "Plataforma de inteligencia de negocios impulsada por IA que transforma datos operativos crudos en insights estratégicos. Dashboards personalizados, analítica predictiva y reportes automatizados de nivel empresarial.",
+      "vorzana_detail": "Vorzana surgió del dolor operativo que enfrentaban nuestros propios clientes: ahogados en datos pero hambrientos de insights. Construimos una capa de IA que habla el lenguaje de tu negocio, no jerga técnica.",
+      "vorzana_stage": "Fase MVP",
+      "vorzana_sectorValue": "IA / Analítica",
+      "statusLabel": "Estado",
+      "statusValue": "Acceso anticipado",
+      "stageLabel": "Etapa",
+      "sectorLabel": "Sector",
+      "badge": "Acceso anticipado",
+      "whyHow": "Por qué y cómo"
+    },
+    "cta": {
+      "h3": "¿Interesado en asociarte o invertir?",
+      "p": "Estamos construyendo activamente relaciones estratégicas con socios de capital, expertos del sector y distribuidores para escalar estos emprendimientos internos a nivel global.",
+      "link": "Hablemos →"
+    }
+  },
+  "partners": {
+    "seo": {
+      "title": "Aliados - CorosDev",
+      "description": "Conoce a los aliados estratégicos de CorosDev en tecnología, capital y datos: EncryptedInfoWeb, SBC Capital, AUDELA Control Tower, Nolim Studios y The Intellify."
+    },
+    "hero": {
+      "label": "Alianzas estratégicas",
+      "h1_1": "Nuestros",
+      "h1_span": "Aliados",
+      "sub": "Construimos junto a una red confiable de empresas de tecnología, capital y datos, ampliando lo que CorosDev puede ofrecer en cada cliente y emprendimiento."
+    },
+    "grid": {
+      "eiw_name": "EncryptedInfoWeb",
+      "eiw_sector": "Soluciones de TI y desarrollo de software",
+      "eiw_desc": "Desarrollo web a medida, apps móviles y software empresarial ERP/CRM, entregando soluciones basadas en datos en bienes raíces, salud, finanzas y e-commerce.",
+      "sbc_name": "SBC Capital",
+      "sbc_sector": "Capital privado y adquisiciones",
+      "sbc_desc": "Firma de adquisiciones privadas que invierte en negocios del mercado medio-bajo en EE. UU. y Europa, actuando como propietarios permanentes a largo plazo.",
+      "audela_name": "AUDELA Control Tower",
+      "audela_sector": "Inteligencia de negocios y LegalTech",
+      "audela_desc": "Empresa de software francesa que ofrece soluciones de Business Intelligence, ERP y LegalTech a través de su plataforma unificada Control Tower.",
+      "nolim_name": "Nolim Studios",
+      "nolim_sector": "Software, IA y AR/VR",
+      "nolim_desc": "Estudio de desarrollo de software que construye software a medida, sistemas de IA, experiencias AR/VR, plataformas SaaS y videojuegos, desde sistemas de tráfico aéreo hasta plataformas de educación judicial.",
+      "intellify_name": "The Intellify",
+      "intellify_sector": "IA e ingeniería de producto digital",
+      "intellify_desc": "Empresa de IA e ingeniería de producto digital que construye automatización inteligente, agentes de IA y plataformas modernizadas para empresas en industrias reguladas.",
+      "visit": "Visitar sitio →"
+    },
+    "cta": {
+      "h3": "¿Interesado en ser aliado de CorosDev?",
+      "p": "Siempre estamos buscando ampliar nuestra red de aliados estratégicos en tecnología, capital y datos.",
+      "link": "Hablemos →"
+    }
+  }
+}
