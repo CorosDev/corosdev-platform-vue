@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Design tokens (Tailwind v4 CSS-first theming — no tailwind.config.js allowed). */
+@theme {
+  --color-brand-900: #070b1a;
+  --color-brand-800: #0b1226;
+  --color-brand-700: #0e1730;
+  --color-brand-600: #121d3c;
+
+  --color-neon-100: #d9efff;
+  --color-neon-300: #7dbbff;
+  --color-neon-500: #1f7fff;
+  --color-neon-700: #114a99;
+
+  --color-cobalt-300: #7dbbff;
+  --color-cobalt-500: #1f7fff;
+  --color-cobalt-700: #114a99;
+
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-marquee: marquee 60s linear infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Glassmorphism panel used by the Navbar and other floating surfaces. */
+@utility glass {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  @apply border border-white/10;
+}
+
+/* Neon glow used on primary CTAs and the logo. */
+@utility drop-shadow-glow {
+  filter: drop-shadow(0 0 20px rgb(31 127 255 / 0.45));
+}
+
+/* Soft ambient shadow for elevated cards. */
+@utility soft {
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.35);
+}
+
+/* Neon gradient headline accent. */
+@utility gradient-text {
+  @apply bg-gradient-to-r from-neon-300 to-neon-500 bg-clip-text text-transparent;
+}
+
+/* Fades the edges of the horizontally scrolling testimonials track. */
+@utility marquee-mask {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Large ambient background glow used behind secondary-page heroes. */
+@utility bg-orb {
+  filter: blur(160px);
+  opacity: 0.07;
+  background: radial-gradient(circle at 50% 50%, rgb(31 127 255 / 1), transparent 60%);
+}
