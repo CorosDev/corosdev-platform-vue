@@ -23,7 +23,23 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-security', '@nuxtjs/i18n'],
+  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image'],
+
+  // All images ship from /public, so the built-in `ipx` provider (backed by
+  // `sharp`, no external service/account needed) is what actually does the
+  // resizing + WebP/AVIF re-encoding on request, cached by Nitro afterwards.
+  image: {
+    format: ['avif', 'webp'],
+    quality: 80,
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+  },
 
   i18n: {
     locales: [

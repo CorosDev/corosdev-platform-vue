@@ -47,11 +47,12 @@ const ventures = computed(() =>
         >
           <div class="flex items-start justify-between">
             <div class="animate-float flex h-16 w-32 items-center justify-start">
-              <img
+              <NuxtImg
                 :src="venture.logo"
                 :alt="`${venture.name} logo`"
                 :width="venture.logoWidth"
                 :height="venture.logoHeight"
+                loading="lazy"
                 class="drop-shadow-glow h-16 w-auto max-w-full object-contain"
               />
             </div>

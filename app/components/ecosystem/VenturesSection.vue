@@ -4,6 +4,8 @@ const { t } = useI18n()
 interface VentureMeta {
   id: 'trd' | 'snapay' | 'vorzana'
   logo: string
+  logoWidth: number
+  logoHeight: number
   logoAlt: string
   logoClass: string
   /** Show the logo before the copy on large screens (alternating layout). */
@@ -11,9 +13,9 @@ interface VentureMeta {
 }
 
 const ventureMeta: VentureMeta[] = [
-  { id: 'trd', logo: '/logos/trd.svg', logoAlt: 'Accesorios TRD logo', logoClass: 'h-48' },
-  { id: 'snapay', logo: '/logos/snapay.svg', logoAlt: 'Snapay logo', logoClass: 'h-48', logoFirst: true },
-  { id: 'vorzana', logo: '/logos/vorzana.svg', logoAlt: 'Vorzana logo', logoClass: 'h-60' },
+  { id: 'trd', logo: '/logos/trd.svg', logoWidth: 829, logoHeight: 367, logoAlt: 'Accesorios TRD logo', logoClass: 'h-48' },
+  { id: 'snapay', logo: '/logos/snapay.svg', logoWidth: 420, logoHeight: 432, logoAlt: 'Snapay logo', logoClass: 'h-48', logoFirst: true },
+  { id: 'vorzana', logo: '/logos/vorzana.svg', logoWidth: 829, logoHeight: 367, logoAlt: 'Vorzana logo', logoClass: 'h-60' },
 ]
 
 const ventures = computed(() =>
@@ -44,9 +46,12 @@ const ventures = computed(() =>
               :class="venture.logoFirst ? 'order-first' : 'lg:order-last'"
             >
               <div class="animate-float flex h-72 w-72 items-center justify-center">
-                <img
+                <NuxtImg
                   :src="venture.logo"
                   :alt="venture.logoAlt"
+                  :width="venture.logoWidth"
+                  :height="venture.logoHeight"
+                  loading="lazy"
                   class="drop-shadow-glow w-auto max-w-full object-contain"
                   :class="venture.logoClass"
                 />

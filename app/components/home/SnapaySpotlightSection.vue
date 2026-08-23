@@ -33,11 +33,12 @@ const stats = computed(() => [
       </div>
 
       <div class="mb-8 flex justify-center md:mb-10">
-        <img
+        <NuxtImg
           src="/logos/snapay.svg"
           alt="Snapay logo"
           width="420"
           height="432"
+          loading="lazy"
           class="animate-float drop-shadow-glow h-20 w-auto md:h-28"
         />
       </div>

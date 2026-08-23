@@ -419,7 +419,7 @@ onBeforeUnmount(() => {
         </button>
 
         <div class="gp-card-banner">
-          <img
+          <NuxtPicture
             v-if="!bannerError"
             :src="currentLocation.banner"
             alt=""
@@ -427,6 +427,8 @@ onBeforeUnmount(() => {
             decoding="async"
             width="280"
             height="140"
+            class="block h-full w-full"
+            :img-attrs="{ class: 'h-full w-full' }"
             @error="bannerError = true"
           />
           <div class="gp-card-banner-overlay" />

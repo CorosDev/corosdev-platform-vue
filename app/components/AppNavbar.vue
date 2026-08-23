@@ -75,7 +75,15 @@ onUnmounted(() => {
 
         <!-- Logo -->
         <NuxtLink :to="localePath('/')" class="flex items-center gap-3" @click="closeMobileMenu">
-          <img src="/coros.png" alt="CorosDev" width="361" height="220" class="h-12 w-auto md:h-16" />
+          <NuxtPicture
+            src="/coros.png"
+            alt="CorosDev"
+            width="361"
+            height="220"
+            loading="eager"
+            class="h-12 w-auto md:h-16"
+            :img-attrs="{ class: 'h-12 w-auto md:h-16' }"
+          />
           <div class="mx-2 hidden h-6 w-px bg-white/10 sm:block" />
           <span class="hidden text-[10px] font-bold uppercase tracking-widest text-white opacity-80 sm:block">
             {{ t('nav.aiDrivenCompany') }}

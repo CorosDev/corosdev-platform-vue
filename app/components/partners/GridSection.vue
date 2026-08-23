@@ -43,7 +43,16 @@ const partners = computed(() =>
             class="flex h-16 w-16 items-center justify-center rounded-2xl border p-2.5"
             :class="partner.lightBg ? 'border-white/10 bg-white' : 'border-neon-500/20 bg-neon-500/10'"
           >
-            <img :src="partner.logo" :alt="`${partner.name} logo`" width="64" height="64" class="h-full w-full object-contain" loading="lazy" decoding="async" />
+            <NuxtPicture
+              :src="partner.logo"
+              :alt="`${partner.name} logo`"
+              width="64"
+              height="64"
+              loading="lazy"
+              decoding="async"
+              class="block h-full w-full"
+              :img-attrs="{ class: 'h-full w-full object-contain' }"
+            />
           </div>
           <h2 class="mt-6 text-2xl font-black text-white">{{ partner.name }}</h2>
           <span
