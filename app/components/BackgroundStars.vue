@@ -24,7 +24,7 @@
 .stars {
   position: fixed;
   inset: 0;
-  z-index: -10;
+  z-index: -1;
   overflow: hidden;
   contain: strict;
   pointer-events: none;
