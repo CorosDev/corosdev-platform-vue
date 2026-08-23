@@ -3,10 +3,30 @@
 // current locale — @nuxtjs/i18n doesn't apply these on its own, it just
 // exposes the composable and expects the app to feed it into useHead().
 const i18nHead = useLocaleHead()
+const { t } = useI18n()
+
+// Organization JSON-LD (CLAUDE.md §3, Schema.org). Site-wide identity, so it
+// lives in the layout rather than a single page — SoftwareApplication (the
+// other schema CLAUDE.md calls out) is more specific to what's being
+// described on a given page and is added per-page instead (see index.vue).
 useHead(() => ({
   htmlAttrs: i18nHead.value.htmlAttrs,
   link: i18nHead.value.link,
   meta: i18nHead.value.meta,
+  script: [
+    {
+      key: 'ld-organization',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'CorosDev',
+        url: 'https://corosdev.com',
+        logo: 'https://corosdev.com/coros.png',
+        description: t('home.seo.description'),
+      }),
+    },
+  ],
 }))
 </script>
 
@@ -23,5 +43,7 @@ useHead(() => ({
     </main>
 
     <AppFooter />
+
+    <FloatingCtaDrawer />
   </div>
 </template>

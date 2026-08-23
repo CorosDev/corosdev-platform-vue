@@ -23,7 +23,21 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image'],
+  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image', '@nuxt/fonts'],
+
+  // CLAUDE.md §4 mandates local serving of Plus Jakarta Sans via @nuxt/fonts
+  // (never actually implemented in prior migration passes — confirmed zero
+  // @font-face/Google Fonts links existed anywhere in /app before this).
+  // Declared explicitly here (rather than relying solely on @nuxt/fonts'
+  // Tailwind v4 `@theme` scanning) so the family is guaranteed to be
+  // downloaded, self-hosted under /_fonts, and preloaded regardless of CSS
+  // scan heuristics. `font-display: swap` is @nuxt/fonts' default — this is
+  // also the fix for the Lighthouse "Font Display" finding, since the app
+  // previously shipped zero custom fonts (nothing to have a display strategy
+  // for) and any future font addition without this module would regress it.
+  fonts: {
+    families: [{ name: 'Plus Jakarta Sans', provider: 'google', weights: [400, 500, 600, 700, 800], global: true }],
+  },
 
   // All images ship from /public, so the built-in `ipx` provider (backed by
   // `sharp`, no external service/account needed) is what actually does the
@@ -55,6 +69,34 @@ export default defineNuxtConfig({
     // (see AppNavbar.vue's setLocale() call) — no surprise auto-redirects
     // based on the visitor's browser/Accept-Language.
     detectBrowserLanguage: false,
+  },
+
+  // Static brand/city assets in /public are served by Nitro with only
+  // ETag/Last-Modified by default (verified via `curl -D-` against a real
+  // `npm run build` + `node .output/server/index.mjs`) — that's the exact
+  // cause of Lighthouse's "Uses efficient cache policy" / Cache Lifetimes
+  // finding. These filenames aren't content-hashed (unlike /_nuxt/*), so a
+  // long immutable cache trades off against "rename the file if you ever
+  // replace its content" — acceptable here since these are static brand/city
+  // assets that change rarely and deliberately (a real content change should
+  // ship under a new filename anyway, e.g. `cities/miami-2027.jpg`).
+  routeRules: {
+    '/cities/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/globe/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/logos/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/favicon.svg': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/coros.png': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+  },
+
+  // Server-only (no `public` key here, so it never reaches the client bundle
+  // — CLAUDE.md's "Cero API Keys en el cliente"). This is the Brevo form
+  // endpoint the legacy floating CTA drawer (_legacy_html/cta-modal.js) used
+  // to call directly from the browser; server/api/subscribe.post.ts now
+  // proxies it server-side instead. Overridable via NUXT_BREVO_FORM_URL.
+  runtimeConfig: {
+    brevoFormUrl:
+      'https://8756b6e9.sibforms.com/serve/MUIFAKSh8xNxNu1k68CAUrSU-1pe6vuWPW7xwKd7CGDHHotwq4IrmYi4rmHXxIdPaUK9KrS9GkA8byZFdcgEXVmcuvpknY91tw4rl1QFgz2m2Dnkli1ietzEY80T98-1orF65YgnA86SG1HqVEkdqGQrDv6O6dj6R-uaW4-qJ5a_5pFTBIIDTFQm7_qVBIlphY3l7SZNkk3Brz5qlg==',
   },
 
   css: ['~/assets/css/main.css'],

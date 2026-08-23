@@ -374,5 +374,38 @@
       "p": "We are always looking to grow our network of strategic technology, capital, and data allies.",
       "link": "Let's talk →"
     }
+  },
+  "ctaDrawer": {
+    "floatingLabel": "Partner / Invest",
+    "title": {
+      "general": "Join the Ecosystem",
+      "ecosystem": "Explore the Ecosystem",
+      "services": "Build Your Custom Platform",
+      "partners": "Become a CorosDev Partner"
+    },
+    "subtitle": {
+      "general": "Apply to be an early tester or investor for our internal ventures.",
+      "ecosystem": "Interested in partnering, investing, or trying early versions of our ventures?",
+      "services": "Let's design and engineer your high-performance growth system.",
+      "partners": "Tell us about your company and how we could collaborate."
+    },
+    "form": {
+      "name": "Full name",
+      "namePlaceholder": "Your full name",
+      "email": "Work email",
+      "emailPlaceholder": "Your business email",
+      "role": "I'm interested as...",
+      "roleTester": "Early Tester / User",
+      "roleInvestor": "Capital Investor",
+      "rolePartner": "Strategic Client Partner",
+      "message": "How can we help you?",
+      "messagePlaceholder": "Tell us a bit about your goals...",
+      "submit": "Submit Application",
+      "submitting": "Sending...",
+      "successTitle": "Application Received!",
+      "successDesc": "Thank you! Our team will review your application and reach out soon.",
+      "error": "Something went wrong. Please try again."
+    },
+    "close": "Close"
   }
 }
