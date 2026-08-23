@@ -55,41 +55,48 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
           </div>
         </div>
 
-        <!-- Global presence panel (static, lightweight — no 3D engine) -->
-        <div class="relative mx-auto w-full max-w-2xl">
-          <div
-            class="absolute inset-[10%] -z-10 rounded-full opacity-70 blur-3xl"
-            style="background: radial-gradient(circle at 50% 50%, rgb(31 127 255 / 0.35), transparent 65%)"
-            aria-hidden="true"
-          />
+        <!-- Interactive 3D globe (WebGL, client-only). The fallback below covers
+             SSR, hydration, and no-JS/no-WebGL visitors with the same footprint
+             so there's no layout jump when the real globe takes over. -->
+        <ClientOnly>
+          <HomeGlobalGlobe />
+          <template #fallback>
+            <div class="relative mx-auto w-full max-w-2xl">
+              <div
+                class="absolute inset-[10%] -z-10 rounded-full opacity-70 blur-3xl"
+                style="background: radial-gradient(circle at 50% 50%, rgb(31 127 255 / 0.35), transparent 65%)"
+                aria-hidden="true"
+              />
 
-          <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
-            Our impact in the world
-          </p>
+              <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
+                Our impact in the world
+              </p>
 
-          <div class="glass mt-6 flex flex-col items-center rounded-3xl p-8 text-center sm:p-12">
-            <div
-              class="animate-float flex h-24 w-24 items-center justify-center rounded-full border border-neon-500/30 bg-neon-500/10 text-3xl font-black text-neon-300"
-              aria-hidden="true"
-            >
-              CD
+              <div class="glass mt-6 flex flex-col items-center rounded-3xl p-8 text-center sm:p-12">
+                <div
+                  class="animate-float flex h-24 w-24 items-center justify-center rounded-full border border-neon-500/30 bg-neon-500/10 text-3xl font-black text-neon-300"
+                  aria-hidden="true"
+                >
+                  CD
+                </div>
+                <p class="mt-6 max-w-xs text-sm text-white/60">
+                  Engineering teams across three continents, working in your timezone.
+                </p>
+
+                <div class="mt-8 flex flex-wrap justify-center gap-2" aria-label="CorosDev locations">
+                  <span
+                    v-for="loc in locations"
+                    :key="`${loc.code}-${loc.label}`"
+                    class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70"
+                  >
+                    <span class="text-[10px] font-bold uppercase text-neon-300">{{ loc.code }}</span>
+                    {{ loc.label }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <p class="mt-6 max-w-xs text-sm text-white/60">
-              Engineering teams across three continents, working in your timezone.
-            </p>
-
-            <div class="mt-8 flex flex-wrap justify-center gap-2" aria-label="CorosDev locations">
-              <span
-                v-for="loc in locations"
-                :key="`${loc.code}-${loc.label}`"
-                class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70"
-              >
-                <span class="text-[10px] font-bold uppercase text-neon-300">{{ loc.code }}</span>
-                {{ loc.label }}
-              </span>
-            </div>
-          </div>
-        </div>
+          </template>
+        </ClientOnly>
       </div>
     </div>
   </section>
