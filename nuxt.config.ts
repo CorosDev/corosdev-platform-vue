@@ -23,7 +23,16 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image', '@nuxt/fonts'],
+  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image', '@nuxt/fonts', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+
+  // Shared by the whole Nuxt SEO module family (sitemap, robots) via
+  // nuxt-site-config — this would already be auto-detected from i18n.baseUrl
+  // below (nuxt-site-config reads it automatically whenever @nuxtjs/i18n is
+  // present), but declaring it explicitly here removes any ambiguity for a
+  // production-critical, load-bearing SEO setting.
+  site: {
+    url: 'https://corosdev.com',
+  },
 
   // CLAUDE.md §4 mandates local serving of Plus Jakarta Sans via @nuxt/fonts
   // (never actually implemented in prior migration passes — confirmed zero
@@ -82,6 +91,26 @@ export default defineNuxtConfig({
     // (see AppNavbar.vue's setLocale() call) — no surprise auto-redirects
     // based on the visitor's browser/Accept-Language.
     detectBrowserLanguage: false,
+  },
+
+  // @nuxtjs/sitemap needs zero i18n-specific config: it auto-detects
+  // @nuxtjs/i18n's locales + defaultLocale + strategy (prefix_except_default,
+  // see the i18n block above) and emits the correct <xhtml:link
+  // rel="alternate" hreflang="..."> entries plus locale-prefixed <loc> URLs
+  // (/, /en/, /about, /en/about...) for every route on its own.
+  sitemap: {},
+
+  // robots.txt: `sitemap` is resolved to an absolute URL automatically via
+  // the shared `site.url` above — no need to hardcode the full
+  // https://corosdev.com/sitemap.xml here. Full indexing is already this
+  // module's default IN PRODUCTION (it only emits a blanket Disallow when
+  // NOT running with NODE_ENV=production — a deliberate guard against
+  // accidentally indexing a preview/staging deploy) — `allow: ['/']` is
+  // added anyway so the directive is always literally present in the file,
+  // not just implied by the absence of a Disallow rule.
+  robots: {
+    sitemap: '/sitemap.xml',
+    allow: ['/'],
   },
 
   // Static brand/city assets in /public are served by Nitro with only
