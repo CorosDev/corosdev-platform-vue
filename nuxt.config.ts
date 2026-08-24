@@ -23,7 +23,39 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image', '@nuxt/fonts'],
+  modules: [
+    'nuxt-security',
+    '@nuxtjs/i18n',
+    '@nuxt/image',
+    '@nuxt/fonts',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots',
+    '@nuxtjs/turnstile',
+  ],
+
+  // Shared by the whole Nuxt SEO module family (sitemap, robots) via
+  // nuxt-site-config — this would already be auto-detected from i18n.baseUrl
+  // below (nuxt-site-config reads it automatically whenever @nuxtjs/i18n is
+  // present), but declaring it explicitly here removes any ambiguity for a
+  // production-critical, load-bearing SEO setting.
+  site: {
+    url: 'https://corosdev.com',
+  },
+
+  // Public site key (NOT secret — it's meant to ship to the client, unlike
+  // the server-only secretKey in runtimeConfig below). Empty by default,
+  // overridden via NUXT_PUBLIC_TURNSTILE_SITE_KEY. When Nuxt itself runs in
+  // dev mode (`npm run dev`) and nothing is configured, @nuxtjs/turnstile
+  // automatically substitutes Cloudflare's own published "always passes"
+  // test keypair here and for the server secretKey — so the whole widget +
+  // server-verification round-trip genuinely works out of the box locally,
+  // with zero real Cloudflare account needed. That auto-substitution does
+  // NOT happen for a `nuxt build` (production build, e.g. what
+  // `npm run build` + `node .output/server/index.mjs` runs), which is
+  // exactly why server/utils/turnstile.ts's own bypass exists — see there.
+  turnstile: {
+    siteKey: '',
+  },
 
   // CLAUDE.md §4 mandates local serving of Plus Jakarta Sans via @nuxt/fonts
   // (never actually implemented in prior migration passes — confirmed zero
@@ -84,6 +116,26 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
   },
 
+  // @nuxtjs/sitemap needs zero i18n-specific config: it auto-detects
+  // @nuxtjs/i18n's locales + defaultLocale + strategy (prefix_except_default,
+  // see the i18n block above) and emits the correct <xhtml:link
+  // rel="alternate" hreflang="..."> entries plus locale-prefixed <loc> URLs
+  // (/, /en/, /about, /en/about...) for every route on its own.
+  sitemap: {},
+
+  // robots.txt: `sitemap` is resolved to an absolute URL automatically via
+  // the shared `site.url` above — no need to hardcode the full
+  // https://corosdev.com/sitemap.xml here. Full indexing is already this
+  // module's default IN PRODUCTION (it only emits a blanket Disallow when
+  // NOT running with NODE_ENV=production — a deliberate guard against
+  // accidentally indexing a preview/staging deploy) — `allow: ['/']` is
+  // added anyway so the directive is always literally present in the file,
+  // not just implied by the absence of a Disallow rule.
+  robots: {
+    sitemap: '/sitemap.xml',
+    allow: ['/'],
+  },
+
   // Static brand/city assets in /public are served by Nitro with only
   // ETag/Last-Modified by default (verified via `curl -D-` against a real
   // `npm run build` + `node .output/server/index.mjs`) — that's the exact
@@ -111,14 +163,29 @@ export default defineNuxtConfig({
     '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
 
-  // Server-only (no `public` key here, so it never reaches the client bundle
-  // — CLAUDE.md's "Cero API Keys en el cliente"). This is the Brevo form
-  // endpoint the legacy floating CTA drawer (_legacy_html/cta-modal.js) used
-  // to call directly from the browser; server/api/subscribe.post.ts now
-  // proxies it server-side instead. Overridable via NUXT_BREVO_FORM_URL.
+  // Server-only (no `public.` prefix, so none of these reach the client
+  // bundle — CLAUDE.md's "Cero API Keys en el cliente"). Both
+  // server/api/contact.post.ts and server/api/subscribe.post.ts (the
+  // FloatingCtaDrawer) go through server/utils/brevo.ts's official Brevo
+  // Contacts API client — the earlier `brevoFormUrl` (proxying a public
+  // sibforms form-embed URL) has been fully replaced by this and is gone.
+  // Real values must come from the environment — see the matching
+  // NUXT_BREVO_* vars below; a blank/zero default fails loudly in
+  // server/utils/brevo.ts rather than silently posting to nowhere.
   runtimeConfig: {
-    brevoFormUrl:
-      'https://8756b6e9.sibforms.com/serve/MUIFAKSh8xNxNu1k68CAUrSU-1pe6vuWPW7xwKd7CGDHHotwq4IrmYi4rmHXxIdPaUK9KrS9GkA8byZFdcgEXVmcuvpknY91tw4rl1QFgz2m2Dnkli1ietzEY80T98-1orF65YgnA86SG1HqVEkdqGQrDv6O6dj6R-uaW4-qJ5a_5pFTBIIDTFQm7_qVBIlphY3l7SZNkk3Brz5qlg==',
+    // NUXT_BREVO_API_KEY
+    brevoApiKey: '',
+    // NUXT_BREVO_CONTACT_LIST_ID — the full Contact-section form (name/email/company/interest/message)
+    brevoContactListId: 0,
+    // NUXT_BREVO_CTA_LIST_ID — the lighter-weight FloatingCtaDrawer widget
+    brevoCtaListId: 0,
+    // Empty here on purpose (never set a real secret in this file) —
+    // overridden via NUXT_TURNSTILE_SECRET_KEY. server/utils/turnstile.ts
+    // treats "not configured" as a deliberate local-dev bypass rather than a
+    // hard failure; see that file for the full reasoning.
+    turnstile: {
+      secretKey: '',
+    },
   },
 
   css: ['~/assets/css/main.css'],
@@ -166,13 +233,24 @@ export default defineNuxtConfig({
   // style-src as `'self' https: 'unsafe-inline'` (no nonce there), which is what actually
   // stays dev-safe while still shipping solid OWASP headers (CSP, HSTS, COOP/CORP,
   // X-Frame-Options, Permissions-Policy, nonce'd script-src, SRI, hidden X-Powered-By...).
-  // Only frame-src is overridden below, to allow the YouTube embed in
-  // HomePresentationVideoSection.vue — nuxt-security deep-merges per directive, so every
-  // other default directive is kept as-is.
+  // frame-src and connect-src are overridden below — nuxt-security deep-merges
+  // per directive, so every other default directive (including script-src,
+  // still 'strict-dynamic'+nonce'd) is kept as-is. frame-src already allowed
+  // the YouTube embed in HomePresentationVideoSection.vue;
+  // https://challenges.cloudflare.com is added for Cloudflare Turnstile
+  // (@nuxtjs/turnstile) — its widget renders inside an <iframe> from that
+  // origin (needs frame-src) and its client script calls back to it directly
+  // for the actual challenge/verification exchange (needs connect-src,
+  // default 'self'-only). Its script tag itself needs no script-src change:
+  // @nuxt/scripts (which @nuxtjs/turnstile depends on) inserts it dynamically
+  // from already-trusted, nonce'd first-party JS, which 'strict-dynamic'
+  // trusts regardless of the child script's own src host — same mechanism
+  // already verified for the deferred GA4 script in analytics.client.ts.
   security: {
     headers: {
       contentSecurityPolicy: {
-        'frame-src': ["'self'", 'https://www.youtube.com'],
+        'frame-src': ["'self'", 'https://www.youtube.com', 'https://challenges.cloudflare.com'],
+        'connect-src': ["'self'", 'https://challenges.cloudflare.com'],
       },
     },
     // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`

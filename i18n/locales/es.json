@@ -186,16 +186,31 @@
       "location": "San Pedro Sula, Honduras · Praga, República Checa",
       "remote": "Remoto / Nearshore · Ingeniería global",
       "form": {
+        "nameLabel": "Nombre completo",
         "namePlaceholder": "Tu nombre completo",
+        "emailLabel": "Correo electrónico",
         "emailPlaceholder": "Tu correo corporativo",
+        "companyLabel": "Empresa",
+        "companyPlaceholder": "Nombre de tu empresa (opcional)",
+        "interestLabel": "¿Cómo podemos ayudarte?",
         "interestInvestor": "Inversor de Capital",
         "interestPartner": "Socio Estratégico / Cliente",
         "interestTester": "Tester de Acceso Anticipado / Usuario",
+        "messageLabel": "Mensaje",
         "messagePlaceholder": "Cuéntanos un poco sobre tus objetivos...",
         "submit": "Enviar solicitud",
         "submitting": "Enviando...",
-        "success": "¡Solicitud enviada con éxito! Te contactaremos pronto.",
-        "error": "Hubo un problema. Por favor intenta de nuevo."
+        "successTitle": "¡Solicitud enviada!",
+        "successDesc": "Gracias por escribirnos — te contactaremos dentro de las próximas 72 horas.",
+        "sendAnother": "Enviar otro mensaje",
+        "error": "Hubo un problema. Por favor intenta de nuevo.",
+        "errors": {
+          "name": "Ingresa un nombre válido (mínimo 2 caracteres).",
+          "email": "Ingresa un correo electrónico válido.",
+          "company": "El nombre de la empresa es demasiado largo.",
+          "interest": "Selecciona una opción.",
+          "message": "El mensaje es demasiado largo."
+        }
       }
     }
   },
@@ -219,8 +234,9 @@
       "jafet_desc": "Dirige la innovación de producto y las arquitecturas centradas en el usuario para software de alto impacto.",
       "salvador_desc": "Experto en gestión estratégica enfocado en escalar negocios y posicionar marcas mediante análisis de mercado de alto impacto.",
       "jeremy_desc": "Gestiona los flujos internos y externos para asegurar claridad e impacto en todos los canales.",
-      "john_desc": "Lidera la estrategia de datos y la integración tecnológica para impulsar insights de negocio inteligentes.",
-      "emerson_desc": "Mente maestra técnica que diseña sistemas de alto rendimiento y soluciones impulsadas por IA."
+      "emerson_desc": "Supervisa la infraestructura tecnológica y los sistemas de información que sostienen la operación global de CorosDev.",
+      "douglas_desc": "Mente maestra técnica que diseña sistemas de alto rendimiento y soluciones impulsadas por IA.",
+      "linkedinAria": "Ver el perfil de LinkedIn de {name}"
     },
     "cta": {
       "h2_1": "¿Quieres trabajar con",
