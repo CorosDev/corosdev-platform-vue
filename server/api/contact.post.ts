@@ -4,11 +4,11 @@
  * both sides validate against the exact same rules instead of two hand-kept
  * copies drifting apart.
  *
- * `honeypot` is a hidden input real visitors never fill in — bot traffic
- * protection per CLAUDE.md ("Validación obligatoria de tokens Cloudflare
- * Turnstile / Honeypot antes de procesar envíos"). Turnstile itself is
- * deferred to the production-prep pass (needs a Cloudflare site key/secret
- * provisioned first) — tracked, not forgotten.
+ * Two bot defenses, both required per CLAUDE.md ("Validación obligatoria de
+ * tokens Cloudflare Turnstile / Honeypot antes de procesar envíos"):
+ * `honeypot` (a hidden input real visitors never fill in) and a Cloudflare
+ * Turnstile token, checked via assertTurnstileToken() (server/utils/turnstile.ts)
+ * — see that file for how it behaves when Turnstile isn't configured.
  */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -24,10 +24,17 @@ export default defineEventHandler(async (event) => {
 
   const { name, email, company, interest, message, honeypot } = parsed.data
 
-  // Bots that fill the trap field silently succeed without being processed.
+  // Bots that fill the trap field silently succeed without being processed
+  // — skipped before Turnstile too, no point burning a verification call on
+  // a submission we're already discarding.
   if (honeypot) {
     return { success: true }
   }
+
+  // `turnstileToken` isn't part of contactSchema (it's a security gate, not
+  // lead data) — read straight off the raw body, which zod's `safeParse`
+  // above left untouched.
+  await assertTurnstileToken(body?.turnstileToken)
 
   try {
     const { brevoContactListId } = useRuntimeConfig()

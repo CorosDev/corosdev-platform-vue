@@ -23,7 +23,15 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['nuxt-security', '@nuxtjs/i18n', '@nuxt/image', '@nuxt/fonts', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+  modules: [
+    'nuxt-security',
+    '@nuxtjs/i18n',
+    '@nuxt/image',
+    '@nuxt/fonts',
+    '@nuxtjs/sitemap',
+    '@nuxtjs/robots',
+    '@nuxtjs/turnstile',
+  ],
 
   // Shared by the whole Nuxt SEO module family (sitemap, robots) via
   // nuxt-site-config — this would already be auto-detected from i18n.baseUrl
@@ -32,6 +40,21 @@ export default defineNuxtConfig({
   // production-critical, load-bearing SEO setting.
   site: {
     url: 'https://corosdev.com',
+  },
+
+  // Public site key (NOT secret — it's meant to ship to the client, unlike
+  // the server-only secretKey in runtimeConfig below). Empty by default,
+  // overridden via NUXT_PUBLIC_TURNSTILE_SITE_KEY. When Nuxt itself runs in
+  // dev mode (`npm run dev`) and nothing is configured, @nuxtjs/turnstile
+  // automatically substitutes Cloudflare's own published "always passes"
+  // test keypair here and for the server secretKey — so the whole widget +
+  // server-verification round-trip genuinely works out of the box locally,
+  // with zero real Cloudflare account needed. That auto-substitution does
+  // NOT happen for a `nuxt build` (production build, e.g. what
+  // `npm run build` + `node .output/server/index.mjs` runs), which is
+  // exactly why server/utils/turnstile.ts's own bypass exists — see there.
+  turnstile: {
+    siteKey: '',
   },
 
   // CLAUDE.md §4 mandates local serving of Plus Jakarta Sans via @nuxt/fonts
@@ -156,6 +179,13 @@ export default defineNuxtConfig({
     brevoContactListId: 0,
     // NUXT_BREVO_CTA_LIST_ID — the lighter-weight FloatingCtaDrawer widget
     brevoCtaListId: 0,
+    // Empty here on purpose (never set a real secret in this file) —
+    // overridden via NUXT_TURNSTILE_SECRET_KEY. server/utils/turnstile.ts
+    // treats "not configured" as a deliberate local-dev bypass rather than a
+    // hard failure; see that file for the full reasoning.
+    turnstile: {
+      secretKey: '',
+    },
   },
 
   css: ['~/assets/css/main.css'],
@@ -203,13 +233,24 @@ export default defineNuxtConfig({
   // style-src as `'self' https: 'unsafe-inline'` (no nonce there), which is what actually
   // stays dev-safe while still shipping solid OWASP headers (CSP, HSTS, COOP/CORP,
   // X-Frame-Options, Permissions-Policy, nonce'd script-src, SRI, hidden X-Powered-By...).
-  // Only frame-src is overridden below, to allow the YouTube embed in
-  // HomePresentationVideoSection.vue — nuxt-security deep-merges per directive, so every
-  // other default directive is kept as-is.
+  // frame-src and connect-src are overridden below — nuxt-security deep-merges
+  // per directive, so every other default directive (including script-src,
+  // still 'strict-dynamic'+nonce'd) is kept as-is. frame-src already allowed
+  // the YouTube embed in HomePresentationVideoSection.vue;
+  // https://challenges.cloudflare.com is added for Cloudflare Turnstile
+  // (@nuxtjs/turnstile) — its widget renders inside an <iframe> from that
+  // origin (needs frame-src) and its client script calls back to it directly
+  // for the actual challenge/verification exchange (needs connect-src,
+  // default 'self'-only). Its script tag itself needs no script-src change:
+  // @nuxt/scripts (which @nuxtjs/turnstile depends on) inserts it dynamically
+  // from already-trusted, nonce'd first-party JS, which 'strict-dynamic'
+  // trusts regardless of the child script's own src host — same mechanism
+  // already verified for the deferred GA4 script in analytics.client.ts.
   security: {
     headers: {
       contentSecurityPolicy: {
-        'frame-src': ["'self'", 'https://www.youtube.com'],
+        'frame-src': ["'self'", 'https://www.youtube.com', 'https://challenges.cloudflare.com'],
+        'connect-src': ["'self'", 'https://challenges.cloudflare.com'],
       },
     },
     // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`

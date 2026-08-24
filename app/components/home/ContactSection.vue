@@ -23,6 +23,8 @@ interface ContactForm {
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
+  /** Set by the <NuxtTurnstile> widget's v-model; verified server-side. */
+  turnstileToken: string
 }
 
 interface ContactResponse {
@@ -51,6 +53,7 @@ function emptyForm(): ContactForm {
     interest: DEFAULT_INTEREST,
     message: '',
     honeypot: '',
+    turnstileToken: '',
   }
 }
 
@@ -87,6 +90,11 @@ const hasVisibleErrors = computed(() => Object.keys(fieldErrors).length > 0)
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 const status = ref<Status>('idle')
 
+// Cloudflare invalidates a Turnstile token the moment it's checked server-side
+// — win or lose — so both a failed submission (retry) and a fresh one after
+// success need a new token, not the same consumed one still sitting in `form`.
+const turnstileWidget = ref<{ reset: () => void } | null>(null)
+
 async function handleSubmit() {
   if (status.value === 'submitting') return
 
@@ -103,6 +111,7 @@ async function handleSubmit() {
     status.value = 'success'
   } catch {
     status.value = 'error'
+    turnstileWidget.value?.reset()
   }
 }
 
@@ -110,6 +119,7 @@ function resetForm() {
   Object.assign(form, emptyForm())
   Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as ContactField])
   status.value = 'idle'
+  turnstileWidget.value?.reset()
 }
 </script>
 
@@ -248,6 +258,16 @@ function resetForm() {
                 tabindex="-1"
                 autocomplete="off"
               />
+            </div>
+
+            <!-- Cloudflare Turnstile — token verified server-side in
+                 contact.post.ts via assertTurnstileToken(). Renders as an
+                 empty/invisible box when no site key is configured (e.g. a
+                 build without NUXT_PUBLIC_TURNSTILE_SITE_KEY set); harmless,
+                 since the server-side check bypasses verification in that
+                 same "not configured" case. -->
+            <div class="flex justify-center">
+              <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 
             <button

@@ -20,6 +20,8 @@ interface CtaForm {
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
+  /** Set by the <NuxtTurnstile> widget's v-model; verified server-side. */
+  turnstileToken: string
 }
 
 interface SubscribeResponse {
@@ -50,7 +52,7 @@ const roleOrder: LeadInterest[] = [DEFAULT_ROLE, 'Inversor de Capital', 'Socio E
 const roleOptions = computed(() => roleOrder.map((value) => ({ value, label: t(roleLabelKeys[value]) })))
 
 function emptyForm(): CtaForm {
-  return { name: '', email: '', role: DEFAULT_ROLE, message: '', honeypot: '' }
+  return { name: '', email: '', role: DEFAULT_ROLE, message: '', honeypot: '', turnstileToken: '' }
 }
 
 const isOpen = ref(false)
@@ -60,6 +62,12 @@ const form = reactive<CtaForm>(emptyForm())
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 const status = ref<Status>('idle')
+
+// Only needed for a retry within the same open drawer (the widget itself
+// gets destroyed/recreated with a fresh token whenever the drawer closes and
+// reopens, via the v-if below) — see ContactSection.vue for the fuller
+// explanation of why a consumed token needs an explicit reset.
+const turnstileWidget = ref<{ reset: () => void } | null>(null)
 
 const title = computed(() => t(`ctaDrawer.title.${context.value}`))
 const subtitle = computed(() => t(`ctaDrawer.subtitle.${context.value}`))
@@ -87,6 +95,7 @@ async function handleSubmit() {
     status.value = 'success'
   } catch {
     status.value = 'error'
+    turnstileWidget.value?.reset()
   }
 }
 
@@ -227,6 +236,12 @@ onBeforeUnmount(() => {
                 tabindex="-1"
                 autocomplete="off"
               />
+            </div>
+
+            <!-- Cloudflare Turnstile — token verified server-side in
+                 subscribe.post.ts via assertTurnstileToken(). -->
+            <div class="flex justify-center">
+              <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 
             <button

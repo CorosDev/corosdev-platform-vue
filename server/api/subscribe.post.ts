@@ -9,7 +9,8 @@
  * now goes through the same server/utils/brevo.ts Contacts API client as
  * contact.post.ts, posting to its own list (`brevoCtaListId`) so this
  * lighter funnel entry point stays reportable separately from the full
- * Contact-section form in Brevo.
+ * Contact-section form in Brevo. Same honeypot + Turnstile bot defenses as
+ * contact.post.ts too — see server/utils/turnstile.ts.
  */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -27,6 +28,9 @@ export default defineEventHandler(async (event) => {
   if (honeypot) {
     return { success: true }
   }
+
+  // Same Turnstile gate as contact.post.ts — see server/utils/turnstile.ts.
+  await assertTurnstileToken(body?.turnstileToken)
 
   try {
     const { brevoCtaListId } = useRuntimeConfig()
