@@ -64,7 +64,7 @@ const team = computed(() =>
           target="_blank"
           rel="noopener noreferrer"
           :aria-label="t('about.team.linkedinAria', { name: member.name })"
-          class="group glass relative flex h-full w-full cursor-pointer flex-col items-center rounded-3xl border border-white/5 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-neon-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-500 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+          class="group glass relative flex w-full cursor-pointer flex-col items-center rounded-3xl border border-white/5 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-neon-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-500 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
         >
           <!-- Corner badge, not inline with the name: the previous inline
                placement (icon in a flex row next to <h3>) was eating into the
