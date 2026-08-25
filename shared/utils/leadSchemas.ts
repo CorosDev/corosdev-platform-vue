@@ -1,28 +1,48 @@
 import { z } from 'zod'
 
 /**
- * Canonical "how can we help" options — shared verbatim between the Contact
- * section form (`interest`) and the FloatingCtaDrawer (`role`), and between
- * their client-side (real-time) and server-side (authoritative) validation.
- * Single source of truth so the two never drift apart — the legacy
- * vanilla-JS version had a typo on this exact enum ("Testes de Accesso...")
- * from having it duplicated by hand in more than one place.
+ * Lead-capture schemas shared between each form component (client-side,
+ * real-time validation) and its Nitro endpoint (authoritative validation).
  *
  * Lives under `shared/` (Nuxt 4's app+server auto-import directory, see
  * https://nuxt.com/docs/guide/directory-structure/shared) so both
- * `app/components/home/ContactSection.vue` and
- * `server/api/contact.post.ts` validate against the exact same rules —
- * that's the whole point of "real-time validation with Zod/Vue": the client
- * check is a UX nicety, the server check (safeParse on the same schema) is
- * what's actually authoritative and security-relevant.
+ * `app/components/home/ContactSection.vue` and `server/api/contact.post.ts`
+ * validate against the exact same rules — the client check is a UX nicety,
+ * the server check (safeParse on the same schema) is what's actually
+ * authoritative and security-relevant.
+ *
+ * The two forms deliberately have DIFFERENT option sets: the Contact section
+ * is the B2B sales funnel (which service do you need) and the floating
+ * drawer is the ecosystem funnel (how do you want to join). They shared one
+ * enum until this pass, which made them read as the same form twice.
+ *
+ * Option VALUES stay pinned to their canonical Spanish string regardless of
+ * the active UI locale — only the displayed <option> label is translated
+ * (see each component's label-key map). They are what lands in Brevo's
+ * INTEREST contact attribute, so they are kept human-readable for whoever
+ * reads the list there rather than being opaque slugs. Changing one of these
+ * strings changes what new leads are tagged with, so old and new values will
+ * coexist in Brevo — rename deliberately.
  */
-export const LEAD_INTEREST_OPTIONS = [
-  'Inversor de Capital',
-  'Socio Estratégico / Cliente',
-  'Tester de Acceso Anticipado / Usuario',
+
+/** Contact section — the B2B "what do you need built" sales funnel. */
+export const CONTACT_SERVICE_OPTIONS = [
+  'Desarrollo de Software a Medida',
+  'Soluciones de IA e Integración',
+  'Aplicaciones Web y Móviles',
+  'Consultoría',
 ] as const
 
-export type LeadInterest = (typeof LEAD_INTEREST_OPTIONS)[number]
+export type ContactService = (typeof CONTACT_SERVICE_OPTIONS)[number]
+
+/** Floating CTA drawer — the ecosystem/investor/tester application funnel. */
+export const ECOSYSTEM_ROLE_OPTIONS = [
+  'Tester de Acceso Anticipado',
+  'Inversor Ángel / VC',
+  'Socio Estratégico',
+] as const
+
+export type EcosystemRole = (typeof ECOSYSTEM_ROLE_OPTIONS)[number]
 
 // No `.min()`/`.email()` custom messages here on purpose — user-facing copy
 // belongs in i18n/locales/*.json, not baked into the schema in one language.
@@ -31,10 +51,13 @@ export type LeadInterest = (typeof LEAD_INTEREST_OPTIONS)[number]
 export const contactSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.email().max(180),
-  // Optional — see the perf/legacy conversation: forcing it would lose the
-  // individual "Tester" applicant who has no organization to declare.
+  // Optional — forcing it would lose the solo founder with no registered
+  // company to declare yet.
   company: z.string().trim().max(160).optional().default(''),
-  interest: z.enum(LEAD_INTEREST_OPTIONS),
+  // No default: the select starts on a non-submittable placeholder so the
+  // visitor has to pick a service, rather than silently tagging every
+  // untouched lead with whichever option happens to be listed first.
+  interest: z.enum(CONTACT_SERVICE_OPTIONS),
   message: z.string().trim().max(2000).optional().default(''),
   // No length constraint here on purpose: a filled-in value must still pass
   // validation so the bot-trap check can run and respond as if nothing
@@ -44,14 +67,13 @@ export const contactSchema = z.object({
 
 export type ContactInput = z.infer<typeof contactSchema>
 
-// FloatingCtaDrawer.vue's lighter-weight quick-capture widget — same
-// interest enum (as `role`) and honeypot convention, no `company` (it's a
-// tap-to-open drawer, not the qualifying B2B form) plus `context` for which
-// page section it was opened from.
+// FloatingCtaDrawer.vue's lighter-weight quick-capture widget — same honeypot
+// convention, no `company` (it's a tap-to-open drawer, not the qualifying B2B
+// form), plus `context` for which page section it was opened from.
 export const subscribeSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.email().max(180),
-  role: z.enum(LEAD_INTEREST_OPTIONS),
+  role: z.enum(ECOSYSTEM_ROLE_OPTIONS),
   message: z.string().trim().max(2000).optional().default(''),
   context: z.enum(['general', 'ecosystem', 'services', 'partners']).optional().default('general'),
   honeypot: z.string().max(500).optional().default(''),

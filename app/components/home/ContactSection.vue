@@ -6,8 +6,10 @@
  * `safeParse` on the same schema is what's actually authoritative.
  *
  * The `interest` option VALUES stay pinned to their canonical Spanish string
- * (LEAD_INTEREST_OPTIONS, matching the server's zod enum) regardless of the
- * active UI locale — only the displayed <option> label is translated.
+ * (CONTACT_SERVICE_OPTIONS, matching the server's zod enum) regardless of the
+ * active UI locale — only the displayed <option> label is translated. This
+ * form is the B2B services funnel; FloatingCtaDrawer.vue is the separate
+ * ecosystem/investor funnel with its own option set.
  *
  * Success/error UI mirrors FloatingCtaDrawer.vue's pattern (full-form swap
  * on success, not just an inline line of text) for consistency between the
@@ -19,7 +21,8 @@ interface ContactForm {
   name: string
   email: string
   company: string
-  interest: LeadInterest
+  /** '' while the select still sits on its placeholder option. */
+  interest: ContactService | ''
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
@@ -31,18 +34,19 @@ interface ContactResponse {
   success: boolean
 }
 
-const DEFAULT_INTEREST: LeadInterest = 'Tester de Acceso Anticipado / Usuario'
-
 const { t } = useI18n()
 
-const interestLabelKeys: Record<LeadInterest, string> = {
-  'Inversor de Capital': 'home.contact.form.interestInvestor',
-  'Socio Estratégico / Cliente': 'home.contact.form.interestPartner',
-  'Tester de Acceso Anticipado / Usuario': 'home.contact.form.interestTester',
+// Values stay pinned to CONTACT_SERVICE_OPTIONS (the server's zod enum);
+// only the displayed label is translated.
+const serviceLabelKeys: Record<ContactService, string> = {
+  'Desarrollo de Software a Medida': 'home.contact.form.serviceSoftware',
+  'Soluciones de IA e Integración': 'home.contact.form.serviceAi',
+  'Aplicaciones Web y Móviles': 'home.contact.form.serviceApps',
+  Consultoría: 'home.contact.form.serviceAdvisory',
 }
 
 const interestOptions = computed(() =>
-  LEAD_INTEREST_OPTIONS.map((value) => ({ value, label: t(interestLabelKeys[value]) })),
+  CONTACT_SERVICE_OPTIONS.map((value) => ({ value, label: t(serviceLabelKeys[value]) })),
 )
 
 function emptyForm(): ContactForm {
@@ -50,7 +54,10 @@ function emptyForm(): ContactForm {
     name: '',
     email: '',
     company: '',
-    interest: DEFAULT_INTEREST,
+    // Deliberately empty: the placeholder option below is not submittable,
+    // so an untouched select fails validation instead of silently tagging
+    // every lead with whichever service happens to be listed first.
+    interest: '',
     message: '',
     honeypot: '',
     turnstileToken: '',
@@ -234,9 +241,20 @@ function resetForm() {
                     v-model="form.interest"
                     name="interest"
                     :aria-invalid="!!fieldErrors.interest"
-                    :class="[fieldClass('interest'), FORM_SELECT_EXTRA_CLASS]"
+                    :aria-describedby="fieldErrors.interest ? 'contact-interest-error' : undefined"
+                    :class="[
+                      fieldClass('interest'),
+                      FORM_SELECT_EXTRA_CLASS,
+                      { 'is-placeholder': !form.interest },
+                    ]"
                     @change="validateField('interest')"
                   >
+                    <!-- Not submittable: zod rejects '' so an untouched select
+                         surfaces the "pick a service" error rather than
+                         defaulting the lead to an arbitrary service. -->
+                    <option value="" disabled :class="FORM_OPTION_CLASS">
+                      {{ t('home.contact.form.servicePlaceholder') }}
+                    </option>
                     <option
                       v-for="option in interestOptions"
                       :key="option.value"
@@ -257,6 +275,9 @@ function resetForm() {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
                   </svg>
                 </div>
+                <p v-if="fieldErrors.interest" id="contact-interest-error" :class="FORM_ERROR_TEXT_CLASS">
+                  {{ fieldErrors.interest }}
+                </p>
               </div>
             </div>
 
@@ -334,6 +355,13 @@ function resetForm() {
 
 
 <style scoped>
+/* Dims the select while it still shows its non-submittable placeholder, so it
+   reads like the placeholder text in the other fields. Scoped (not a utility)
+   on purpose — see the note in the template. */
+.is-placeholder {
+  color: rgb(255 255 255 / 0.4);
+}
+
 .contact-spinner {
   width: 14px;
   height: 14px;

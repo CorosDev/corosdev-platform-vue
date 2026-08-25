@@ -16,7 +16,7 @@ type Context = 'general' | 'ecosystem' | 'services' | 'partners'
 interface CtaForm {
   name: string
   email: string
-  role: LeadInterest
+  role: EcosystemRole
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
@@ -30,26 +30,25 @@ interface SubscribeResponse {
 
 // Role values stay pinned to their canonical Spanish string (matching
 // server/api/subscribe.post.ts's zod enum) regardless of the active UI
-// locale — same convention as ContactSection.vue's `interestOptions`. Only
-// the displayed <option> label is translated. LEAD_INTEREST_OPTIONS (and its
-// order) comes from shared/utils/leadSchemas.ts — the single source of truth
-// both this drawer and ContactSection.vue's "interest" select share.
-const DEFAULT_ROLE: LeadInterest = 'Tester de Acceso Anticipado / Usuario'
+// locale — same convention as ContactSection.vue's service select. Only the
+// displayed <option> label is translated.
+//
+// This drawer is the ecosystem funnel (tester / investor / venture partner),
+// deliberately a different option set from the Contact section's B2B service
+// list — see ECOSYSTEM_ROLE_OPTIONS in shared/utils/leadSchemas.ts.
+const DEFAULT_ROLE: EcosystemRole = 'Tester de Acceso Anticipado'
 
 const { t } = useI18n()
 
-const roleLabelKeys: Record<LeadInterest, string> = {
-  'Tester de Acceso Anticipado / Usuario': 'ctaDrawer.form.roleTester',
-  'Inversor de Capital': 'ctaDrawer.form.roleInvestor',
-  'Socio Estratégico / Cliente': 'ctaDrawer.form.rolePartner',
+const roleLabelKeys: Record<EcosystemRole, string> = {
+  'Tester de Acceso Anticipado': 'ctaDrawer.form.roleTester',
+  'Inversor Ángel / VC': 'ctaDrawer.form.roleInvestor',
+  'Socio Estratégico': 'ctaDrawer.form.rolePartner',
 }
 
-// Deliberately NOT just `LEAD_INTEREST_OPTIONS.map(...)` — this drawer lists
-// its default (Tester) first, unlike ContactSection.vue's ordering. The
-// `LeadInterest` typing still guarantees every value here is one of the
-// shared enum's, so this can't silently drift from the server's zod enum.
-const roleOrder: LeadInterest[] = [DEFAULT_ROLE, 'Inversor de Capital', 'Socio Estratégico / Cliente']
-const roleOptions = computed(() => roleOrder.map((value) => ({ value, label: t(roleLabelKeys[value]) })))
+const roleOptions = computed(() =>
+  ECOSYSTEM_ROLE_OPTIONS.map((value) => ({ value, label: t(roleLabelKeys[value]) })),
+)
 
 function emptyForm(): CtaForm {
   return { name: '', email: '', role: DEFAULT_ROLE, message: '', honeypot: '', turnstileToken: '' }
