@@ -187,11 +187,12 @@
       "remote": "Remote / Nearshore · Global Engineering",
       "form": {
         "nameLabel": "Full name",
+        "optional": "(optional)",
         "namePlaceholder": "Your full name",
         "emailLabel": "Email address",
         "emailPlaceholder": "Your corporate email",
         "companyLabel": "Company",
-        "companyPlaceholder": "Your company name (optional)",
+        "companyPlaceholder": "Your company name",
         "interestLabel": "How can we help you?",
         "interestInvestor": "Capital Investor",
         "interestPartner": "Strategic Partner / Client",
@@ -411,6 +412,7 @@
     },
     "form": {
       "name": "Full name",
+      "optional": "(optional)",
       "namePlaceholder": "Your full name",
       "email": "Work email",
       "emailPlaceholder": "Your business email",

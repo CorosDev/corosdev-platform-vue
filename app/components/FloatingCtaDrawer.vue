@@ -178,52 +178,83 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="flex-1 overflow-y-auto p-6">
-          <form v-if="status !== 'success'" class="grid gap-4" novalidate @submit.prevent="handleSubmit">
-            <label for="cta-drawer-name" class="sr-only">{{ t('ctaDrawer.form.name') }}</label>
-            <input
-              id="cta-drawer-name"
-              v-model="form.name"
-              type="text"
-              name="name"
-              :placeholder="t('ctaDrawer.form.namePlaceholder')"
-              autocomplete="name"
-              required
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
+          <form v-if="status !== 'success'" novalidate @submit.prevent="handleSubmit">
+            <div class="mb-5">
+              <label for="cta-drawer-name" :class="FORM_LABEL_CLASS">{{ t('ctaDrawer.form.name') }}</label>
+              <input
+                id="cta-drawer-name"
+                v-model="form.name"
+                type="text"
+                name="name"
+                :placeholder="t('ctaDrawer.form.namePlaceholder')"
+                autocomplete="name"
+                required
+                :class="[FORM_FIELD_CLASS, FORM_FIELD_IDLE_CLASS]"
+              />
+            </div>
 
-            <label for="cta-drawer-email" class="sr-only">{{ t('ctaDrawer.form.email') }}</label>
-            <input
-              id="cta-drawer-email"
-              v-model="form.email"
-              type="email"
-              name="email"
-              :placeholder="t('ctaDrawer.form.emailPlaceholder')"
-              autocomplete="email"
-              required
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
+            <div class="mb-5">
+              <label for="cta-drawer-email" :class="FORM_LABEL_CLASS">{{ t('ctaDrawer.form.email') }}</label>
+              <input
+                id="cta-drawer-email"
+                v-model="form.email"
+                type="email"
+                name="email"
+                :placeholder="t('ctaDrawer.form.emailPlaceholder')"
+                autocomplete="email"
+                required
+                :class="[FORM_FIELD_CLASS, FORM_FIELD_IDLE_CLASS]"
+              />
+            </div>
 
-            <label for="cta-drawer-role" class="sr-only">{{ t('ctaDrawer.form.role') }}</label>
-            <select
-              id="cta-drawer-role"
-              v-model="form.role"
-              name="role"
-              class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            >
-              <option v-for="option in roleOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
+            <div class="mb-5">
+              <label for="cta-drawer-role" :class="FORM_LABEL_CLASS">{{ t('ctaDrawer.form.role') }}</label>
+              <!-- The relative wrapper hosts the custom chevron; the native arrow
+                   is removed via appearance-none so it cannot render as a
+                   dark-on-dark glyph depending on the OS/browser theme. -->
+              <div class="relative">
+                <select
+                  id="cta-drawer-role"
+                  v-model="form.role"
+                  name="role"
+                  :class="[FORM_FIELD_CLASS, FORM_FIELD_IDLE_CLASS, FORM_SELECT_EXTRA_CLASS]"
+                >
+                  <option
+                    v-for="option in roleOptions"
+                    :key="option.value"
+                    :value="option.value"
+                    :class="FORM_OPTION_CLASS"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+                <svg
+                  :class="FORM_SELECT_CHEVRON_CLASS"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                </svg>
+              </div>
+            </div>
 
-            <label for="cta-drawer-message" class="sr-only">{{ t('ctaDrawer.form.message') }}</label>
-            <textarea
-              id="cta-drawer-message"
-              v-model="form.message"
-              name="message"
-              rows="3"
-              :placeholder="t('ctaDrawer.form.messagePlaceholder')"
-              class="w-full rounded-md border border-white/10 bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-            />
+            <div class="mb-5">
+              <label for="cta-drawer-message" :class="FORM_LABEL_CLASS">
+                {{ t('ctaDrawer.form.message') }}
+                <span :class="FORM_LABEL_HINT_CLASS">{{ t('ctaDrawer.form.optional') }}</span>
+              </label>
+              <textarea
+                id="cta-drawer-message"
+                v-model="form.message"
+                name="message"
+                rows="3"
+                :placeholder="t('ctaDrawer.form.messagePlaceholder')"
+                :class="[FORM_FIELD_CLASS, FORM_FIELD_IDLE_CLASS, 'resize-y']"
+              />
+            </div>
 
             <!-- Honeypot: hidden from real visitors, validated server-side in subscribe.post.ts. -->
             <div class="absolute left-[-9999px] opacity-0" aria-hidden="true">
@@ -238,21 +269,18 @@ onBeforeUnmount(() => {
               />
             </div>
 
-            <!-- Cloudflare Turnstile — token verified server-side in
+            <!-- Cloudflare Turnstile: token verified server-side in
                  subscribe.post.ts via assertTurnstileToken(). -->
-            <div class="flex justify-center">
+            <div class="mb-5 flex justify-center">
               <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 
-            <button
-              type="submit"
-              :disabled="status === 'submitting'"
-              class="mt-2 flex w-full items-center justify-center rounded-xl bg-neon-500 px-5 py-3 font-semibold text-brand-900 drop-shadow-glow transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <button type="submit" :disabled="status === 'submitting'" :class="FORM_SUBMIT_CLASS">
+              <span v-if="status === 'submitting'" class="cta-spinner" aria-hidden="true" />
               {{ status === 'submitting' ? t('ctaDrawer.form.submitting') : t('ctaDrawer.form.submit') }}
             </button>
 
-            <p v-if="status === 'error'" class="mt-2 text-center text-xs text-red-400">
+            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-400">
               {{ t('ctaDrawer.form.error') }}
             </p>
           </form>
@@ -273,6 +301,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* Loading indicator inside the submit button (matches ContactSection.vue). */
+.cta-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgb(7 11 26 / 0.25);
+  border-top-color: rgb(7 11 26 / 0.85);
+  animation: cta-spin 0.8s linear infinite;
+}
+
+@keyframes cta-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ── Floating trigger (bottom-right) ── */
 .cta-floating-btn {
   position: fixed;
@@ -374,6 +418,10 @@ onBeforeUnmount(() => {
   .cta-floating-btn,
   .cta-drawer-transition {
     transition: none;
+  }
+
+  .cta-spinner {
+    animation-duration: 1.6s;
   }
 }
 </style>

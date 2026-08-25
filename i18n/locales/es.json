@@ -187,11 +187,12 @@
       "remote": "Remoto / Nearshore · Ingeniería global",
       "form": {
         "nameLabel": "Nombre completo",
+        "optional": "(opcional)",
         "namePlaceholder": "Tu nombre completo",
         "emailLabel": "Correo electrónico",
         "emailPlaceholder": "Tu correo corporativo",
         "companyLabel": "Empresa",
-        "companyPlaceholder": "Nombre de tu empresa (opcional)",
+        "companyPlaceholder": "Nombre de tu empresa",
         "interestLabel": "¿Cómo podemos ayudarte?",
         "interestInvestor": "Inversor de Capital",
         "interestPartner": "Socio Estratégico / Cliente",
@@ -411,6 +412,7 @@
     },
     "form": {
       "name": "Nombre completo",
+      "optional": "(opcional)",
       "namePlaceholder": "Tu nombre completo",
       "email": "Correo corporativo",
       "emailPlaceholder": "Tu correo corporativo",

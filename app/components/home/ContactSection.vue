@@ -85,6 +85,13 @@ function validateField(field: ContactField) {
   }
 }
 
+// Border colour is applied separately from FORM_FIELD_CLASS so the invalid
+// state can swap it cleanly — two competing `border-*` utilities on one
+// element resolve by CSS source order, not by class attribute order.
+function fieldClass(field: ContactField) {
+  return [FORM_FIELD_CLASS, fieldErrors[field] ? FORM_FIELD_ERROR_CLASS : FORM_FIELD_IDLE_CLASS]
+}
+
 const hasVisibleErrors = computed(() => Object.keys(fieldErrors).length > 0)
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
@@ -122,7 +129,6 @@ function resetForm() {
   turnstileWidget.value?.reset()
 }
 </script>
-
 <template>
   <section id="contact" class="py-10 md:py-20">
     <div class="mx-auto max-w-7xl px-6">
@@ -144,11 +150,13 @@ function resetForm() {
           </ul>
         </div>
 
-        <div class="glass rounded-2xl p-6">
-          <form v-if="status !== 'success'" class="grid gap-4" novalidate @submit.prevent="handleSubmit">
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label for="contact-name" class="sr-only">{{ t('home.contact.form.nameLabel') }}</label>
+        <div class="glass rounded-2xl p-6 sm:p-8">
+          <form v-if="status !== 'success'" novalidate @submit.prevent="handleSubmit">
+            <div class="sm:grid sm:grid-cols-2 sm:gap-x-4">
+              <div class="mb-5">
+                <label for="contact-name" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.nameLabel') }}
+                </label>
                 <input
                   id="contact-name"
                   v-model="form.name"
@@ -159,17 +167,18 @@ function resetForm() {
                   required
                   :aria-invalid="!!fieldErrors.name"
                   :aria-describedby="fieldErrors.name ? 'contact-name-error' : undefined"
-                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-                  :class="fieldErrors.name ? 'border-red-500/60' : 'border-white/10'"
+                  :class="fieldClass('name')"
                   @blur="validateField('name')"
                 />
-                <p v-if="fieldErrors.name" id="contact-name-error" class="mt-1 text-xs text-red-400">
+                <p v-if="fieldErrors.name" id="contact-name-error" :class="FORM_ERROR_TEXT_CLASS">
                   {{ fieldErrors.name }}
                 </p>
               </div>
 
-              <div>
-                <label for="contact-email" class="sr-only">{{ t('home.contact.form.emailLabel') }}</label>
+              <div class="mb-5">
+                <label for="contact-email" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.emailLabel') }}
+                </label>
                 <input
                   id="contact-email"
                   v-model="form.email"
@@ -180,19 +189,21 @@ function resetForm() {
                   required
                   :aria-invalid="!!fieldErrors.email"
                   :aria-describedby="fieldErrors.email ? 'contact-email-error' : undefined"
-                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-                  :class="fieldErrors.email ? 'border-red-500/60' : 'border-white/10'"
+                  :class="fieldClass('email')"
                   @blur="validateField('email')"
                 />
-                <p v-if="fieldErrors.email" id="contact-email-error" class="mt-1 text-xs text-red-400">
+                <p v-if="fieldErrors.email" id="contact-email-error" :class="FORM_ERROR_TEXT_CLASS">
                   {{ fieldErrors.email }}
                 </p>
               </div>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label for="contact-company" class="sr-only">{{ t('home.contact.form.companyLabel') }}</label>
+            <div>
+              <div class="mb-5">
+                <label for="contact-company" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.companyLabel') }}
+                  <span :class="FORM_LABEL_HINT_CLASS">{{ t('home.contact.form.optional') }}</span>
+                </label>
                 <input
                   id="contact-company"
                   v-model="form.company"
@@ -202,34 +213,58 @@ function resetForm() {
                   autocomplete="organization"
                   :aria-invalid="!!fieldErrors.company"
                   :aria-describedby="fieldErrors.company ? 'contact-company-error' : undefined"
-                  class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-                  :class="fieldErrors.company ? 'border-red-500/60' : 'border-white/10'"
+                  :class="fieldClass('company')"
                   @blur="validateField('company')"
                 />
-                <p v-if="fieldErrors.company" id="contact-company-error" class="mt-1 text-xs text-red-400">
+                <p v-if="fieldErrors.company" id="contact-company-error" :class="FORM_ERROR_TEXT_CLASS">
                   {{ fieldErrors.company }}
                 </p>
               </div>
 
-              <div>
-                <label for="contact-interest" class="sr-only">{{ t('home.contact.form.interestLabel') }}</label>
-                <select
-                  id="contact-interest"
-                  v-model="form.interest"
-                  name="interest"
-                  :aria-invalid="!!fieldErrors.interest"
-                  class="w-full rounded-md border border-white/10 bg-brand-800 px-4 py-3 text-white/70 focus:outline-none focus:ring-2 focus:ring-neon-500"
-                  @change="validateField('interest')"
-                >
-                  <option v-for="option in interestOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                  </option>
-                </select>
+              <div class="mb-5">
+                <label for="contact-interest" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.interestLabel') }}
+                </label>
+                <!-- The relative wrapper hosts the custom chevron; the native arrow
+                     is removed via appearance-none so it cannot render as a
+                     dark-on-dark glyph depending on the OS/browser theme. -->
+                <div class="relative">
+                  <select
+                    id="contact-interest"
+                    v-model="form.interest"
+                    name="interest"
+                    :aria-invalid="!!fieldErrors.interest"
+                    :class="[fieldClass('interest'), FORM_SELECT_EXTRA_CLASS]"
+                    @change="validateField('interest')"
+                  >
+                    <option
+                      v-for="option in interestOptions"
+                      :key="option.value"
+                      :value="option.value"
+                      :class="FORM_OPTION_CLASS"
+                    >
+                      {{ option.label }}
+                    </option>
+                  </select>
+                  <svg
+                    :class="FORM_SELECT_CHEVRON_CLASS"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    aria-hidden="true"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
               </div>
             </div>
 
-            <div>
-              <label for="contact-message" class="sr-only">{{ t('home.contact.form.messageLabel') }}</label>
+            <div class="mb-5">
+              <label for="contact-message" :class="FORM_LABEL_CLASS">
+                {{ t('home.contact.form.messageLabel') }}
+                <span :class="FORM_LABEL_HINT_CLASS">{{ t('home.contact.form.optional') }}</span>
+              </label>
               <textarea
                 id="contact-message"
                 v-model="form.message"
@@ -238,11 +273,10 @@ function resetForm() {
                 :placeholder="t('home.contact.form.messagePlaceholder')"
                 :aria-invalid="!!fieldErrors.message"
                 :aria-describedby="fieldErrors.message ? 'contact-message-error' : undefined"
-                class="w-full rounded-md border bg-white/5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neon-500"
-                :class="fieldErrors.message ? 'border-red-500/60' : 'border-white/10'"
+                :class="[fieldClass('message'), 'resize-y']"
                 @blur="validateField('message')"
               />
-              <p v-if="fieldErrors.message" id="contact-message-error" class="mt-1 text-xs text-red-400">
+              <p v-if="fieldErrors.message" id="contact-message-error" :class="FORM_ERROR_TEXT_CLASS">
                 {{ fieldErrors.message }}
               </p>
             </div>
@@ -260,26 +294,22 @@ function resetForm() {
               />
             </div>
 
-            <!-- Cloudflare Turnstile — token verified server-side in
+            <!-- Cloudflare Turnstile: token verified server-side in
                  contact.post.ts via assertTurnstileToken(). Renders as an
                  empty/invisible box when no site key is configured (e.g. a
                  build without NUXT_PUBLIC_TURNSTILE_SITE_KEY set); harmless,
                  since the server-side check bypasses verification in that
                  same "not configured" case. -->
-            <div class="flex justify-center">
+            <div class="mb-5 flex justify-center">
               <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 
-            <button
-              type="submit"
-              :disabled="status === 'submitting' || hasVisibleErrors"
-              class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-neon-500 px-5 py-3 font-semibold text-brand-900 drop-shadow-glow transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <button type="submit" :disabled="status === 'submitting' || hasVisibleErrors" :class="FORM_SUBMIT_CLASS">
               <span v-if="status === 'submitting'" class="contact-spinner" aria-hidden="true" />
               {{ status === 'submitting' ? t('home.contact.form.submitting') : t('home.contact.form.submit') }}
             </button>
 
-            <p v-if="status === 'error'" role="alert" class="mt-2 text-center text-xs text-red-400">
+            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-400">
               {{ t('home.contact.form.error') }}
             </p>
           </form>
@@ -301,6 +331,7 @@ function resetForm() {
     </div>
   </section>
 </template>
+
 
 <style scoped>
 .contact-spinner {
