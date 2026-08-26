@@ -31,3 +31,6 @@ Thumbs.db
 # Nitro / misc
 .nitro
 .cache
+
+# Guía de ingeniería local (no se versiona)
+CLAUDE.md
