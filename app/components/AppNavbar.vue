@@ -107,7 +107,7 @@ onUnmounted(() => {
           <button
             type="button"
             class="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300"
-            :aria-label="t('nav.langToggle')"
+            :aria-label="t('nav.langToggleTo', { code: locale === 'es' ? 'EN' : 'ES' })"
             @click="toggleLocale"
           >
             {{ locale === 'es' ? 'EN' : 'ES' }}

@@ -8,7 +8,8 @@
     "contact": "Contact",
     "cta": "Book a demo",
     "langToggle": "Switch language",
-    "aiDrivenCompany": "AI Driven Company"
+    "aiDrivenCompany": "AI Driven Company",
+    "langToggleTo": "Switch language to {code}"
   },
   "footer": {
     "rights": "CorosDev. All rights reserved."

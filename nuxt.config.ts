@@ -203,6 +203,14 @@ export default defineNuxtConfig({
   // platform/reverse-proxy in front of Nitro (Vercel, Netlify, Cloudflare,
   // nginx), which is also why this specific gap only shows up testing
   // directly against the bare `npm run preview` server.
+  // Deliberately NOT setting `preset: 'vercel'` here. Nitro already detects
+  // Vercel on its own (std-env reads the VERCEL env var that the platform
+  // injects) and switches presets automatically — verified locally by running
+  // the build with VERCEL=1, which emitted .vercel/output/ instead of
+  // .output/server/. Hardcoding the preset therefore adds nothing on Vercel,
+  // but it WOULD break local verification: `npm run build` would stop
+  // producing .output/server/index.mjs, so `npm run preview` and the
+  // build+curl loop this project relies on would have nothing to run.
   nitro: {
     compressPublicAssets: {
       gzip: true,

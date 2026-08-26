@@ -1,6 +1,7 @@
 # Nuxt dev/build output
 .nuxt
 .output
+.vercel
 .data
 dist
 

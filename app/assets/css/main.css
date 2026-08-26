@@ -30,6 +30,16 @@
 @layer base {
   html {
     font-family: var(--font-sans);
+    /* The brand background is painted here, not only by BackgroundStars.vue.
+       That component is position:fixed with z-index:-1 and every ancestor of
+       the page text is bg-transparent, so nothing in the text nodes ancestor
+       chain actually declares a background colour. Contrast checkers (axe,
+       and Lighthouse through it) walk that chain, find nothing, and fall back
+       to assuming a WHITE page — which reported every brand-blue label as a
+       contrast failure even though the real ratios on #070b1a are 5.2:1 to
+       9.7:1. Painting it here also removes the white flash before the stars
+       layer paints, and keeps the page readable if that layer ever fails. */
+    background-color: var(--color-brand-900);
   }
 }
 

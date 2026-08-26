@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-useSeoMeta({
+usePageSeo({
   title: () => t('home.seo.title'),
   description: () => t('home.seo.description'),
 })
