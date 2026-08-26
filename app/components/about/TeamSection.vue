@@ -6,9 +6,8 @@ interface MemberMeta {
   name: string
   role: string
   /**
-   * Placeholder ("#") until real profile URLs are provided — every card
-   * still renders as a clickable link so swapping these in later is a
-   * one-line data change, not a template change.
+   * Public LinkedIn profile. Emerson has no personal profile on file yet, so
+   * his points at linkedin.com itself — swap it in here when it exists.
    */
   linkedinUrl: string
 }
@@ -21,14 +20,14 @@ interface MemberMeta {
 // team following. John Vanegas (formerly CIO) was removed — Emerson Medina
 // is now the sole CIO.
 const teamMeta: MemberMeta[] = [
-  { id: 'carlos', name: 'Carlos Hernandez', role: 'CEO', linkedinUrl: '#' },
-  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: '#' },
-  { id: 'kriscia', name: 'Kriscia Cornejo', role: 'CFO', linkedinUrl: '#' },
-  { id: 'arturo', name: 'Arturo Guzman', role: 'COO', linkedinUrl: '#' },
-  { id: 'jafet', name: 'Jafet Mourra', role: 'CPO', linkedinUrl: '#' },
-  { id: 'salvador', name: 'Salvador Reynaud', role: 'CMO', linkedinUrl: '#' },
-  { id: 'jeremy', name: 'Jeremy Rápalo', role: 'CCO', linkedinUrl: '#' },
-  { id: 'emerson', name: 'Emerson Medina', role: 'CIO', linkedinUrl: '#' },
+  { id: 'carlos', name: 'Carlos Hernandez', role: 'CEO', linkedinUrl: 'https://www.linkedin.com/in/carlos-hernandez-zuniga-b030731a5/' },
+  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: 'https://www.linkedin.com/in/douglaspinedarojas/' },
+  { id: 'kriscia', name: 'Kriscia Cornejo', role: 'CFO', linkedinUrl: 'https://www.linkedin.com/in/kriscia-cornejo-616454395/' },
+  { id: 'arturo', name: 'Arturo Guzman', role: 'COO', linkedinUrl: 'https://www.linkedin.com/in/arturoguzmanpaz/' },
+  { id: 'jafet', name: 'Jafet Mourra', role: 'CPO', linkedinUrl: 'https://www.linkedin.com/in/jafet-mourra-3b128a2b1/' },
+  { id: 'salvador', name: 'Salvador Reynaud', role: 'CMO', linkedinUrl: 'https://www.linkedin.com/in/salvadorreynaud/' },
+  { id: 'jeremy', name: 'Jeremy Rápalo', role: 'CCO', linkedinUrl: 'https://www.linkedin.com/in/jeremy-r%C3%A1palo-394949283/' },
+  { id: 'emerson', name: 'Emerson Medina', role: 'CIO', linkedinUrl: 'https://www.linkedin.com' },
 ]
 
 const team = computed(() =>
