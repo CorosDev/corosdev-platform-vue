@@ -367,7 +367,7 @@ function resetForm() {
    reads like the placeholder text in the other fields. Scoped (not a utility)
    on purpose — see the note in the template. */
 .is-placeholder {
-  color: rgb(255 255 255 / 0.4);
+  color: rgb(255 255 255 / 0.5);
 }
 
 .contact-spinner {

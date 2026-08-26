@@ -44,9 +44,7 @@
         "cardClose": "Cerrar",
         "fallbackNote": "El globo interactivo no está disponible — mostrando nuestras ubicaciones a continuación.",
         "posterCta": "Toca para explorar el globo 3D",
-        "posterCtaAria": "Cargar la vista interactiva del globo 3D",
-        "posterLoading": "Cargando vista interactiva…",
-        "posterLoadingAria": "Cargando la vista interactiva del globo 3D"
+        "posterLoading": "Cargando vista interactiva…"
       },
       "globeLocations": {
         "honduras": {
@@ -220,7 +218,7 @@
   },
   "about": {
     "seo": {
-      "title": "Nosotros | CorosDev — Ingeniería para el futuro",
+      "title": "Nosotros — CorosDev",
       "description": "Las mentes visionarias detrás de CorosDev, impulsando la innovación a través de tecnología de clase mundial y sistemas inteligentes."
     },
     "hero": {

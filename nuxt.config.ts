@@ -203,6 +203,28 @@ export default defineNuxtConfig({
   // platform/reverse-proxy in front of Nitro (Vercel, Netlify, Cloudflare,
   // nginx), which is also why this specific gap only shows up testing
   // directly against the bare `npm run preview` server.
+  // GlobalGlobe.vue import()s globe.gl only when the visitor actually asks for
+  // the 3D globe — but Nuxt still emitted <link rel="prefetch"> for that chunk
+  // on every page load, so mobile downloaded ~1.9MB in the background even
+  // though it renders GlobeStaticPoster.vue and never boots WebGL unless the
+  // poster is tapped. The prefetch never hurt CPU/TBT (it does not execute),
+  // it just burned mobile data for nothing.
+  //
+  // Flipping the manifest entry off stops the link tag; the dynamic import()
+  // itself is untouched, so tapping the poster still loads the chunk on
+  // demand. Desktop loses a small head start (it auto-loads the globe on idle
+  // anyway, so the prefetch was only ever marginally ahead of the import).
+  hooks: {
+    'build:manifest'(manifest) {
+      for (const [key, entry] of Object.entries(manifest)) {
+        if (key.includes('globe.gl')) {
+          entry.prefetch = false
+          entry.preload = false
+        }
+      }
+    },
+  },
+
   // Deliberately NOT setting `preset: 'vercel'` here. Nitro already detects
   // Vercel on its own (std-env reads the VERCEL env var that the platform
   // injects) and switches presets automatically — verified locally by running
@@ -256,6 +278,16 @@ export default defineNuxtConfig({
   // already verified for the deferred GA4 script in analytics.client.ts.
   security: {
     headers: {
+      // nuxt-security defaults to 15552000s (180 days). Chrome's HSTS preload
+      // list requires at least 31536000s (1 year) plus includeSubDomains, so
+      // this is the value to run if corosdev.com is ever submitted there.
+      // preload:true is deliberately NOT set: it is a one-way door (removal
+      // from the list takes months and needs a separate request), so it should
+      // only be turned on together with an actual preload submission.
+      strictTransportSecurity: {
+        maxAge: 31536000,
+        includeSubdomains: true,
+      },
       contentSecurityPolicy: {
         'frame-src': ["'self'", 'https://www.youtube.com', 'https://challenges.cloudflare.com'],
         'connect-src': ["'self'", 'https://challenges.cloudflare.com'],

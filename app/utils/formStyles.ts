@@ -16,7 +16,7 @@
 export const FORM_LABEL_CLASS = 'block mb-2 text-xs font-semibold uppercase tracking-widest text-white/70'
 
 /** Muted "(optional)" suffix rendered next to a non-required field's label. */
-export const FORM_LABEL_HINT_CLASS = 'font-normal text-white/40'
+export const FORM_LABEL_HINT_CLASS = 'font-normal text-white/50'
 
 /**
  * Everything except the border colour, which is applied separately so an

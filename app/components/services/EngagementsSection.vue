@@ -79,7 +79,7 @@ const engagements = computed(() =>
         </div>
       </div>
 
-      <p class="mt-20 text-center text-sm italic text-white/40 underline decoration-neon-500/30 underline-offset-4">
+      <p class="mt-20 text-center text-sm italic text-white/50 underline decoration-neon-500/30 underline-offset-4">
         {{ t('services.engagements.custom') }}
       </p>
     </div>

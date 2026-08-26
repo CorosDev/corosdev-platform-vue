@@ -29,7 +29,7 @@ const blocks = computed<MissionBlock[]>(() => [
         {{ t('home.mission.p') }}
       </p>
 
-      <p class="mt-8 text-sm font-bold uppercase tracking-[0.3em] text-cobalt-500 opacity-80 md:mt-16">
+      <p class="mt-8 text-sm font-bold uppercase tracking-[0.3em] text-cobalt-500 md:mt-16">
         {{ t('home.mission.label') }}
       </p>
 
