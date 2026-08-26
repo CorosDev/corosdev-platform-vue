@@ -8,7 +8,8 @@
     "contact": "Contact",
     "cta": "Book a demo",
     "langToggle": "Switch language",
-    "aiDrivenCompany": "AI Driven Company"
+    "aiDrivenCompany": "AI Driven Company",
+    "langToggleTo": "Switch language to {code}"
   },
   "footer": {
     "rights": "CorosDev. All rights reserved."
@@ -43,9 +44,7 @@
         "cardClose": "Close",
         "fallbackNote": "Interactive globe unavailable — showing our locations below.",
         "posterCta": "Tap to explore the 3D globe",
-        "posterCtaAria": "Load the interactive 3D globe view",
-        "posterLoading": "Loading interactive view…",
-        "posterLoadingAria": "Loading the interactive 3D globe view"
+        "posterLoading": "Loading interactive view…"
       },
       "globeLocations": {
         "honduras": {
@@ -219,7 +218,7 @@
   },
   "about": {
     "seo": {
-      "title": "About Us | CorosDev — Engineering the Future",
+      "title": "About Us — CorosDev",
       "description": "The visionary minds behind CorosDev, empowering innovation through world-class technology and intelligent systems."
     },
     "hero": {

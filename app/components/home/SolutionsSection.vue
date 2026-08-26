@@ -46,7 +46,7 @@ const solutions = computed(() =>
               <path :d="solution.icon" />
             </svg>
           </div>
-          <div class="mb-4 text-[10px] font-bold uppercase tracking-widest text-neon-500 opacity-60">
+          <div class="mb-4 text-[10px] font-bold uppercase tracking-widest text-neon-500">
             {{ solution.badge }}
           </div>
           <h3 class="mb-4 flex min-h-[80px] items-center text-3xl font-black text-white transition-colors group-hover:gradient-text">

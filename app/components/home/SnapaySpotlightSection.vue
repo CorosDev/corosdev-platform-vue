@@ -59,7 +59,7 @@ const stats = computed(() => [
           class="glass rounded-2xl border border-white/5 p-4 transition-colors duration-300 hover:border-neon-500/20 md:p-6"
         >
           <div class="gradient-text drop-shadow-glow text-3xl font-black md:text-4xl">{{ stat.value }}</div>
-          <div class="mt-1 text-xs font-semibold uppercase tracking-wider text-white/40 md:text-sm">
+          <div class="mt-1 text-xs font-semibold uppercase tracking-wider text-white/50 md:text-sm">
             {{ stat.label }}
           </div>
         </div>

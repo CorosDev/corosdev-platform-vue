@@ -49,7 +49,7 @@ const track = computed(() => [...testimonials.value, ...testimonials.value])
               <div class="h-8 w-1 rounded-full bg-cobalt-500" />
               <div>
                 <p class="text-sm font-bold text-white">{{ testimonial.name }}</p>
-                <p class="text-xs text-white/40">{{ testimonial.role }}</p>
+                <p class="text-xs text-white/50">{{ testimonial.role }}</p>
               </div>
             </div>
           </div>

@@ -38,7 +38,6 @@ const posterMarkers = [
     type="button"
     class="gp-poster"
     :disabled="loading"
-    :aria-label="loading ? t('home.hero.globe.posterLoadingAria') : t('home.hero.globe.posterCtaAria')"
     @click="emit('activate')"
   >
     <svg viewBox="0 0 200 200" class="gp-poster-svg" aria-hidden="true">

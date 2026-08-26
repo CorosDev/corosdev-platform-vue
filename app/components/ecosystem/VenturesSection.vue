@@ -85,15 +85,15 @@ const ventures = computed(() =>
 
               <div class="grid grid-cols-2 gap-6 border-t border-white/5 pt-4 sm:grid-cols-3">
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/40">{{ t('ecosystem.ventures.statusLabel') }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.statusLabel') }}</span>
                   <span class="mt-1 block text-sm font-bold text-white">{{ t('ecosystem.ventures.statusValue') }}</span>
                 </div>
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/40">{{ t('ecosystem.ventures.stageLabel') }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.stageLabel') }}</span>
                   <span class="mt-1 block text-sm font-bold text-white">{{ venture.stage }}</span>
                 </div>
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/40">{{ t('ecosystem.ventures.sectorLabel') }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.sectorLabel') }}</span>
                   <span class="mt-1 block text-sm font-bold text-white">{{ venture.sectorValue }}</span>
                 </div>
               </div>

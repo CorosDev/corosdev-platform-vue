@@ -28,7 +28,7 @@ const ventures = computed(() =>
   <section id="ecosystem" class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-8 md:mb-16">
-        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-neon-500 opacity-70">
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-neon-500">
           {{ t('home.ecosystem.label') }}
         </p>
         <h2 class="text-4xl font-black text-white md:text-6xl">
@@ -68,7 +68,7 @@ const ventures = computed(() =>
             <p class="text-sm leading-relaxed text-white/55">{{ venture.description }}</p>
           </div>
           <div class="flex items-center gap-3 border-t border-white/5 pt-2">
-            <span class="text-[11px] font-semibold uppercase tracking-widest text-white/30">{{ t('home.ecosystem.sectorLabel') }}</span>
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-white/50">{{ t('home.ecosystem.sectorLabel') }}</span>
             <span class="text-[11px] font-bold uppercase tracking-widest text-neon-300">{{ venture.sector }}</span>
           </div>
         </div>
@@ -76,9 +76,9 @@ const ventures = computed(() =>
 
       <div class="mt-8 flex items-center gap-4 md:mt-14">
         <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        <p class="px-4 text-xs font-semibold uppercase tracking-widest text-white/30">
+        <p class="px-4 text-xs font-semibold uppercase tracking-widest text-white/50">
           {{ t('home.ecosystem.ctaText') }}
-          <a href="#contact" class="ml-1 text-neon-500 hover:underline">{{ t('home.ecosystem.ctaLink') }}</a>
+          <a href="#contact" class="ml-1 text-neon-500 underline underline-offset-2">{{ t('home.ecosystem.ctaLink') }}</a>
         </p>
         <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
@@ -86,7 +86,7 @@ const ventures = computed(() =>
       <div class="mt-6 text-center md:mt-12">
         <a
           href="#contact"
-          class="animate-pulse inline-flex items-center gap-2 rounded-2xl bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 shadow-[0_0_25px_rgba(31,127,255,0.35)] transition-all hover:scale-105"
+          class="animate-glow-pulse inline-flex items-center gap-2 rounded-2xl bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all hover:scale-105"
         >
           {{ t('home.ecosystem.earlyTester') }}
         </a>
