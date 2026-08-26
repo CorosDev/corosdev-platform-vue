@@ -68,6 +68,14 @@ const status = ref<Status>('idle')
 // explanation of why a consumed token needs an explicit reset.
 const turnstileWidget = ref<{ reset: () => void } | null>(null)
 
+// Turnstile is wired up end-to-end but intentionally dormant: CorosDev opted
+// for the invisible honeypot instead of a visible captcha. With no
+// NUXT_PUBLIC_TURNSTILE_SITE_KEY configured the widget is not rendered at
+// all, so no Cloudflare script or iframe is requested — the integration only
+// wakes up if the key is ever set (server/utils/turnstile.ts mirrors this,
+// skipping verification while NUXT_TURNSTILE_SECRET_KEY is unset).
+const turnstileEnabled = computed(() => !!useRuntimeConfig().public.turnstile?.siteKey)
+
 const title = computed(() => t(`ctaDrawer.title.${context.value}`))
 const subtitle = computed(() => t(`ctaDrawer.subtitle.${context.value}`))
 
@@ -270,7 +278,7 @@ onBeforeUnmount(() => {
 
             <!-- Cloudflare Turnstile: token verified server-side in
                  subscribe.post.ts via assertTurnstileToken(). -->
-            <div class="mb-5 flex justify-center">
+            <div v-if="turnstileEnabled" class="mb-5 flex justify-center">
               <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 

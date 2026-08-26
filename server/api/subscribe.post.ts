@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       email,
       listId: brevoCtaListId,
       attributes: {
-        FIRSTNAME: name,
+        NOMBRE: name,
         INTEREST: role,
         MESSAGE: message,
         SOURCE: `cta_drawer_${context}`,
