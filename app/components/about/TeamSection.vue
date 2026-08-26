@@ -6,9 +6,8 @@ interface MemberMeta {
   name: string
   role: string
   /**
-   * Placeholder ("#") until real profile URLs are provided — every card
-   * still renders as a clickable link so swapping these in later is a
-   * one-line data change, not a template change.
+   * Public LinkedIn profile. Emerson has no personal profile on file yet, so
+   * his points at linkedin.com itself — swap it in here when it exists.
    */
   linkedinUrl: string
 }
@@ -21,20 +20,35 @@ interface MemberMeta {
 // team following. John Vanegas (formerly CIO) was removed — Emerson Medina
 // is now the sole CIO.
 const teamMeta: MemberMeta[] = [
-  { id: 'carlos', name: 'Carlos Hernandez', role: 'CEO', linkedinUrl: '#' },
-  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: '#' },
-  { id: 'kriscia', name: 'Kriscia Cornejo', role: 'CFO', linkedinUrl: '#' },
-  { id: 'arturo', name: 'Arturo Guzman', role: 'COO', linkedinUrl: '#' },
-  { id: 'jafet', name: 'Jafet Mourra', role: 'CPO', linkedinUrl: '#' },
-  { id: 'salvador', name: 'Salvador Reynaud', role: 'CMO', linkedinUrl: '#' },
-  { id: 'jeremy', name: 'Jeremy Rápalo', role: 'CCO', linkedinUrl: '#' },
-  { id: 'emerson', name: 'Emerson Medina', role: 'CIO', linkedinUrl: '#' },
+  { id: 'carlos', name: 'Carlos Hernandez', role: 'CEO', linkedinUrl: 'https://www.linkedin.com/in/carlos-hernandez-zuniga-b030731a5/' },
+  { id: 'douglas', name: 'Douglas Pineda', role: 'CTO', linkedinUrl: 'https://www.linkedin.com/in/douglaspinedarojas/' },
+  { id: 'kriscia', name: 'Kriscia Cornejo', role: 'CFO', linkedinUrl: 'https://www.linkedin.com/in/kriscia-cornejo-616454395/' },
+  { id: 'arturo', name: 'Arturo Guzman', role: 'COO', linkedinUrl: 'https://www.linkedin.com/in/arturoguzmanpaz/' },
+  { id: 'jafet', name: 'Jafet Mourra', role: 'CPO', linkedinUrl: 'https://www.linkedin.com/in/jafet-mourra-3b128a2b1/' },
+  { id: 'salvador', name: 'Salvador Reynaud', role: 'CMO', linkedinUrl: 'https://www.linkedin.com/in/salvadorreynaud/' },
+  { id: 'jeremy', name: 'Jeremy Rápalo', role: 'CCO', linkedinUrl: 'https://www.linkedin.com/in/jeremy-r%C3%A1palo-394949283/' },
+  { id: 'emerson', name: 'Emerson Medina', role: 'CIO', linkedinUrl: 'https://www.linkedin.com' },
 ]
+
+/**
+ * A usable profile is a linkedin.com/in/<slug> URL. A bare
+ * "https://www.linkedin.com" (or an empty/partial value) means "not published
+ * yet": that card renders as a plain, non-interactive tile instead of a link
+ * that dumps the visitor on LinkedIn's homepage while looking like it leads
+ * somewhere. These URLs are hand-maintained above, never user input, so a
+ * substring check is enough.
+ */
+function hasLinkedInProfile(url: string) {
+  const marker = 'linkedin.com/in/'
+  const at = url.indexOf(marker)
+  return at !== -1 && url.length > at + marker.length
+}
 
 const team = computed(() =>
   teamMeta.map((member) => ({
     ...member,
     description: t(`about.team.${member.id}_desc`),
+    hasProfile: hasLinkedInProfile(member.linkedinUrl),
   })),
 )
 </script>
@@ -57,14 +71,20 @@ const team = computed(() =>
            `grid-cols-4`/`grid-cols-2` + `gap-8` would have produced at each
            breakpoint, so this is a drop-in visual replacement, not a resize. -->
       <div class="flex flex-wrap justify-center gap-8">
-        <a
+        <component
+          :is="member.hasProfile ? 'a' : 'div'"
           v-for="member in team"
           :key="member.id"
-          :href="member.linkedinUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          :aria-label="t('about.team.linkedinAria', { name: member.name })"
-          class="group glass relative flex w-full cursor-pointer flex-col items-center rounded-3xl border border-white/5 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-neon-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-500 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+          :href="member.hasProfile ? member.linkedinUrl : undefined"
+          :target="member.hasProfile ? '_blank' : undefined"
+          :rel="member.hasProfile ? 'noopener noreferrer' : undefined"
+          :aria-label="member.hasProfile ? t('about.team.linkedinAria', { name: member.name }) : undefined"
+          class="group glass relative flex w-full flex-col items-center rounded-3xl border border-white/5 p-8 text-center transition-all duration-300 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+          :class="
+            member.hasProfile
+              ? 'cursor-pointer hover:-translate-y-1 hover:border-neon-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-500'
+              : ''
+          "
         >
           <!-- Corner badge, not inline with the name: the previous inline
                placement (icon in a flex row next to <h3>) was eating into the
@@ -73,6 +93,7 @@ const team = computed(() =>
                second line and knock every other card's role/description out
                of alignment with it. -->
           <svg
+            v-if="member.hasProfile"
             class="absolute right-4 top-4 h-4 w-4 text-white/30 transition-colors duration-300 group-hover:text-neon-300"
             fill="currentColor"
             viewBox="0 0 24 24"
@@ -86,7 +107,7 @@ const team = computed(() =>
           <h3 class="mb-1 text-xl font-bold text-white">{{ member.name }}</h3>
           <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-neon-500">{{ member.role }}</p>
           <p class="text-sm leading-relaxed text-white/50">{{ member.description }}</p>
-        </a>
+        </component>
       </div>
     </div>
   </section>

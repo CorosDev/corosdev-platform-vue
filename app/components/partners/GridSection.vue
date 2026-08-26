@@ -11,7 +11,7 @@ interface PartnerMeta {
 
 const partnerMeta: PartnerMeta[] = [
   { id: 'eiw', url: 'https://encryptedinfoweb.com/', logo: '/logos/partners/encryptedinfoweb.webp', lightBg: true },
-  { id: 'sbc', url: 'https://www.sbc.capital/', logo: '/logos/partners/sbc-capital.png', lightBg: true },
+  { id: 'sbc', url: 'https://www.sbc.capital/', logo: '/logos/partners/sbc-capital-square.png', lightBg: true },
   { id: 'audela', url: 'https://audeladedonnees.fr/', logo: '/logos/partners/audela.svg', lightBg: false },
   { id: 'nolim', url: 'https://www.nolimstudios.com/es', logo: '/logos/partners/nolim-studios.png', lightBg: true },
   { id: 'intellify', url: 'https://theintellify.com/', logo: '/logos/partners/the-intellify.svg', lightBg: false },

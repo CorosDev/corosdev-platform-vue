@@ -11,11 +11,13 @@
  * dashboard (Contacts → Settings → Contact Attributes) *before* this goes to
  * production — the API returns a 400 for any attribute name it doesn't
  * recognize:
+ *   - NOMBRE (text)   — this Brevo account renamed the built-in
+ *                      first-name attribute, so the payload must send
+ *                      NOMBRE, never FIRSTNAME
  *   - COMPANY (text)
  *   - INTEREST (text)
  *   - MESSAGE (text)
  *   - SOURCE (text)
- * (FIRSTNAME is one of Brevo's own built-in defaults, used for the name.)
  */
 interface UpsertBrevoContactInput {
   email: string

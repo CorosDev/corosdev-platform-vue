@@ -1,8 +1,9 @@
 /**
  * Server-side handler for FloatingCtaDrawer.vue's lighter-weight quick-
  * capture widget. `subscribeSchema` lives in shared/utils/leadSchemas.ts
- * (shared with contact.post.ts's `LEAD_INTEREST_OPTIONS`, so the two forms'
- * "how can we help" values can never drift apart).
+ * (its `role` enum is ECOSYSTEM_ROLE_OPTIONS — deliberately a different
+ * set from contact.post.ts's CONTACT_SERVICE_OPTIONS, since this drawer is
+ * the ecosystem/investor/tester funnel, not the B2B services one).
  *
  * Originally proxied a public Brevo `sibforms` form-embed URL (matching what
  * the legacy _legacy_html/cta-modal.js called directly from the browser);
@@ -39,7 +40,7 @@ export default defineEventHandler(async (event) => {
       email,
       listId: brevoCtaListId,
       attributes: {
-        FIRSTNAME: name,
+        NOMBRE: name,
         INTEREST: role,
         MESSAGE: message,
         SOURCE: `cta_drawer_${context}`,

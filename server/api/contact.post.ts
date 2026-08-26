@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
       email,
       listId: brevoContactListId,
       attributes: {
-        FIRSTNAME: name,
+        NOMBRE: name,
         COMPANY: company,
         INTEREST: interest,
         MESSAGE: message,
