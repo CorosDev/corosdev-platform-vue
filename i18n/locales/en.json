@@ -220,6 +220,31 @@
       "startupkitchen_name": "Startup Kitchen",
       "startupkitchen_desc": "Innovation and venture building ecosystem for early-stage product."
     },
+    "process": {
+      "label": "How we work",
+      "title_1": "What happens when",
+      "title_span": "you write to us",
+      "subtitle": "No forms landing in a shared inbox, no generic discovery calls. This is the actual path a request takes.",
+      "steps": {
+        "triage_title": "Technical triage",
+        "triage_desc": "An engineer reviews your request, validates the feasibility of the stack you propose, and confirms team availability.",
+        "call_title": "Deep-dive call",
+        "call_desc": "A technical session to understand the real scope, the constraints you already have, and the criteria you will measure success by.",
+        "packet_title": "Documentation packet",
+        "packet_desc": "You receive the proposed team composition, timeline estimates, and the identified risk matrix, in writing."
+      },
+      "faq": {
+        "label": "Frequently asked questions",
+        "ip_q": "Who owns the code and the intellectual property?",
+        "ip_a": "100% of the intellectual property and the code transfers to your company. CorosDev retains no rights over what we build for you.",
+        "response_q": "How quickly do you answer a request?",
+        "response_a": "We reply to every request within 24 business hours. Your message is read by an engineer, not a sales intermediary, so the first reply already comes with concrete technical questions.",
+        "engagement_q": "What engagement models do you offer?",
+        "engagement_a": "We work through dedicated engineering pods, fixed-scope product sprints, and reinforcement of existing teams. The model is defined in the deep-dive call, based on the scope and pace you need.",
+        "nearshore_q": "How does the nearshore model work?",
+        "nearshore_a": "Our engineering centers in Honduras operate in the same time zone as the US central region, with full working-day overlap. We add a presence in Prague for European coverage."
+      }
+    },
     "contact": {
       "h2": "Tell us what you're building",
       "sub": "Get a roadmap, estimate, and risk assessment in 72 hours.",
@@ -266,6 +291,22 @@
           "company": "Company name is too long.",
           "interest": "Select a service.",
           "message": "Message is too long."
+        },
+        "qualify": {
+          "title": "Help us prepare a better proposal?",
+          "desc": "Two optional details. They let us reach the call with context instead of asking you then.",
+          "budgetLabel": "Estimated investment range",
+          "profileLabel": "Company profile",
+          "profileStartup": "Early-stage startup",
+          "profileScaleup": "Growing scale-up",
+          "profileEnterprise": "Established company",
+          "profileAgency": "Agency or consultancy",
+          "submit": "Send context",
+          "submitting": "Sending...",
+          "skip": "Skip",
+          "successTitle": "Context received",
+          "successDesc": "Thank you. We will come to the conversation better prepared.",
+          "error": "Could not send. You can skip this step — your request is already registered."
         }
       }
     }

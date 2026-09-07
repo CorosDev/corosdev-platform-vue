@@ -39,6 +39,7 @@ useHead(() => ({
     <HomeSolutionsSection />
     <HomeTestimonialsSection />
     <HomeRecognitionSection />
+    <HomeProcessSection />
     <HomeContactSection />
   </div>
 </template>

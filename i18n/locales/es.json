@@ -220,6 +220,31 @@
       "startupkitchen_name": "Startup Kitchen",
       "startupkitchen_desc": "Ecosistema de innovación y venture building para producto en fase temprana."
     },
+    "process": {
+      "label": "Cómo trabajamos",
+      "title_1": "Qué pasa cuando",
+      "title_span": "nos escribes",
+      "subtitle": "Sin formularios que caen en un buzón compartido y sin llamadas de descubrimiento genéricas. Este es el recorrido real de una solicitud.",
+      "steps": {
+        "triage_title": "Triage técnico",
+        "triage_desc": "Un ingeniero revisa tu solicitud, valida la viabilidad del stack que planteas y confirma la disponibilidad de equipo.",
+        "call_title": "Llamada de profundización",
+        "call_desc": "Una sesión técnica para entender el alcance real, las restricciones que ya tienes y los criterios con los que medirás el éxito.",
+        "packet_title": "Paquete de documentación",
+        "packet_desc": "Recibes por escrito la composición de equipo propuesta, la estimación de tiempos y la matriz de riesgos identificados."
+      },
+      "faq": {
+        "label": "Preguntas frecuentes",
+        "ip_q": "¿Quién es dueño del código y la propiedad intelectual?",
+        "ip_a": "El 100% de la propiedad intelectual y del código se transfiere a tu empresa. CorosDev no retiene derechos sobre lo que construimos para ti.",
+        "response_q": "¿En cuánto tiempo responden una solicitud?",
+        "response_a": "Respondemos cada solicitud en menos de 24 horas hábiles. Tu mensaje lo lee un ingeniero, no un intermediario comercial, así que la primera respuesta ya llega con preguntas técnicas concretas.",
+        "engagement_q": "¿Qué modelos de contratación manejan?",
+        "engagement_a": "Trabajamos con pods de ingeniería dedicados, sprints de producto de alcance cerrado y refuerzo de equipos ya existentes. El modelo se define en la llamada de profundización, según el alcance y el ritmo que necesites.",
+        "nearshore_q": "¿Cómo funciona el modelo nearshore?",
+        "nearshore_a": "Nuestros centros de ingeniería en Honduras operan en la misma franja horaria que el centro de Estados Unidos, con solapamiento completo de jornada laboral. Sumamos presencia en Praga para cobertura europea."
+      }
+    },
     "contact": {
       "h2": "Cuéntanos qué estás construyendo",
       "sub": "Obtén una hoja de ruta, una cotización y una evaluación de riesgos en 72 horas.",
@@ -266,6 +291,22 @@
           "company": "El nombre de la empresa es demasiado largo.",
           "interest": "Selecciona un servicio.",
           "message": "El mensaje es demasiado largo."
+        },
+        "qualify": {
+          "title": "¿Nos ayudas a preparar mejor la propuesta?",
+          "desc": "Dos datos opcionales. Nos permiten llegar a la llamada con contexto en lugar de preguntártelo entonces.",
+          "budgetLabel": "Rango de inversión estimado",
+          "profileLabel": "Perfil de la empresa",
+          "profileStartup": "Startup en fase temprana",
+          "profileScaleup": "Scale-up en crecimiento",
+          "profileEnterprise": "Empresa consolidada",
+          "profileAgency": "Agencia o consultora",
+          "submit": "Enviar contexto",
+          "submitting": "Enviando...",
+          "skip": "Omitir",
+          "successTitle": "Contexto recibido",
+          "successDesc": "Gracias. Llegaremos a la conversación mejor preparados.",
+          "error": "No se pudo enviar. Puedes omitir este paso: tu solicitud ya está registrada."
         }
       }
     }

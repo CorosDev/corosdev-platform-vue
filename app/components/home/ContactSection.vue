@@ -202,6 +202,9 @@ async function handleSubmit() {
       method: 'POST',
       body: form,
     })
+    // Se captura antes de cualquier reset para que el paso 2 sepa a qué
+    // contacto de Brevo se está añadiendo el contexto.
+    qualifyEmail.value = form.email
     status.value = 'success'
   } catch {
     status.value = 'error'
@@ -209,10 +212,58 @@ async function handleSubmit() {
   }
 }
 
+/**
+ * Paso 2: cualificación opcional, ofrecida SÓLO tras un envío correcto.
+ *
+ * El correo se guarda aparte y no se lee de `form` porque `resetForm()` lo
+ * vacía — y este paso tiene que seguir sabiendo a qué contacto de Brevo
+ * pertenece incluso si el visitante abre otro formulario.
+ */
+const qualifyEmail = ref('')
+const qualifyForm = reactive({ budget: '' as BudgetRange | '', profile: '' as CompanyProfile | '', honeypot: '' })
+const qualifyStatus = ref<Status>('idle')
+const qualifyDismissed = ref(false)
+
+const profileLabelKeys: Record<CompanyProfile, string> = {
+  'Startup en fase temprana': 'home.contact.form.qualify.profileStartup',
+  'Scale-up en crecimiento': 'home.contact.form.qualify.profileScaleup',
+  'Empresa consolidada': 'home.contact.form.qualify.profileEnterprise',
+  'Agencia o consultora': 'home.contact.form.qualify.profileAgency',
+}
+
+const profileOptions = computed(() =>
+  COMPANY_PROFILE_OPTIONS.map((value) => ({ value, label: t(profileLabelKeys[value]) })),
+)
+
+/** El paso 2 sólo tiene sentido con ambos datos elegidos. */
+const canSubmitQualify = computed(() => !!qualifyForm.budget && !!qualifyForm.profile)
+
+async function submitQualify() {
+  if (!canSubmitQualify.value || qualifyStatus.value === 'submitting') return
+
+  qualifyStatus.value = 'submitting'
+
+  try {
+    await $fetch('/api/qualify', {
+      method: 'POST',
+      body: { ...qualifyForm, email: qualifyEmail.value },
+    })
+    qualifyStatus.value = 'success'
+  } catch {
+    // Un fallo aquí no es un lead perdido: el del paso 1 ya está guardado,
+    // y el copy del error lo dice explícitamente para que nadie reintente
+    // creyendo que su solicitud no llegó.
+    qualifyStatus.value = 'error'
+  }
+}
+
 function resetForm() {
   Object.assign(form, emptyForm())
   Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as ContactField])
   status.value = 'idle'
+  Object.assign(qualifyForm, { budget: '', profile: '', honeypot: '' })
+  qualifyStatus.value = 'idle'
+  qualifyDismissed.value = false
   turnstileWidget.value?.reset()
 }
 </script>
@@ -479,7 +530,128 @@ function resetForm() {
             </div>
             <h4 class="mt-5 text-xl font-bold text-white">{{ t('home.contact.form.successTitle') }}</h4>
             <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">{{ t('home.contact.form.successDesc') }}</p>
-            <button type="button" class="mt-6 text-xs font-semibold text-neon-300 hover:underline" @click="resetForm">
+
+            <!-- Paso 2: cualificación opcional. El lead del paso 1 ya está
+                 guardado, así que abandonar aquí no cuesta nada. -->
+            <form
+              v-if="qualifyStatus !== 'success' && !qualifyDismissed"
+              class="mt-8 w-full border-t border-white/10 pt-8 text-left"
+              novalidate
+              @submit.prevent="submitQualify"
+            >
+              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.title') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-white/50">{{ t('home.contact.form.qualify.desc') }}</p>
+
+              <fieldset class="mt-6">
+                <legend :class="FORM_LABEL_CLASS">{{ t('home.contact.form.qualify.budgetLabel') }}</legend>
+                <div class="mt-1 grid grid-cols-2 gap-2">
+                  <button
+                    v-for="range in BUDGET_RANGE_OPTIONS"
+                    :key="range"
+                    type="button"
+                    :aria-pressed="qualifyForm.budget === range"
+                    class="rounded-lg border px-3 py-2.5 text-xs font-bold tabular-nums transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+                    :class="
+                      qualifyForm.budget === range
+                        ? 'border-neon-500/50 bg-neon-500/15 text-neon-100'
+                        : 'border-white/10 bg-white/[0.02] text-white/55 hover:border-white/25 hover:text-white'
+                    "
+                    @click="qualifyForm.budget = range"
+                  >
+                    {{ range }}
+                  </button>
+                </div>
+              </fieldset>
+
+              <div class="mt-5">
+                <label for="qualify-profile" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.qualify.profileLabel') }}
+                </label>
+                <div class="relative">
+                  <select
+                    id="qualify-profile"
+                    v-model="qualifyForm.profile"
+                    name="profile"
+                    :class="[
+                      FORM_FIELD_CLASS,
+                      FORM_FIELD_IDLE_CLASS,
+                      FORM_SELECT_EXTRA_CLASS,
+                      { 'is-placeholder': !qualifyForm.profile },
+                    ]"
+                  >
+                    <option value="" disabled :class="FORM_OPTION_CLASS">
+                      {{ t('home.contact.form.servicePlaceholder') }}
+                    </option>
+                    <option
+                      v-for="option in profileOptions"
+                      :key="option.value"
+                      :value="option.value"
+                      :class="FORM_OPTION_CLASS"
+                    >
+                      {{ option.label }}
+                    </option>
+                  </select>
+                  <svg
+                    :class="FORM_SELECT_CHEVRON_CLASS"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    aria-hidden="true"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Honeypot: mismo patrón que el paso 1, validado en qualify.post.ts. -->
+              <div class="absolute left-[-9999px] opacity-0" aria-hidden="true">
+                <label for="qualify-website">Leave this field empty</label>
+                <input
+                  id="qualify-website"
+                  v-model="qualifyForm.honeypot"
+                  type="text"
+                  name="website"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="mt-6 flex items-center gap-4">
+                <button
+                  type="submit"
+                  :disabled="!canSubmitQualify || qualifyStatus === 'submitting'"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg bg-neon-500 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-brand-900 transition-all duration-300 ease-out-expo hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span v-if="qualifyStatus === 'submitting'" class="contact-spinner" aria-hidden="true" />
+                  {{
+                    qualifyStatus === 'submitting'
+                      ? t('home.contact.form.qualify.submitting')
+                      : t('home.contact.form.qualify.submit')
+                  }}
+                </button>
+                <button
+                  type="button"
+                  class="text-xs font-semibold text-white/45 transition-colors hover:text-white/70"
+                  @click="qualifyDismissed = true"
+                >
+                  {{ t('home.contact.form.qualify.skip') }}
+                </button>
+              </div>
+
+              <p v-if="qualifyStatus === 'error'" role="alert" class="mt-3 text-xs text-red-400">
+                {{ t('home.contact.form.qualify.error') }}
+              </p>
+            </form>
+
+            <div v-else-if="qualifyStatus === 'success'" class="mt-8 w-full border-t border-white/10 pt-8">
+              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.successTitle') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-white/50">
+                {{ t('home.contact.form.qualify.successDesc') }}
+              </p>
+            </div>
+
+            <button type="button" class="mt-8 text-xs font-semibold text-neon-300 hover:underline" @click="resetForm">
               {{ t('home.contact.form.sendAnother') }}
             </button>
           </div>
