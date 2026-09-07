@@ -20,7 +20,7 @@ const track = computed(() => [...testimonials.value, ...testimonials.value])
   <section id="testimonials" class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto mb-8 max-w-7xl px-6 md:mb-16">
       <h2 class="text-4xl font-black text-white md:text-6xl">
-        {{ t('home.testimonials.h2_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.testimonials.h2_span') }}</span>
+        {{ t('home.testimonials.h2_1') }} <span class="gradient-text">{{ t('home.testimonials.h2_span') }}</span>
       </h2>
       <p class="mt-4 max-w-2xl text-lg text-white/50">
         {{ t('home.testimonials.sub') }}

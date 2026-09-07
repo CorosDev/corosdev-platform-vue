@@ -2,16 +2,8 @@
 const { t, locale, setLocale } = useI18n()
 const localePath = useLocalePath()
 
-const navLinks = computed(() => [
-  { key: 'home', label: t('nav.home'), to: localePath('/') },
-  { key: 'ecosystem', label: t('nav.ecosystem'), to: localePath('/ecosystem') },
-  { key: 'partners', label: t('nav.partners'), to: localePath('/partners') },
-  { key: 'services', label: t('nav.services'), to: localePath('/services') },
-  { key: 'about', label: t('nav.about'), to: localePath('/about') },
-  { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact` },
-])
-
-const bookingUrl = 'https://calendly.com/corosdev-info/30min'
+// Enlaces y agenda salen de useSiteNav(), compartido con AppFooter.
+const { navLinks, bookingUrl } = useSiteNav()
 
 const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
@@ -106,7 +98,7 @@ onUnmounted(() => {
         <div class="flex items-center gap-3">
           <button
             type="button"
-            class="rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300"
+            class="rounded-lg border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors duration-300 ease-out-expo hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
             :aria-label="t('nav.langToggleTo', { code: locale === 'es' ? 'EN' : 'ES' })"
             @click="toggleLocale"
           >
@@ -116,7 +108,7 @@ onUnmounted(() => {
             :href="bookingUrl"
             target="_blank"
             rel="noopener"
-            class="drop-shadow-glow inline-block rounded-xl bg-cobalt-500 px-2.5 py-1.5 text-xs font-semibold text-brand-900 transition-transform hover:scale-105 sm:px-4 sm:py-2 sm:text-sm"
+            class="inline-block rounded-lg bg-cobalt-500 px-2.5 py-1.5 text-xs font-semibold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900 sm:px-4 sm:py-2 sm:text-sm"
           >
             {{ t('nav.cta') }}
           </a>

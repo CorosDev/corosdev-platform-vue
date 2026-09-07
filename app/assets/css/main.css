@@ -23,11 +23,6 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
   --animate-float: float 5s ease-in-out infinite;
-  /* Pulso de atención para CTAs. Anima el resplandor, NO la opacidad del
-     elemento: Tailwind animate-pulse baja la opacidad a .5, lo que atenuaba
-     fondo y texto a la vez y hundía el contraste del CTA a 3.8:1 (bajo el
-     4.5:1 de AA) en mitad del ciclo. */
-  --animate-glow-pulse: glow-pulse 2.6s ease-in-out infinite;
   --animate-marquee: marquee 60s linear infinite;
 
   /* Brand typeface (CLAUDE.md §4) — self-hosted by @nuxt/fonts (nuxt.config.ts),
@@ -64,23 +59,6 @@
   }
 }
 
-@keyframes glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 25px rgb(31 127 255 / 0.35);
-  }
-  50% {
-    box-shadow: 0 0 45px rgb(31 127 255 / 0.7);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-glow-pulse {
-    animation: none;
-    box-shadow: 0 0 25px rgb(31 127 255 / 0.35);
-  }
-}
-
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -95,11 +73,6 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   @apply border border-white/10;
-}
-
-/* Neon glow used on primary CTAs and the logo. */
-@utility drop-shadow-glow {
-  filter: drop-shadow(0 0 20px rgb(31 127 255 / 0.45));
 }
 
 /* Soft ambient shadow for elevated cards. */

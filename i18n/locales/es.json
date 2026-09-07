@@ -12,7 +12,8 @@
     "langToggleTo": "Cambiar idioma a {code}"
   },
   "footer": {
-    "rights": "CorosDev. Todos los derechos reservados."
+    "rights": "CorosDev. Todos los derechos reservados.",
+    "navLabel": "Navegación del sitio"
   },
   "home": {
     "seo": {
@@ -223,8 +224,8 @@
       "title_span": "ecosistemas de innovación globales",
       "subtitle": "Programas de innovación, agencias de inversión y redes de fundadores que han evaluado y respaldado el trabajo de CorosDev.",
       "verified": "Verificado",
-      "forbes_name": "Forbes 30 Under 30",
-      "forbes_desc": "Reconocimiento al liderazgo fundador en la categoría de tecnología.",
+      "forbes_name": "Forbes Centroamérica",
+      "forbes_desc": "Reconocimiento editorial al liderazgo fundador en tecnología en la región.",
       "czechinvest_name": "CzechInvest",
       "czechinvest_desc": "Agencia de inversión y desarrollo empresarial de la República Checa.",
       "startupkitchen_name": "Startup Kitchen",

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const { open: openCtaDrawer } = useCtaDrawer()
 
 interface Venture {
   id: 'trd' | 'snapay' | 'vorzana'
@@ -32,7 +33,7 @@ const ventures = computed(() =>
           {{ t('home.ecosystem.label') }}
         </p>
         <h2 class="text-4xl font-black text-white md:text-6xl">
-          {{ t('home.ecosystem.title_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.ecosystem.title_span') }}</span>
+          {{ t('home.ecosystem.title_1') }} <span class="gradient-text">{{ t('home.ecosystem.title_span') }}</span>
         </h2>
         <p class="mt-4 max-w-2xl text-lg text-white/50">
           {{ t('home.ecosystem.subtitle') }}
@@ -46,14 +47,14 @@ const ventures = computed(() =>
           class="group glass relative flex flex-col gap-6 rounded-3xl border border-white/5 p-8 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-[0_30px_80px_rgba(31,127,255,0.18)]"
         >
           <div class="flex items-start justify-between">
-            <div class="animate-float flex h-16 w-32 items-center justify-start">
+            <div class="flex h-16 w-32 items-center justify-start">
               <NuxtImg
                 :src="venture.logo"
                 :alt="`${venture.name} logo`"
                 :width="venture.logoWidth"
                 :height="venture.logoHeight"
                 loading="lazy"
-                class="drop-shadow-glow h-16 w-auto max-w-full object-contain"
+                class="h-16 w-auto max-w-full object-contain"
               />
             </div>
             <span
@@ -78,18 +79,25 @@ const ventures = computed(() =>
         <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <p class="px-4 text-xs font-semibold uppercase tracking-widest text-white/50">
           {{ t('home.ecosystem.ctaText') }}
-          <a href="#contact" class="ml-1 text-neon-500 underline underline-offset-2">{{ t('home.ecosystem.ctaLink') }}</a>
+          <button
+            type="button"
+            class="ml-1 rounded text-neon-500 underline underline-offset-2 transition-colors hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            @click="openCtaDrawer('ecosystem')"
+          >
+            {{ t('home.ecosystem.ctaLink') }}
+          </button>
         </p>
         <div class="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
       <div class="mt-6 text-center md:mt-12">
-        <a
-          href="#contact"
-          class="animate-glow-pulse inline-flex items-center gap-2 rounded-2xl bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all hover:scale-105"
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-lg bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
+          @click="openCtaDrawer('ecosystem')"
         >
           {{ t('home.ecosystem.earlyTester') }}
-        </a>
+        </button>
       </div>
     </div>
   </section>
