@@ -333,6 +333,7 @@
       "h2_1": "Servicios que",
       "h2_span": "escalan",
       "sub": "Soluciones tecnológicas de élite diseñadas para adaptarse a la etapa única de tu negocio. Elige tu nivel de impacto.",
+      "featuredTag": "Más solicitado",
       "item1_tag": "01 / Innovación",
       "item1_title": "IA y automatización de flujos",
       "item1_desc": "Aumenta la eficiencia operativa en un 40% con agentes inteligentes e integraciones de GPT personalizadas para tus datos.",
@@ -475,12 +476,15 @@
       "roleTester": "Tester de Acceso Anticipado",
       "roleInvestor": "Inversor Ángel / VC",
       "rolePartner": "Socio Estratégico",
+      "roleServices": "¿Qué necesitas construir?",
       "message": "Cuéntanos sobre ti",
       "messagePlaceholder": "Cuéntanos brevemente sobre tu experiencia, fondo o interés...",
       "submit": "Aplicar al ecosistema",
+      "submitServices": "Solicitar propuesta",
       "submitting": "Enviando...",
       "successTitle": "¡Solicitud Recibida!",
       "successDesc": "¡Gracias! Nuestro equipo revisará tu perfil y te contactará pronto.",
+      "successDescServices": "Gracias. Un ingeniero revisará tu caso y te responderá con los siguientes pasos.",
       "error": "Hubo un problema. Por favor intenta de nuevo."
     },
     "close": "Cerrar"

@@ -44,6 +44,22 @@ export const ECOSYSTEM_ROLE_OPTIONS = [
 
 export type EcosystemRole = (typeof ECOSYSTEM_ROLE_OPTIONS)[number]
 
+/**
+ * El drawer flotante sirve a dos embudos distintos según el contexto con el
+ * que se abra, así que su campo `role` acepta ambos juegos de opciones: los
+ * roles de ecosistema cuando entra por el botón flotante o desde /ecosystem,
+ * y los servicios cuando lo abre un CTA de /services. Preguntarle a un CTO
+ * que pide una propuesta si es "Inversor Ángel / VC" rompe la conversación
+ * en la primera pregunta.
+ *
+ * Los dos juegos siguen siendo listas separadas y con significado propio;
+ * esta unión existe sólo para el endpoint, que recibe cualquiera de las dos
+ * y las distingue por el `context` que ya venía enviando en `SOURCE`.
+ */
+export const DRAWER_ROLE_OPTIONS = [...ECOSYSTEM_ROLE_OPTIONS, ...CONTACT_SERVICE_OPTIONS] as const
+
+export type DrawerRole = (typeof DRAWER_ROLE_OPTIONS)[number]
+
 // No `.min()`/`.email()` custom messages here on purpose — user-facing copy
 // belongs in i18n/locales/*.json, not baked into the schema in one language.
 // Both contact.post.ts and ContactSection.vue map a failing field to its own
@@ -73,7 +89,7 @@ export type ContactInput = z.infer<typeof contactSchema>
 export const subscribeSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.email().max(180),
-  role: z.enum(ECOSYSTEM_ROLE_OPTIONS),
+  role: z.enum(DRAWER_ROLE_OPTIONS),
   message: z.string().trim().max(2000).optional().default(''),
   context: z.enum(['general', 'ecosystem', 'services', 'partners']).optional().default('general'),
   honeypot: z.string().max(500).optional().default(''),
