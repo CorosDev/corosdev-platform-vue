@@ -3,15 +3,17 @@
  * Reconocimientos — bloque de autoridad B2B (modelo BairesDev).
  *
  * Preparada para recibir los sellos monocromáticos definitivos: cada
- * reconocimiento declara su `logo` en /public/images/logos/. Mientras ese
- * campo sea `null` se dibuja un glyph vectorial de reserva en currentColor
+ * reconocimiento declara su `logo` bajo /public/logos/, que es donde
+ * aterrizaron los assets y donde ya aplica la cabecera de caché inmutable
+ * del routeRule /logos/**. Mientras ese campo sea `null` se dibuja un glyph
+ * vectorial de reserva en currentColor
  * — deliberadamente geométrico y neutro, NUNCA una aproximación dibujada a
  * mano del logotipo real: un wordmark falso de una marca ajena es peor que
  * no tener logo. El nombre del reconocimiento siempre se renderiza como
  * texto, así que la tarjeta se lee igual de bien con o sin asset.
  *
  * Para activar un sello definitivo basta con poner su ruta en `logo` y sus
- * dimensiones intrínsecas en `width`/`height` — obligatorias para reservar
+ * dimensiones intrínsecas reales en `width`/`height` — obligatorias para reservar
  * la caja del elemento y no introducir CLS.
  *
  * Los sellos van forzados a monocromo blanco (`brightness-0 invert`)
@@ -35,6 +37,11 @@ interface Recognition {
 
 const recognitionMeta: Recognition[] = [
   {
+    // Sigue con el glyph de reserva a propósito. Los dos archivos subidos no
+    // sirven para este sello: Forbes30u30.webp NO tiene canal alfa (fondo
+    // sólido, así que el monocromo forzado lo convertiría en un rectángulo
+    // blanco) y ForbesCentroamerica_logo.svg es la marca de Forbes
+    // Centroamérica, que es un reconocimiento distinto del 30 Under 30.
     id: 'forbes',
     logo: null,
     width: 320,
@@ -44,17 +51,21 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'czechinvest',
-    logo: null,
-    width: 320,
-    height: 80,
+    logo: '/logos/CzechInvest_logo.svg',
+    width: 480,
+    height: 58,
     // Nodo hexagonal (red de inversión).
     placeholder: 'M12 2.8l7.5 4.4v9.6L12 21.2l-7.5-4.4V7.2L12 2.8zm0 5.6a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2z',
   },
   {
+    // WebP con canal alfa, no SVG: el monocromo forzado funciona igual
+    // (brightness-0 invert convierte la silueta en blanco) y @nuxt/image lo
+    // reescala desde 1080px, pero conviene sustituirlo por vectorial cuando
+    // exista — ver la nota del asset de Forbes más abajo.
     id: 'startupkitchen',
-    logo: null,
-    width: 320,
-    height: 80,
+    logo: '/logos/startupkitchen_logo.webp',
+    width: 1080,
+    height: 1080,
     // Módulo de lanzamiento.
     placeholder: 'M12 2.8c3.4 2.6 5.2 6.1 5.2 10l-2.4 2.6H9.2L6.8 12.8c0-3.9 1.8-7.4 5.2-10zm0 6.4a1.9 1.9 0 100 3.8 1.9 1.9 0 000-3.8zM9.6 18.2L8 21.2m6.4-3l1.6 3',
   },

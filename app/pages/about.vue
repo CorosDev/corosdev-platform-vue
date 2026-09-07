@@ -11,6 +11,11 @@ usePageSeo({
   <div>
     <AboutHeroSection />
     <AboutTeamSection />
+    <!-- Misma sección que cierra el argumento de autoridad en el home. Es
+         autocontenida y sin estado, así que montarla en las dos vistas no
+         duplica lógica: aquí acompaña al bloque de liderazgo, allí actúa
+         como prueba social justo antes del CTA. -->
+    <HomeRecognitionSection />
     <AboutCtaSection />
   </div>
 </template>

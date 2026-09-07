@@ -2,72 +2,96 @@
 /**
  * Snapay — vitrina del venture insignia, reconstruida como Bento Grid.
  *
- * Qué cambia respecto de la versión anterior y por qué:
- * - Las tres métricas (`10K+ pymes`, `12+ monedas`, `IA`) eran cifras sin
- *   respaldo verificable. Se sustituyen por CAPACIDADES del producto, que
- *   sí son comprobables contra el propio producto.
- * - El mockup es DOM puro, no una captura: cero bytes de imagen, cero CLS
- *   (no hay medio que cargue de forma asíncrona) y el texto queda indexable.
- *   Sus datos son de ejemplo y el propio panel lo declara en pantalla
- *   (`mockup.demoNote`) — nada aquí debe leerse como un dato real de Snapay.
- * - La interacción (cambiar de corredor) es la única animación de la sección
- *   junto al reveal de entrada: sin autoplay, sin timers, sin trabajo en el
- *   hilo principal mientras nadie interactúa.
+ * El mockup modela el flujo real del producto (factura de mesa → método de
+ * pago → confirmación) en DOM puro, no como captura: cero bytes de imagen,
+ * cero CLS y texto indexable. Sus datos son de ejemplo y el propio panel lo
+ * declara en pantalla — nada aquí debe leerse como un dato real de Snapay.
+ *
+ * Traducido a la paleta del sitio: superficie #0d1117, bordes #30363d y
+ * acento cobalto #1f7fff (neon-500). Los morados y verdes de las capturas
+ * originales quedan fuera por la directiva Anti-Slop.
+ *
+ * Los totales se DERIVAN de las líneas de la comanda en vez de estar
+ * escritos a mano. En las capturas de referencia los números no cuadraban
+ * (las líneas sumaban L860 pero el subtotal decía L1,030, y un "x4" a L140
+ * c/u totalizaba L140); un mockup con aritmética rota es exactamente lo que
+ * un CTO detecta en tres segundos. Calculándolos aquí no pueden divergir.
  */
 const { t, locale } = useI18n()
 
-type CorridorId = 'usd' | 'eur' | 'hnl'
-
-interface Corridor {
-  id: CorridorId
-  /** Código ISO 4217, renderizado como texto junto al monto. */
-  code: string
-  /** Monto de ejemplo. NO es un dato de negocio — ver `demoNote`. */
-  amount: number
-  reference: string
+interface LineItem {
+  /** Nombre de plato: dato de demostración, no se traduce. */
+  name: string
+  quantity: number
+  unitPrice: number
 }
 
-const corridors: Corridor[] = [
-  { id: 'usd', code: 'USD', amount: 1250, reference: 'TX-4F81-US' },
-  { id: 'eur', code: 'EUR', amount: 3480, reference: 'TX-9C20-EU' },
-  { id: 'hnl', code: 'HNL', amount: 86400, reference: 'TX-2B77-HN' },
+const items: LineItem[] = [
+  { name: 'Margherita Pizza', quantity: 2, unitPrice: 150 },
+  { name: 'Diet Coke', quantity: 2, unitPrice: 50 },
+  { name: 'Vegetarian Pizza', quantity: 1, unitPrice: 320 },
+  { name: 'Chocolate Cake', quantity: 1, unitPrice: 140 },
 ]
 
-const activeId = ref<CorridorId>('usd')
-const active = computed(() => corridors.find((corridor) => corridor.id === activeId.value) ?? corridors[0]!)
+const TAX_RATE = 0.15
+const TIP_RATE = 0.03
+
+const subtotal = computed(() => items.reduce((total, item) => total + item.quantity * item.unitPrice, 0))
+const taxes = computed(() => subtotal.value * TAX_RATE)
+const total = computed(() => subtotal.value + taxes.value)
+const tip = computed(() => subtotal.value * TIP_RATE)
+const totalPaid = computed(() => total.value + tip.value)
 
 /**
- * Intl formatea únicamente el número, nunca el símbolo de moneda: con
- * `style: 'currency'` la posición del símbolo y el espacio duro que Intl
- * inserta pueden diferir entre el ICU de Node y el del navegador, lo que
- * produciría un mismatch de hidratación sobre una cifra visible. El código
- * ISO se renderiza aparte, como texto plano.
+ * Intl formatea sólo el número; el símbolo "L" del lempira se antepone como
+ * texto. Con `style: 'currency'` la posición del símbolo y el espacio duro
+ * que Intl inserta difieren entre el ICU de Node y el del navegador, lo que
+ * daría un mismatch de hidratación sobre cifras visibles.
  */
-const formattedAmount = computed(() =>
-  new Intl.NumberFormat(locale.value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-    active.value.amount,
-  ),
+const amountFormatter = computed(
+  () => new Intl.NumberFormat(locale.value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
 )
 
-/**
- * Se incrementa en cada cambio de corredor y alimenta el `:key` del
- * pipeline: fuerza el remontaje de la lista para reiniciar su animación de
- * entrada. Alternar una clase no serviría — el navegador no reinicia una
- * animación CSS ya terminada sin un reflow forzado.
- */
-const runId = ref(0)
-
-function selectCorridor(id: CorridorId) {
-  if (id === activeId.value) return
-  activeId.value = id
-  runId.value += 1
+function money(value: number) {
+  return `L${amountFormatter.value.format(value)}`
 }
 
-const steps = computed(() => [
-  t('home.snapay.mockup.stepAuthorized'),
-  t('home.snapay.mockup.stepScreened'),
-  t('home.snapay.mockup.stepSettled'),
-])
+type Step = 'invoice' | 'method' | 'paid'
+
+const step = ref<Step>('invoice')
+
+type MethodId = 'full' | 'split' | 'items' | 'custom'
+
+interface PaymentMethod {
+  id: MethodId
+  icon: string
+}
+
+const methodMeta: PaymentMethod[] = [
+  { id: 'full', icon: 'M3 7.5h18v10.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 18V7.5zm0-1.5h18M7 15h4' },
+  { id: 'split', icon: 'M8.5 9.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm7 0a2.5 2.5 0 100-5 2.5 2.5 0 000-5zM3 19.5a5.5 5.5 0 0111 0M14 19.5a5.5 5.5 0 017-5.3' },
+  { id: 'items', icon: 'M9 5h9M9 12h9M9 19h9M4.5 5l1 1 2-2M4.5 12l1 1 2-2M4.5 19l1 1 2-2' },
+  { id: 'custom', icon: 'M12 6v12M9 9.5a2 2 0 012-2h2.5a2 2 0 010 4h-3a2 2 0 000 4H15' },
+]
+
+const selectedMethod = ref<MethodId>('full')
+
+const methods = computed(() =>
+  methodMeta.map((method) => ({
+    ...method,
+    title: t(`home.snapay.mockup.method_${method.id}_title`),
+    description: t(`home.snapay.mockup.method_${method.id}_desc`),
+  })),
+)
+
+function goTo(next: Step) {
+  step.value = next
+}
+
+function restart() {
+  selectedMethod.value = 'full'
+  step.value = 'invoice'
+}
 
 interface Capability {
   id: 'settlement' | 'currency' | 'api' | 'pci'
@@ -123,7 +147,7 @@ const capabilities = computed(() =>
       </div>
 
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
-        <!-- Celda mayor: mockup de producto en DOM puro. -->
+        <!-- Celda mayor: flujo de producto en DOM puro. -->
         <div v-reveal class="lg:col-span-7">
           <UiSpotlightCard :size="520" class="flex h-full flex-col rounded-2xl p-5 md:p-7">
             <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
@@ -152,85 +176,155 @@ const capabilities = computed(() =>
               </span>
             </div>
 
-            <div class="mt-5">
-              <p id="snapay-corridor-label" class="mb-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                {{ t('home.snapay.mockup.corridorLabel') }}
-              </p>
-              <div role="group" aria-labelledby="snapay-corridor-label" class="flex flex-wrap gap-2">
-                <button
-                  v-for="corridor in corridors"
-                  :key="corridor.id"
-                  type="button"
-                  :aria-pressed="corridor.id === activeId"
-                  class="rounded-md border px-3 py-1.5 text-xs font-bold tracking-wide transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            <!-- Pantalla del producto -->
+            <div class="mt-5 overflow-hidden rounded-xl border border-[#30363d] bg-[#0d1117]">
+              <div class="flex items-center justify-between gap-3 border-b border-[#30363d] px-5 py-4">
+                <p class="text-sm font-bold text-white">
+                  {{ t('home.snapay.mockup.venue') }}
+                  <span class="text-white/40">·</span>
+                  {{ t('home.snapay.mockup.table') }}
+                </p>
+                <span
+                  class="rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
                   :class="
-                    corridor.id === activeId
-                      ? 'border-neon-500/50 bg-neon-500/15 text-neon-100'
-                      : 'border-white/10 bg-white/[0.02] text-white/55 hover:border-white/25 hover:text-white'
+                    step === 'paid'
+                      ? 'bg-neon-500/15 text-neon-300'
+                      : 'bg-white/[0.06] text-white/50'
                   "
-                  @click="selectCorridor(corridor.id)"
                 >
-                  {{ corridor.code }}
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-5 rounded-xl border border-white/10 bg-brand-900/60 p-5" aria-live="polite">
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                    {{ t('home.snapay.mockup.merchantLabel') }}
-                  </p>
-                  <p class="mt-1 text-sm font-semibold text-white">{{ t('home.snapay.mockup.merchantValue') }}</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                    {{ t('home.snapay.mockup.referenceLabel') }}
-                  </p>
-                  <p class="mt-1 font-mono text-xs text-white/60">{{ active.reference }}</p>
-                </div>
+                  {{ step === 'paid' ? t('home.snapay.mockup.tabPaid') : t('home.snapay.mockup.tabPending') }}
+                </span>
               </div>
 
-              <div class="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-white/10 pt-5">
-                <div>
-                  <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                    {{ t('home.snapay.mockup.amountLabel') }}
-                  </p>
-                  <p class="mt-1.5 flex items-baseline gap-2">
-                    <span class="text-3xl font-black tabular-nums tracking-tight text-white md:text-4xl">
-                      {{ formattedAmount }}
-                    </span>
-                    <span class="text-sm font-bold text-white/45">{{ active.code }}</span>
-                  </p>
-                </div>
-                <div class="text-right">
-                  <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-                    {{ t('home.snapay.mockup.routeLabel') }}
-                  </p>
-                  <p class="mt-1.5 text-xs font-bold text-cobalt-300">
-                    {{ t(`home.snapay.corridors.${active.id}_route`) }}
-                  </p>
-                </div>
-              </div>
+              <div :key="step" class="screen p-5">
+                <!-- 1 · Factura -->
+                <template v-if="step === 'invoice'">
+                  <ul class="flex flex-col divide-y divide-[#30363d]">
+                    <li v-for="item in items" :key="item.name" class="flex items-start justify-between gap-4 py-3 first:pt-0">
+                      <span class="min-w-0">
+                        <span class="flex items-center gap-2">
+                          <span class="truncate text-sm font-semibold text-white">{{ item.name }}</span>
+                          <span class="shrink-0 rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white/50">
+                            x{{ item.quantity }}
+                          </span>
+                        </span>
+                        <span class="mt-0.5 block text-xs tabular-nums text-white/35">
+                          {{ money(item.unitPrice) }} {{ t('home.snapay.mockup.each') }}
+                        </span>
+                      </span>
+                      <span class="shrink-0 text-sm font-bold tabular-nums text-white">
+                        {{ money(item.quantity * item.unitPrice) }}
+                      </span>
+                    </li>
+                  </ul>
 
-              <ol :key="runId" class="mt-5 grid gap-2.5 border-t border-white/10 pt-5 sm:grid-cols-3">
-                <li
-                  v-for="(step, index) in steps"
-                  :key="step"
-                  class="pipeline-step flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5"
-                  :style="{ animationDelay: `${index * 110}ms` }"
-                >
-                  <span
-                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-neon-500/40 bg-neon-500/15 text-neon-300"
-                    aria-hidden="true"
+                  <dl class="mt-5 space-y-2 border-t border-[#30363d] pt-4">
+                    <div class="flex items-center justify-between">
+                      <dt class="text-xs text-white/45">{{ t('home.snapay.mockup.subtotal') }}</dt>
+                      <dd class="text-xs tabular-nums text-white/70">{{ money(subtotal) }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <dt class="text-xs text-white/45">{{ t('home.snapay.mockup.taxes') }}</dt>
+                      <dd class="text-xs tabular-nums text-white/70">{{ money(taxes) }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-[#30363d] pt-3">
+                      <dt class="text-sm font-bold text-white">{{ t('home.snapay.mockup.total') }}</dt>
+                      <dd class="text-lg font-black tabular-nums text-white">{{ money(total) }}</dd>
+                    </div>
+                  </dl>
+
+                  <button type="button" class="mockup-cta" @click="goTo('method')">
+                    {{ t('home.snapay.mockup.ctaMethod') }}
+                  </button>
+                </template>
+
+                <!-- 2 · Método de pago -->
+                <template v-else-if="step === 'method'">
+                  <div role="group" :aria-label="t('home.snapay.mockup.methodGroup')" class="flex flex-col gap-2.5">
+                    <button
+                      v-for="method in methods"
+                      :key="method.id"
+                      type="button"
+                      :aria-pressed="selectedMethod === method.id"
+                      class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+                      :class="
+                        selectedMethod === method.id
+                          ? 'border-neon-500/50 bg-neon-500/10'
+                          : 'border-[#30363d] bg-white/[0.02] hover:border-white/25'
+                      "
+                      @click="selectedMethod = method.id"
+                    >
+                      <span
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
+                        :class="
+                          selectedMethod === method.id
+                            ? 'border-neon-500/30 bg-neon-500/15 text-neon-300'
+                            : 'border-[#30363d] bg-white/[0.03] text-white/45'
+                        "
+                        aria-hidden="true"
+                      >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" :d="method.icon" />
+                        </svg>
+                      </span>
+                      <span class="min-w-0">
+                        <span class="block text-sm font-semibold text-white">{{ method.title }}</span>
+                        <span class="mt-0.5 block text-xs text-white/40">{{ method.description }}</span>
+                      </span>
+                    </button>
+                  </div>
+
+                  <button type="button" class="mockup-cta" @click="goTo('paid')">
+                    {{ t('home.snapay.mockup.ctaComplete') }}
+                  </button>
+                  <button
+                    type="button"
+                    class="mt-3 w-full text-center text-xs font-semibold text-white/40 transition-colors hover:text-white/70"
+                    @click="goTo('invoice')"
                   >
-                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  <span class="text-xs font-semibold text-white/75">{{ step }}</span>
-                </li>
-              </ol>
+                    {{ t('home.snapay.mockup.back') }}
+                  </button>
+                </template>
+
+                <!-- 3 · Confirmación -->
+                <template v-else>
+                  <div class="flex flex-col items-center text-center">
+                    <span
+                      class="flex h-14 w-14 items-center justify-center rounded-full border border-neon-500/30 bg-neon-500/15 text-neon-300"
+                      aria-hidden="true"
+                    >
+                      <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                    <p class="mt-4 text-lg font-black text-white">{{ t('home.snapay.mockup.paidTitle') }}</p>
+                    <p class="mt-1 text-xs text-white/45">{{ t('home.snapay.mockup.paidSubtitle') }}</p>
+                  </div>
+
+                  <dl class="mt-6 space-y-2 border-t border-[#30363d] pt-4">
+                    <div class="flex items-center justify-between">
+                      <dt class="text-xs text-white/45">{{ t('home.snapay.mockup.subtotal') }}</dt>
+                      <dd class="text-xs tabular-nums text-white/70">{{ money(subtotal) }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <dt class="text-xs text-white/45">{{ t('home.snapay.mockup.taxes') }}</dt>
+                      <dd class="text-xs tabular-nums text-white/70">{{ money(taxes) }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <dt class="text-xs text-white/45">{{ t('home.snapay.mockup.tip') }}</dt>
+                      <dd class="text-xs tabular-nums text-neon-300">{{ money(tip) }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-[#30363d] pt-3">
+                      <dt class="text-sm font-bold text-white">{{ t('home.snapay.mockup.totalPaid') }}</dt>
+                      <dd class="text-lg font-black tabular-nums text-white">{{ money(totalPaid) }}</dd>
+                    </div>
+                  </dl>
+
+                  <button type="button" class="mockup-cta" @click="restart()">
+                    {{ t('home.snapay.mockup.restart') }}
+                  </button>
+                </template>
+              </div>
             </div>
 
             <p class="mt-3 text-[11px] text-white/40">{{ t('home.snapay.mockup.demoNote') }}</p>
@@ -332,15 +426,37 @@ const capabilities = computed(() =>
 </template>
 
 <style scoped>
-/* Sólo se ejecuta al montar la lista, es decir al cambiar de corredor
-   (`:key="runId"`). `backwards` mantiene el estado inicial durante el
-   retardo escalonado, y anima únicamente `opacity`/`transform` — nada que
-   dispare layout. */
-.pipeline-step {
-  animation: pipeline-step 0.55s var(--ease-out-expo) backwards;
+/* Botón primario de la pantalla del mockup: se repite en los tres pasos y
+   vive aquí, no como utilidad global, porque pertenece al lenguaje visual
+   del dispositivo simulado, no al del sitio. */
+.mockup-cta {
+  margin-top: 1.25rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: var(--color-neon-500);
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-brand-900);
+  transition: background-color 0.3s var(--ease-out-expo);
 }
 
-@keyframes pipeline-step {
+.mockup-cta:hover {
+  background-color: var(--color-neon-300);
+}
+
+.mockup-cta:focus-visible {
+  outline: 2px solid var(--color-neon-300);
+  outline-offset: 2px;
+}
+
+/* Sólo se ejecuta al cambiar de paso (`:key="step"` remonta el bloque).
+   Anima únicamente opacity/transform: nada que dispare layout. */
+.screen {
+  animation: screen-in 0.4s var(--ease-out-expo);
+}
+
+@keyframes screen-in {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -348,7 +464,7 @@ const capabilities = computed(() =>
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pipeline-step {
+  .screen {
     animation: none;
   }
 }
