@@ -128,14 +128,44 @@
       "badge": "Un emprendimiento de CorosDev",
       "title_1": "El futuro de los pagos",
       "title_span": "para mercados emergentes",
-      "desc": "Infraestructura de pagos de nueva generación creada para pymes. Liquidaciones instantáneas, soporte multi-moneda y prevención de fraude con IA, democratizando las fintech sin fronteras.",
-      "stat1_value": "10K+",
-      "stat1_label": "Pymes registradas",
-      "stat2_value": "12+",
-      "stat2_label": "Monedas",
-      "stat3_value": "IA",
-      "stat3_label": "Prevención de fraude",
-      "cta": "Visita Snapay.ai →"
+      "desc": "Infraestructura de pagos de nueva generación creada para pymes: liquidaciones instantáneas, soporte multi-moneda y rieles cifrados bajo estándar PCI-DSS.",
+      "cta": "Visita Snapay.ai",
+      "mockup": {
+        "product": "Settlement Gateway",
+        "demo": "Demo",
+        "demoNote": "Interfaz de producto ilustrativa con datos de ejemplo.",
+        "corridorLabel": "Corredor de liquidación",
+        "corridorGroup": "Selecciona un corredor de liquidación",
+        "merchantLabel": "Comercio",
+        "merchantValue": "Comercio de demostración",
+        "referenceLabel": "Referencia",
+        "amountLabel": "Monto de la transacción",
+        "routeLabel": "Ruta",
+        "stepAuthorized": "Autorizada",
+        "stepScreened": "Verificación antifraude",
+        "stepSettled": "Liquidada",
+        "footerNote": "Rieles cifrados bajo estándar PCI-DSS",
+        "openPlatform": "Abrir plataforma"
+      },
+      "corridors": {
+        "usd_route": "Estados Unidos · ACH",
+        "eur_route": "Zona euro · SEPA",
+        "hnl_route": "Honduras · ACH local"
+      },
+      "capabilities": {
+        "settlement_title": "Liquidación Instantánea",
+        "settlement_desc": "Los fondos llegan al comercio dentro del mismo ciclo, sin ventanas de espera entre bancos.",
+        "currency_title": "Soporte Multi-Moneda",
+        "currency_desc": "Cobros y cuentas en varias divisas operando sobre un mismo balance.",
+        "api_title": "API-First Infrastructure",
+        "api_desc": "Cada capacidad del producto existe primero como API documentada y versionada.",
+        "pci_title": "PCI-DSS Standard",
+        "pci_desc": "Tokenización de tarjetas y cifrado de extremo a extremo bajo el estándar PCI-DSS."
+      },
+      "ctaCard": {
+        "title": "¿Te interesa Snapay?",
+        "desc": "Documentación técnica y arquitectura de la API."
+      }
     },
     "solutions": {
       "title_1": "Soluciones que",

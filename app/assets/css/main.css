@@ -16,6 +16,12 @@
   --color-cobalt-500: #1f7fff;
   --color-cobalt-700: #114a99;
 
+  /* Curva de salida del rediseño B2B. Tailwind v4 expone cualquier
+     `--ease-*` declarado aquí como utilidad (`ease-out-expo`), así que esta
+     es la única definición de la curva en todo el proyecto: arranque rápido
+     y frenado largo, el gesto de Stripe/Linear, sin el rebote de un spring. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   --animate-float: float 5s ease-in-out infinite;
   /* Pulso de atención para CTAs. Anima el resplandor, NO la opacidad del
      elemento: Tailwind animate-pulse baja la opacidad a .5, lo que atenuaba
@@ -117,4 +123,36 @@
   filter: blur(160px);
   opacity: 0.07;
   background: radial-gradient(circle at 50% 50%, rgb(31 127 255 / 1), transparent 60%);
+}
+
+/* Reveal on scroll (directiva `v-reveal`, app/plugins/reveal.ts).
+   El estado inicial se emite en el HTML del SSR vía `getSSRProps`, no al
+   hidratar: si se aplicara en `mounted` el contenido ya pintado parpadearía
+   al ocultarse. Por eso mismo NUNCA debe usarse sobre contenido above the
+   fold — retrasar su pintado hasta la hidratación degradaría el LCP.
+
+   Sin capas (`@layer`) a propósito: las reglas sin capa ganan a las de
+   cualquier capa, de modo que el override de motion reducida de abajo no
+   depende del orden en que Tailwind emita sus capas. */
+[data-reveal='out'] {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+[data-reveal='in'] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms),
+    transform 0.7s var(--ease-out-expo) var(--reveal-delay, 0ms);
+}
+
+/* Cubre también el caso en que el JS nunca llegue a ejecutarse: el estado
+   `out` del SSR queda anulado por CSS puro, nada se queda invisible. */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

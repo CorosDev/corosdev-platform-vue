@@ -128,14 +128,44 @@
       "badge": "A CorosDev Venture",
       "title_1": "The Future of Payments",
       "title_span": "for Emerging Markets",
-      "desc": "Next-generation payment infrastructure built for SMEs. Instant settlements, multi-currency support, and AI-powered fraud prevention — democratizing fintech across borders.",
-      "stat1_value": "10K+",
-      "stat1_label": "SMEs Onboarded",
-      "stat2_value": "12+",
-      "stat2_label": "Currencies",
-      "stat3_value": "AI",
-      "stat3_label": "Fraud Prevention",
-      "cta": "Visit Snapay.ai →"
+      "desc": "Next-generation payment infrastructure built for SMEs: instant settlement, multi-currency support, and encrypted rails under the PCI-DSS standard.",
+      "cta": "Visit Snapay.ai",
+      "mockup": {
+        "product": "Settlement Gateway",
+        "demo": "Demo",
+        "demoNote": "Illustrative product interface with sample data.",
+        "corridorLabel": "Settlement corridor",
+        "corridorGroup": "Select a settlement corridor",
+        "merchantLabel": "Merchant",
+        "merchantValue": "Demo merchant",
+        "referenceLabel": "Reference",
+        "amountLabel": "Transaction amount",
+        "routeLabel": "Route",
+        "stepAuthorized": "Authorized",
+        "stepScreened": "Fraud screening",
+        "stepSettled": "Settled",
+        "footerNote": "Encrypted rails under the PCI-DSS standard",
+        "openPlatform": "Open platform"
+      },
+      "corridors": {
+        "usd_route": "United States · ACH",
+        "eur_route": "Eurozone · SEPA",
+        "hnl_route": "Honduras · local ACH"
+      },
+      "capabilities": {
+        "settlement_title": "Instant Settlement",
+        "settlement_desc": "Funds reach the merchant within the same cycle, with no waiting windows between banks.",
+        "currency_title": "Multi-Currency Support",
+        "currency_desc": "Collections and accounts across several currencies running on a single balance.",
+        "api_title": "API-First Infrastructure",
+        "api_desc": "Every product capability ships first as a documented, versioned API.",
+        "pci_title": "PCI-DSS Standard",
+        "pci_desc": "Card tokenization and end-to-end encryption under the PCI-DSS standard."
+      },
+      "ctaCard": {
+        "title": "Interested in Snapay?",
+        "desc": "Technical documentation and API architecture."
+      }
     },
     "solutions": {
       "title_1": "Solutions that",
