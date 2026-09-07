@@ -223,10 +223,21 @@
     "contact": {
       "h2": "Cuéntanos qué estás construyendo",
       "sub": "Obtén una hoja de ruta, una cotización y una evaluación de riesgos en 72 horas.",
-      "emailLabel": "Correo",
-      "whatsappLabel": "WhatsApp",
       "location": "San Pedro Sula, Honduras · Praga, República Checa",
       "remote": "Remoto / Nearshore · Ingeniería global",
+      "channels": {
+        "label": "Canales directos",
+        "whatsapp_title": "WhatsApp",
+        "email_title": "Correo",
+        "ecosystem_title": "Ecosistema e inversión",
+        "ecosystem_value": "Tester, inversor o socio estratégico"
+      },
+      "commitments": {
+        "label": "Nuestro compromiso",
+        "item1": "Respondemos cada solicitud en menos de 24 horas hábiles.",
+        "item2": "Hablas directamente con ingeniería, no con un intermediario comercial.",
+        "item3": "NDA disponible antes de compartir cualquier detalle técnico."
+      },
       "form": {
         "nameLabel": "Nombre completo",
         "namePlaceholder": "Tu nombre completo",

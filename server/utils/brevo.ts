@@ -42,8 +42,23 @@ export async function upsertBrevoContact({ email, listId, attributes }: UpsertBr
   // `updateEnabled: true` is what makes this idempotent per email address —
   // without it, Brevo responds 400 ("Contact already exist") the second time
   // the same visitor submits, e.g. editing and resending an inquiry.
+  // Sin `timeout` este fetch no tiene tope: si Brevo se cuelga, la petición
+  // del visitante queda abierta hasta que la corte la plataforma y el
+  // spinner del formulario gira indefinidamente. 8s cubre de sobra la
+  // latencia real de la API (cientos de ms) y convierte una caída del
+  // proveedor en un error rápido y honesto en vez de en una interfaz
+  // aparentemente colgada.
+  //
+  // `retry: 1` cubre el fallo transitorio de red o el 502/503 puntual —
+  // ofetch reintenta por defecto sobre 408/409/425/429/500/502/503/504, y la
+  // llamada es idempotente gracias a `updateEnabled`, así que un reintento
+  // nunca duplica el contacto. Se deja en un solo reintento a propósito: más
+  // reintentos alargan justo lo que se intenta acotar.
   await $fetch('https://api.brevo.com/v3/contacts', {
     method: 'POST',
+    timeout: 8000,
+    retry: 1,
+    retryDelay: 300,
     headers: {
       'api-key': brevoApiKey,
       accept: 'application/json',

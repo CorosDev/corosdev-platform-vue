@@ -223,10 +223,21 @@
     "contact": {
       "h2": "Tell us what you're building",
       "sub": "Get a roadmap, estimate, and risk assessment in 72 hours.",
-      "emailLabel": "Email",
-      "whatsappLabel": "WhatsApp",
       "location": "San Pedro Sula, Honduras · Prague, Czech Republic",
       "remote": "Remote / Nearshore · Global Engineering",
+      "channels": {
+        "label": "Direct channels",
+        "whatsapp_title": "WhatsApp",
+        "email_title": "Email",
+        "ecosystem_title": "Ecosystem & investment",
+        "ecosystem_value": "Tester, investor, or strategic partner"
+      },
+      "commitments": {
+        "label": "Our commitment",
+        "item1": "We reply to every request within 24 business hours.",
+        "item2": "You talk directly to engineering, not to a sales intermediary.",
+        "item3": "NDA available before sharing any technical detail."
+      },
       "form": {
         "nameLabel": "Full name",
         "namePlaceholder": "Your full name",
