@@ -207,6 +207,19 @@
       "card6_name": "Velocity VC",
       "card6_role": "Portfolio"
     },
+    "recognition": {
+      "label": "Institutional validation",
+      "title_1": "Backed by",
+      "title_span": "global innovation ecosystems",
+      "subtitle": "Innovation programs, investment agencies, and founder networks that have assessed and backed the work of CorosDev.",
+      "verified": "Verified",
+      "forbes_name": "Forbes 30 Under 30",
+      "forbes_desc": "Founder leadership recognition in the technology category.",
+      "czechinvest_name": "CzechInvest",
+      "czechinvest_desc": "Investment and business development agency of the Czech Republic.",
+      "startupkitchen_name": "Startup Kitchen",
+      "startupkitchen_desc": "Innovation and venture building ecosystem for early-stage product."
+    },
     "contact": {
       "h2": "Tell us what you're building",
       "sub": "Get a roadmap, estimate, and risk assessment in 72 hours.",
