@@ -103,7 +103,7 @@ useHead(() => ({
       </div>
 
       <div v-reveal="160" class="mx-auto mt-12 max-w-3xl md:mt-16">
-        <h3 class="mb-5 text-[11px] font-bold uppercase tracking-[0.35em] text-white/40">
+        <h3 class="mb-5 text-[11px] font-bold uppercase tracking-[0.35em] text-white/50">
           {{ t('home.process.faq.label') }}
         </h3>
         <div class="flex flex-col gap-2.5">

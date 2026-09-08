@@ -24,7 +24,7 @@ export const FORM_LABEL_HINT_CLASS = 'font-normal text-white/50'
  * fighting over CSS source order (which class attribute order does NOT win).
  */
 export const FORM_FIELD_CLASS =
-  'w-full rounded-lg border bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:outline-none focus:ring-1'
+  'w-full rounded-lg border bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/10 focus:outline-none focus:ring-1'
 
 /** Resting + focus border for a valid field. */
 export const FORM_FIELD_IDLE_CLASS = 'border-white/15 focus:border-neon-500 focus:ring-neon-500'

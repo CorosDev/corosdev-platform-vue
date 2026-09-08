@@ -25,11 +25,12 @@ const year = new Date().getFullYear()
               alt="CorosDev"
               width="361"
               height="220"
+              sizes="70px"
               loading="lazy"
               :img-attrs="{ class: 'h-10 w-auto' }"
             />
           </NuxtLink>
-          <p class="mt-4 max-w-xs text-sm leading-relaxed text-white/45">
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
             {{ t('home.contact.location') }}
           </p>
         </div>
@@ -47,7 +48,7 @@ const year = new Date().getFullYear()
       </div>
 
       <div class="mt-10 border-t border-white/10 pt-6">
-        <p class="text-xs text-white/35">&copy; {{ year }} {{ t('footer.rights') }}</p>
+        <p class="text-xs text-white/50">&copy; {{ year }} {{ t('footer.rights') }}</p>
       </div>
     </div>
   </footer>

@@ -50,9 +50,9 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
           </div>
           <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
             <span>{{ t('home.hero.pill1') }}</span>
-            <span class="opacity-50">&bull;</span>
+            <span class="opacity-60" aria-hidden="true">&bull;</span>
             <span>{{ t('home.hero.pill2') }}</span>
-            <span class="opacity-50">&bull;</span>
+            <span class="opacity-60" aria-hidden="true">&bull;</span>
             <span>{{ t('home.hero.pill3') }}</span>
           </div>
         </div>

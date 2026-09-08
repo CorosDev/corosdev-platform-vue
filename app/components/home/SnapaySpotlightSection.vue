@@ -210,7 +210,7 @@ const capabilities = computed(() =>
                         <span class="flex-1 rounded-full bg-[#111827] px-3 py-1.5 text-center text-[11px] font-bold text-white">
                           {{ t('home.snapay.mockup.tabPending') }}
                         </span>
-                        <span class="flex-1 px-3 py-1.5 text-center text-[11px] font-bold text-[#9CA3AF]">
+                        <span class="flex-1 px-3 py-1.5 text-center text-[11px] font-bold text-[#6B7280]">
                           {{ t('home.snapay.mockup.tabPaid') }}
                         </span>
                       </div>
@@ -228,7 +228,7 @@ const capabilities = computed(() =>
                                 x{{ item.quantity }}
                               </span>
                             </span>
-                            <span class="mt-0.5 block text-[11px] tabular-nums text-[#9CA3AF]">
+                            <span class="mt-0.5 block text-[11px] tabular-nums text-[#6B7280]">
                               {{ money(item.unitPrice) }} {{ t('home.snapay.mockup.each') }}
                             </span>
                           </span>
@@ -352,7 +352,7 @@ const capabilities = computed(() =>
           </div>
 
           <div class="mt-5 flex flex-col items-center gap-2">
-            <p class="text-[11px] text-white/40">{{ t('home.snapay.mockup.demoNote') }}</p>
+            <p class="text-[11px] text-white/50">{{ t('home.snapay.mockup.demoNote') }}</p>
             <button
               v-if="step !== 'invoice'"
               type="button"

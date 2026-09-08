@@ -135,7 +135,7 @@ const engagements = computed(() =>
         </UiSpotlightCard>
       </div>
 
-      <p v-reveal class="mt-12 text-center text-sm text-white/40">
+      <p v-reveal class="mt-12 text-center text-sm text-white/50">
         {{ t('services.engagements.custom') }}
       </p>
     </div>

@@ -277,7 +277,7 @@ function resetForm() {
           </h2>
           <p class="mt-4 max-w-md text-base leading-relaxed text-white/55">{{ t('home.contact.sub') }}</p>
 
-          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
             {{ t('home.contact.channels.label') }}
           </p>
           <div class="flex flex-col gap-3">
@@ -302,7 +302,7 @@ function resetForm() {
                 </svg>
               </span>
               <span class="min-w-0 flex-1">
-                <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+                <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
                   {{ channel.title }}
                 </span>
                 <span class="mt-0.5 block truncate text-sm font-semibold text-white">{{ channel.value }}</span>
@@ -320,7 +320,7 @@ function resetForm() {
             </UiSpotlightCard>
           </div>
 
-          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
             {{ t('home.contact.commitments.label') }}
           </p>
           <ul class="flex flex-col gap-2.5">
@@ -339,7 +339,7 @@ function resetForm() {
             </li>
           </ul>
 
-          <p class="mt-10 border-t border-white/10 pt-5 text-xs text-white/35">
+          <p class="mt-10 border-t border-white/10 pt-5 text-xs text-white/50">
             {{ t('home.contact.location') }} &middot; {{ t('home.contact.remote') }}
           </p>
         </div>
@@ -632,7 +632,7 @@ function resetForm() {
                 </button>
                 <button
                   type="button"
-                  class="text-xs font-semibold text-white/45 transition-colors hover:text-white/70"
+                  class="text-xs font-semibold text-white/55 transition-colors hover:text-white/70"
                   @click="qualifyDismissed = true"
                 >
                   {{ t('home.contact.form.qualify.skip') }}

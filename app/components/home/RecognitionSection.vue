@@ -48,11 +48,11 @@ const recognitionMeta: Recognition[] = [
     logo: '/logos/ForbesCentroamerica_logo.svg',
     width: 319,
     height: 80,
-    // Fragmento de texto (#:~:text=) para que el navegador salte y resalte la
-    // mención concreta dentro de un artículo largo, en vez de dejar al
-    // visitante buscándola. Degrada solo: un navegador que no lo soporte
-    // simplemente abre el artículo por arriba.
-    url: 'https://forbescentroamerica.com/2026/07/07/estos-son-los-30-under-30-forbes-centroamerica-2026/#:~:text=Carlos%20Daniel%20Hernandez%20Zuniga',
+    // Fragmento de texto con RANGO (#:~:text=inicio,fin) para que el
+    // navegador salte y resalte el párrafo completo de Carlos dentro de un
+    // artículo largo, no sólo la primera coincidencia de su nombre. Degrada
+    // solo: un navegador que no lo soporte abre el artículo por arriba.
+    url: 'https://forbescentroamerica.com/2026/07/07/estos-son-los-30-under-30-forbes-centroamerica-2026/#:~:text=Carlos%20Daniel%20Hernandez%20Zuniga,ecommerce%20automotriz.',
     span: 'lg:col-span-4',
   },
   {
@@ -206,7 +206,7 @@ const recognitions = computed(() =>
             />
             <svg
               v-else-if="recognition.placeholder"
-              class="h-10 w-10 text-white/45 transition-colors duration-500 ease-out-expo group-hover/spot:text-white/80"
+              class="h-10 w-10 text-white/55 transition-colors duration-500 ease-out-expo group-hover/spot:text-white/80"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -221,7 +221,7 @@ const recognitions = computed(() =>
           <p class="mt-2 flex-1 text-sm leading-relaxed text-white/50">{{ recognition.description }}</p>
 
           <div class="mt-6 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+            <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
               {{ recognition.kind }}
             </span>
             <span
