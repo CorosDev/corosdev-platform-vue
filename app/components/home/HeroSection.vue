@@ -17,11 +17,12 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
 </script>
 
 <template>
-  <section class="relative pb-12 pt-44 sm:pb-20 sm:pt-36">
+  <section v-vanish class="relative pb-12 pt-44 sm:pb-20 sm:pt-36">
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-center gap-12 md:grid-cols-2">
-        <!-- Copy -->
-        <div>
+        <!-- Copy — tilt magnético aislado a esta columna: el globo WebGL de la
+             derecha ya es un objeto 3D interactivo y no debe inclinarse. -->
+        <div v-tilt="5">
           <p class="text-sm font-medium uppercase tracking-wide text-white opacity-90">
             {{ t('home.hero.tag') }}
           </p>
