@@ -58,8 +58,8 @@ const recognitionMeta: Recognition[] = [
   {
     id: 'truesdays',
     logo: '/logos/TRUESDAYS_logo.webp',
-    width: 600,
-    height: 300,
+    width: 577,
+    height: 167,
     url: 'https://www.linkedin.com/posts/truesdays_truesdays-startupcommunity-openmic-activity-7394366760600117248-x98x',
     span: 'lg:col-span-4',
   },
@@ -81,9 +81,9 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'businessshow',
-    logo: '/logos/MiamiBusinessShow_logo.webp',
-    width: 4320,
-    height: 4320,
+    logo: '/logos/MiamiBusinessShow_logo.svg',
+    width: 1095,
+    height: 1095,
     url: null,
     span: 'lg:col-span-6',
   },
@@ -103,13 +103,14 @@ const recognitionMeta: Recognition[] = [
  * objetivo A, la altura es sqrt(A / r). El área objetivo está calibrada
  * sobre cómo se veía el wordmark de Forbes, que es la referencia pedida.
  *
- * Los topes evitan los dos extremos degenerados: un wordmark muy alargado
- * quedaría demasiado fino para leerse, y una marca cuadrada crecería hasta
- * dominar la tarjeta.
+ * Los topes existen sólo para los extremos degenerados (un wordmark
+ * larguísimo quedaría ilegible de fino, una marca cuadrada crecería hasta
+ * dominar la tarjeta). Con los archivos actuales ninguno recorta la altura
+ * ideal salvo CzechInvest, que roza el suelo por 0.4px.
  */
 const TARGET_LOGO_AREA = 4600
 const MIN_LOGO_HEIGHT = 24
-const MAX_LOGO_HEIGHT = 60
+const MAX_LOGO_HEIGHT = 68
 
 const recognitions = computed(() =>
   recognitionMeta.map((recognition) => {
@@ -124,10 +125,8 @@ const recognitions = computed(() =>
       name: t(`home.recognition.${recognition.id}_name`),
       description: t(`home.recognition.${recognition.id}_desc`),
       kind: t(`home.recognition.${recognition.id}_kind`),
-      // Nombre distinto de `height` a propósito: ese campo es la dimensión
-      // INTRÍNSECA del archivo y NuxtImg la necesita intacta para deducir la
-      // relación de aspecto y pedirle a IPX el reescalado correcto.
       displayHeight,
+      displayWidth: Math.round(displayHeight * aspect),
     }
   }),
 )
@@ -173,19 +172,25 @@ const recognitions = computed(() =>
           ]"
         >
           <!-- Alto fijo del contenedor: reserva la caja pase lo que pase con
-               el sello, así que la altura calculada de cada logo no puede
-               introducir CLS. -->
-          <div class="flex h-16 items-center">
+               el sello, así que la altura calculada no puede introducir CLS.
+
+               A NuxtImg se le pasan las dimensiones de RENDER, no las
+               intrínsecas del archivo: con las intrínsecas, IPX servía cada
+               sello a tamaño completo (s_1080x1080 para pintarlo a 68px)
+               porque es de esas medidas de donde deduce qué recorte pedir.
+               Las de render conservan exactamente la misma relación de
+               aspecto — se derivan de ella — y además dejan que @nuxt/image
+               emita el srcset 2x correcto para pantallas de alta densidad. -->
+          <div class="flex h-20 items-center">
             <NuxtImg
               v-if="recognition.logo"
               :src="recognition.logo"
               alt=""
               aria-hidden="true"
-              :width="recognition.width"
-              :height="recognition.height"
+              :width="recognition.displayWidth"
+              :height="recognition.displayHeight"
               loading="lazy"
-              :style="{ height: `${recognition.displayHeight}px` }"
-              class="w-auto max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
+              class="h-auto w-auto max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
             />
             <svg
               v-else-if="recognition.placeholder"
