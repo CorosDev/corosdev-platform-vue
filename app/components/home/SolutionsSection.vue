@@ -24,7 +24,7 @@ const solutions = computed(() =>
 </script>
 
 <template>
-  <section id="solutions" class="relative overflow-hidden py-12 md:py-24">
+  <section id="solutions" v-vanish class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-8 md:mb-16">
         <h2 class="text-4xl font-black text-white md:text-6xl">
@@ -39,6 +39,7 @@ const solutions = computed(() =>
         <div
           v-for="solution in solutions"
           :key="solution.id"
+          v-tilt
           class="group glass soft relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/5 p-8 transition-all duration-500 hover:border-neon-500/50"
         >
           <div class="pointer-events-none absolute bottom-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">

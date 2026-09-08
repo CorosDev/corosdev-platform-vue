@@ -142,7 +142,7 @@ const capabilities = computed(() =>
 </script>
 
 <template>
-  <section id="snapay-spotlight" class="relative overflow-hidden py-16 md:py-28">
+  <section id="snapay-spotlight" v-vanish class="relative overflow-hidden py-16 md:py-28">
     <div
       class="pointer-events-none absolute inset-0"
       style="background: radial-gradient(ellipse 70% 55% at 50% 35%, rgb(31 127 255 / 0.06), transparent)"

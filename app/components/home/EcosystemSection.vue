@@ -44,6 +44,7 @@ const ventures = computed(() =>
         <div
           v-for="venture in ventures"
           :key="venture.id"
+          v-tilt
           class="group glass relative flex flex-col gap-6 rounded-3xl border border-white/5 p-8 transition-all duration-400 hover:-translate-y-1.5 hover:shadow-[0_30px_80px_rgba(31,127,255,0.18)]"
         >
           <div class="flex items-start justify-between">

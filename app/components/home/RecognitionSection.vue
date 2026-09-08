@@ -155,7 +155,7 @@ const recognitions = computed(() =>
 </script>
 
 <template>
-  <section id="recognition" class="relative overflow-hidden py-16 md:py-24">
+  <section id="recognition" v-vanish class="relative overflow-hidden py-16 md:py-24">
     <div
       class="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2"
       style="background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent)"
