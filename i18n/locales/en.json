@@ -126,16 +126,13 @@
       "earlyTester": "Want to be an early Tester? →"
     },
     "snapay": {
-      "badge": "A CorosDev Venture",
-      "title_1": "The Future of Payments",
-      "title_span": "for Emerging Markets",
-      "desc": "Next-generation payment infrastructure built for SMEs: instant settlement, multi-currency support, and encrypted rails under the PCI-DSS standard.",
+      "title_1": "Snapay.ai",
+      "title_span": "Instant payment collection infrastructure",
       "cta": "Visit Snapay.ai",
       "mockup": {
-        "product": "Payment terminal",
-        "demo": "Demo",
         "demoNote": "Illustrative product interface with sample data.",
         "venue": "Alamitos Restaurant",
+        "invoiceTitle": "Invoice",
         "table": "Table 23",
         "tabPending": "Pending invoice",
         "tabPaid": "Paid",
@@ -149,6 +146,7 @@
         "ctaComplete": "Complete payment",
         "back": "Back to invoice",
         "restart": "Restart demo",
+        "receipt": "Download receipt",
         "methodGroup": "Select a payment method",
         "method_full_title": "Full invoice",
         "method_full_desc": "Pay for every item",
@@ -158,10 +156,8 @@
         "method_items_desc": "Choose specific items",
         "method_custom_title": "Custom amount",
         "method_custom_desc": "Pay a specific amount",
-        "paidTitle": "Payment complete!",
-        "paidSubtitle": "Transaction approved",
-        "footerNote": "Encrypted rails under the PCI-DSS standard",
-        "openPlatform": "Open platform"
+        "paidTitle": "Payment complete",
+        "paidSubtitle": "Transaction approved"
       },
       "capabilities": {
         "settlement_title": "Instant Settlement",
@@ -172,10 +168,6 @@
         "api_desc": "Every product capability ships first as a documented, versioned API.",
         "pci_title": "PCI-DSS Standard",
         "pci_desc": "Card tokenization and end-to-end encryption under the PCI-DSS standard."
-      },
-      "ctaCard": {
-        "title": "Interested in Snapay?",
-        "desc": "Technical documentation and API architecture."
       }
     },
     "solutions": {

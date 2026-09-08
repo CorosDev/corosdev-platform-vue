@@ -89,15 +89,47 @@ const recognitionMeta: Recognition[] = [
   },
 ]
 
+/**
+ * Normalización óptica de los sellos.
+ *
+ * Igualar la ALTURA no iguala la presencia: estos cinco archivos van de 1:1
+ * (Startup Kitchen, The Business Show) a 8.26:1 (CzechInvest), así que a la
+ * misma altura el wordmark más apaisado ocupa ocho veces más masa visual que
+ * la marca cuadrada — que es exactamente el desequilibrio que se veía.
+ * Ninguno tiene margen transparente que recortar (los cinco miden 100% de
+ * contenido útil), de modo que no es un problema de assets.
+ *
+ * Se iguala el ÁREA en su lugar: para una relación de aspecto r y un área
+ * objetivo A, la altura es sqrt(A / r). El área objetivo está calibrada
+ * sobre cómo se veía el wordmark de Forbes, que es la referencia pedida.
+ *
+ * Los topes evitan los dos extremos degenerados: un wordmark muy alargado
+ * quedaría demasiado fino para leerse, y una marca cuadrada crecería hasta
+ * dominar la tarjeta.
+ */
+const TARGET_LOGO_AREA = 4600
+const MIN_LOGO_HEIGHT = 24
+const MAX_LOGO_HEIGHT = 60
+
 const recognitions = computed(() =>
-  recognitionMeta.map((recognition) => ({
-    ...recognition,
-    name: t(`home.recognition.${recognition.id}_name`),
-    description: t(`home.recognition.${recognition.id}_desc`),
-    kind: t(`home.recognition.${recognition.id}_kind`),
-    /** Los cuadrados se encajan en una caja fija; los apaisados sólo por alto. */
-    logoClass: recognition.width === recognition.height ? 'h-10 w-10' : 'h-9 w-auto',
-  })),
+  recognitionMeta.map((recognition) => {
+    const aspect = recognition.width / recognition.height
+    const displayHeight = Math.min(
+      MAX_LOGO_HEIGHT,
+      Math.max(MIN_LOGO_HEIGHT, Math.round(Math.sqrt(TARGET_LOGO_AREA / aspect))),
+    )
+
+    return {
+      ...recognition,
+      name: t(`home.recognition.${recognition.id}_name`),
+      description: t(`home.recognition.${recognition.id}_desc`),
+      kind: t(`home.recognition.${recognition.id}_kind`),
+      // Nombre distinto de `height` a propósito: ese campo es la dimensión
+      // INTRÍNSECA del archivo y NuxtImg la necesita intacta para deducir la
+      // relación de aspecto y pedirle a IPX el reescalado correcto.
+      displayHeight,
+    }
+  }),
 )
 </script>
 
@@ -140,7 +172,10 @@ const recognitions = computed(() =>
             recognition.url ? 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300' : '',
           ]"
         >
-          <div class="flex h-12 items-center">
+          <!-- Alto fijo del contenedor: reserva la caja pase lo que pase con
+               el sello, así que la altura calculada de cada logo no puede
+               introducir CLS. -->
+          <div class="flex h-16 items-center">
             <NuxtImg
               v-if="recognition.logo"
               :src="recognition.logo"
@@ -149,8 +184,8 @@ const recognitions = computed(() =>
               :width="recognition.width"
               :height="recognition.height"
               loading="lazy"
-              class="max-w-[180px] object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
-              :class="recognition.logoClass"
+              :style="{ height: `${recognition.displayHeight}px` }"
+              class="w-auto max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
             />
             <svg
               v-else-if="recognition.placeholder"

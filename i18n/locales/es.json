@@ -126,16 +126,13 @@
       "earlyTester": "¿Quieres ser tester de acceso anticipado? →"
     },
     "snapay": {
-      "badge": "Un emprendimiento de CorosDev",
-      "title_1": "El futuro de los pagos",
-      "title_span": "para mercados emergentes",
-      "desc": "Infraestructura de pagos de nueva generación creada para pymes: liquidaciones instantáneas, soporte multi-moneda y rieles cifrados bajo estándar PCI-DSS.",
+      "title_1": "Snapay.ai",
+      "title_span": "Infraestructura de cobros instantáneos",
       "cta": "Visita Snapay.ai",
       "mockup": {
-        "product": "Terminal de cobro",
-        "demo": "Demo",
         "demoNote": "Interfaz de producto ilustrativa con datos de ejemplo.",
         "venue": "Restaurante Alamitos",
+        "invoiceTitle": "Factura",
         "table": "Mesa 23",
         "tabPending": "Factura pendiente",
         "tabPaid": "Pagado",
@@ -149,6 +146,7 @@
         "ctaComplete": "Completar pago",
         "back": "Volver a la factura",
         "restart": "Reiniciar demo",
+        "receipt": "Descargar recibo",
         "methodGroup": "Selecciona un método de pago",
         "method_full_title": "Factura completa",
         "method_full_desc": "Paga todos los artículos",
@@ -158,10 +156,8 @@
         "method_items_desc": "Elige artículos específicos",
         "method_custom_title": "Monto personalizado",
         "method_custom_desc": "Paga una cantidad específica",
-        "paidTitle": "¡Pago completo!",
-        "paidSubtitle": "Transacción aprobada",
-        "footerNote": "Rieles cifrados bajo estándar PCI-DSS",
-        "openPlatform": "Abrir plataforma"
+        "paidTitle": "Pago completo",
+        "paidSubtitle": "Transacción aprobada"
       },
       "capabilities": {
         "settlement_title": "Liquidación Instantánea",
@@ -172,10 +168,6 @@
         "api_desc": "Cada capacidad del producto existe primero como API documentada y versionada.",
         "pci_title": "PCI-DSS Standard",
         "pci_desc": "Tokenización de tarjetas y cifrado de extremo a extremo bajo el estándar PCI-DSS."
-      },
-      "ctaCard": {
-        "title": "¿Te interesa Snapay?",
-        "desc": "Documentación técnica y arquitectura de la API."
       }
     },
     "solutions": {
