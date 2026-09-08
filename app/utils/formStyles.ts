@@ -24,7 +24,7 @@ export const FORM_LABEL_HINT_CLASS = 'font-normal text-white/50'
  * fighting over CSS source order (which class attribute order does NOT win).
  */
 export const FORM_FIELD_CLASS =
-  'w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 transition-all duration-200 focus:bg-white/10 focus:outline-none focus:ring-1'
+  'w-full rounded-lg border bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/50 transition-all duration-200 focus:bg-white/10 focus:outline-none focus:ring-1'
 
 /** Resting + focus border for a valid field. */
 export const FORM_FIELD_IDLE_CLASS = 'border-white/15 focus:border-neon-500 focus:ring-neon-500'
@@ -54,5 +54,10 @@ export const FORM_OPTION_CLASS = 'bg-slate-900 text-white'
 export const FORM_ERROR_TEXT_CLASS = 'mt-2 text-xs text-red-400'
 
 /** Primary submit button, including its disabled/loading treatment. */
+/**
+ * Radio al núcleo de 8px del sistema y sin `drop-shadow-glow`: el resplandor
+ * sobre un botón sólido es ornamento de plantilla, no jerarquía. El contraste
+ * ya lo da el relleno cobalto sobre el fondo oscuro.
+ */
 export const FORM_SUBMIT_CLASS =
-  'flex w-full items-center justify-center gap-2 rounded-xl bg-neon-500 px-5 py-4 text-sm font-bold uppercase tracking-wider text-brand-900 drop-shadow-glow transition-all duration-200 hover:bg-neon-300 disabled:cursor-not-allowed disabled:opacity-60'
+  'flex w-full items-center justify-center gap-2 rounded-lg bg-neon-500 px-5 py-4 text-sm font-bold uppercase tracking-wider text-brand-900 transition-all duration-200 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900 disabled:cursor-not-allowed disabled:opacity-60'

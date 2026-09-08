@@ -52,7 +52,7 @@ const ventures = computed(() =>
                   :width="venture.logoWidth"
                   :height="venture.logoHeight"
                   loading="lazy"
-                  class="drop-shadow-glow w-auto max-w-full object-contain"
+                  class="w-auto max-w-full object-contain"
                   :class="venture.logoClass"
                 />
               </div>
@@ -66,7 +66,7 @@ const ventures = computed(() =>
                   {{ venture.sector }}
                 </span>
                 <span
-                  class="animate-pulse rounded-lg bg-neon-500 px-3 py-1 text-xs font-bold uppercase tracking-widest text-brand-900 drop-shadow-glow"
+                  class="rounded-md bg-neon-500 px-3 py-1 text-xs font-bold uppercase tracking-widest text-brand-900"
                 >
                   {{ t('ecosystem.ventures.badge') }}
                 </span>

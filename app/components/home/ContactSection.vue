@@ -49,6 +49,78 @@ const interestOptions = computed(() =>
   CONTACT_SERVICE_OPTIONS.map((value) => ({ value, label: t(serviceLabelKeys[value]) })),
 )
 
+const { open: openCtaDrawer } = useCtaDrawer()
+
+/**
+ * Canales directos de la columna lateral. Sólo se listan vías que existen y
+ * están atendidas — un canal decorativo (una dirección genérica que nadie
+ * lee) es peor que un canal menos.
+ *
+ * El tercero no es un enlace: abre el drawer de ecosistema, que ya está
+ * conectado a Brevo con su propia lista. Es el embudo de inversores y
+ * partners, distinto del formulario de servicios que vive a la derecha.
+ */
+interface Channel {
+  id: 'whatsapp' | 'email' | 'ecosystem'
+  /** `null` ⇒ no navega: dispara el drawer. */
+  href: string | null
+  external: boolean
+  icon: string
+  /**
+   * Valor mostrado, literal cuando es un dato de contacto. Un correo o un
+   * teléfono no son texto traducible, y además vue-i18n lee la `@` de un
+   * email como sintaxis de mensaje enlazado (`@:clave`): meterlo en el JSON
+   * de locales rompe la compilación del idioma entero con un 500 en SSR.
+   * `null` ⇒ el valor sí sale de i18n.
+   */
+  value: string | null
+}
+
+const channelMeta: Channel[] = [
+  {
+    id: 'whatsapp',
+    href: 'https://wa.me/50431750453',
+    external: true,
+    value: '+504 3175-0453',
+    icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
+  },
+  {
+    id: 'email',
+    href: 'mailto:info@corosdev.com',
+    external: false,
+    value: 'info@corosdev.com',
+    icon: 'M3 6.75l9 6 9-6M4.5 5.25h15a1.5 1.5 0 011.5 1.5v10.5a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5V6.75a1.5 1.5 0 011.5-1.5z',
+  },
+  {
+    id: 'ecosystem',
+    href: null,
+    external: false,
+    value: null,
+    icon: 'M17.5 6.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 12a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm10.5 5.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7.2 10.9l5.2-3.1m0 8.4l-5.2-3.1',
+  },
+]
+
+const channels = computed(() =>
+  channelMeta.map((channel) => ({
+    ...channel,
+    title: t(`home.contact.channels.${channel.id}_title`),
+    value: channel.value ?? t(`home.contact.channels.${channel.id}_value`),
+  })),
+)
+
+function activateChannel(channel: Channel) {
+  // Los canales con href navegan solos; este handler existe sólo para el
+  // que no lo tiene.
+  if (channel.href) return
+  openCtaDrawer('ecosystem')
+}
+
+const commitments = computed(() => [
+  t('home.contact.commitments.item1'),
+  t('home.contact.commitments.item2'),
+  t('home.contact.commitments.item3'),
+])
+
 function emptyForm(): ContactForm {
   return {
     name: '',
@@ -130,6 +202,9 @@ async function handleSubmit() {
       method: 'POST',
       body: form,
     })
+    // Se captura antes de cualquier reset para que el paso 2 sepa a qué
+    // contacto de Brevo se está añadiendo el contexto.
+    qualifyEmail.value = form.email
     status.value = 'success'
   } catch {
     status.value = 'error'
@@ -137,35 +212,139 @@ async function handleSubmit() {
   }
 }
 
+/**
+ * Paso 2: cualificación opcional, ofrecida SÓLO tras un envío correcto.
+ *
+ * El correo se guarda aparte y no se lee de `form` porque `resetForm()` lo
+ * vacía — y este paso tiene que seguir sabiendo a qué contacto de Brevo
+ * pertenece incluso si el visitante abre otro formulario.
+ */
+const qualifyEmail = ref('')
+const qualifyForm = reactive({ budget: '' as BudgetRange | '', profile: '' as CompanyProfile | '', honeypot: '' })
+const qualifyStatus = ref<Status>('idle')
+const qualifyDismissed = ref(false)
+
+const profileLabelKeys: Record<CompanyProfile, string> = {
+  'Startup en fase temprana': 'home.contact.form.qualify.profileStartup',
+  'Scale-up en crecimiento': 'home.contact.form.qualify.profileScaleup',
+  'Empresa consolidada': 'home.contact.form.qualify.profileEnterprise',
+  'Agencia o consultora': 'home.contact.form.qualify.profileAgency',
+}
+
+const profileOptions = computed(() =>
+  COMPANY_PROFILE_OPTIONS.map((value) => ({ value, label: t(profileLabelKeys[value]) })),
+)
+
+/** El paso 2 sólo tiene sentido con ambos datos elegidos. */
+const canSubmitQualify = computed(() => !!qualifyForm.budget && !!qualifyForm.profile)
+
+async function submitQualify() {
+  if (!canSubmitQualify.value || qualifyStatus.value === 'submitting') return
+
+  qualifyStatus.value = 'submitting'
+
+  try {
+    await $fetch('/api/qualify', {
+      method: 'POST',
+      body: { ...qualifyForm, email: qualifyEmail.value },
+    })
+    qualifyStatus.value = 'success'
+  } catch {
+    // Un fallo aquí no es un lead perdido: el del paso 1 ya está guardado,
+    // y el copy del error lo dice explícitamente para que nadie reintente
+    // creyendo que su solicitud no llegó.
+    qualifyStatus.value = 'error'
+  }
+}
+
 function resetForm() {
   Object.assign(form, emptyForm())
   Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as ContactField])
   status.value = 'idle'
+  Object.assign(qualifyForm, { budget: '', profile: '', honeypot: '' })
+  qualifyStatus.value = 'idle'
+  qualifyDismissed.value = false
   turnstileWidget.value?.reset()
 }
 </script>
 <template>
   <section id="contact" class="py-10 md:py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <div class="grid items-center gap-10 md:grid-cols-2">
-        <div>
-          <h2 class="text-3xl font-bold md:text-5xl">{{ t('home.contact.h2') }}</h2>
-          <p class="mt-3 text-white/70">{{ t('home.contact.sub') }}</p>
-          <ul class="mt-6 space-y-3 text-white/80">
-            <li>
-              &bull; {{ t('home.contact.emailLabel') }}:
-              <a class="text-neon-500 hover:underline" href="mailto:info@corosdev.com">info@corosdev.com</a>
+      <div class="grid items-start gap-10 md:grid-cols-2 lg:gap-14">
+        <div v-reveal>
+          <h2 class="text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl">
+            {{ t('home.contact.h2') }}
+          </h2>
+          <p class="mt-4 max-w-md text-base leading-relaxed text-white/55">{{ t('home.contact.sub') }}</p>
+
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+            {{ t('home.contact.channels.label') }}
+          </p>
+          <div class="flex flex-col gap-3">
+            <UiSpotlightCard
+              v-for="channel in channels"
+              :key="channel.id"
+              :as="channel.href ? 'a' : 'button'"
+              :href="channel.href ?? undefined"
+              :type="channel.href ? undefined : 'button'"
+              :target="channel.external ? '_blank' : undefined"
+              :rel="channel.external ? 'noopener' : undefined"
+              :size="300"
+              class="group/channel flex w-full items-center gap-4 rounded-lg p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+              @click="activateChannel(channel)"
+            >
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-neon-500/20 bg-neon-500/10 text-neon-300"
+                aria-hidden="true"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" :d="channel.icon" />
+                </svg>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+                  {{ channel.title }}
+                </span>
+                <span class="mt-0.5 block truncate text-sm font-semibold text-white">{{ channel.value }}</span>
+              </span>
+              <svg
+                class="h-4 w-4 shrink-0 text-white/30 transition-transform duration-300 ease-out-expo group-hover/channel:translate-x-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </UiSpotlightCard>
+          </div>
+
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+            {{ t('home.contact.commitments.label') }}
+          </p>
+          <ul class="flex flex-col gap-2.5">
+            <li v-for="commitment in commitments" :key="commitment" class="flex items-start gap-2.5">
+              <svg
+                class="mt-0.5 h-4 w-4 shrink-0 text-neon-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.2"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-sm leading-relaxed text-white/60">{{ commitment }}</span>
             </li>
-            <li>
-              &bull; {{ t('home.contact.whatsappLabel') }}:
-              <a class="text-neon-500 hover:underline" href="https://wa.me/50431750453">+504 3175-0453</a>
-            </li>
-            <li>&bull; {{ t('home.contact.location') }}</li>
-            <li>&bull; {{ t('home.contact.remote') }}</li>
           </ul>
+
+          <p class="mt-10 border-t border-white/10 pt-5 text-xs text-white/50">
+            {{ t('home.contact.location') }} &middot; {{ t('home.contact.remote') }}
+          </p>
         </div>
 
-        <div class="glass rounded-2xl p-6 sm:p-8">
+        <UiSpotlightCard v-reveal="120" :size="560" class="rounded-2xl p-6 sm:p-8">
           <form v-if="status !== 'success'" novalidate @submit.prevent="handleSubmit">
             <div class="sm:grid sm:grid-cols-2 sm:gap-x-4">
               <div class="mb-5">
@@ -351,11 +530,132 @@ function resetForm() {
             </div>
             <h4 class="mt-5 text-xl font-bold text-white">{{ t('home.contact.form.successTitle') }}</h4>
             <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">{{ t('home.contact.form.successDesc') }}</p>
-            <button type="button" class="mt-6 text-xs font-semibold text-neon-300 hover:underline" @click="resetForm">
+
+            <!-- Paso 2: cualificación opcional. El lead del paso 1 ya está
+                 guardado, así que abandonar aquí no cuesta nada. -->
+            <form
+              v-if="qualifyStatus !== 'success' && !qualifyDismissed"
+              class="mt-8 w-full border-t border-white/10 pt-8 text-left"
+              novalidate
+              @submit.prevent="submitQualify"
+            >
+              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.title') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-white/50">{{ t('home.contact.form.qualify.desc') }}</p>
+
+              <fieldset class="mt-6">
+                <legend :class="FORM_LABEL_CLASS">{{ t('home.contact.form.qualify.budgetLabel') }}</legend>
+                <div class="mt-1 grid grid-cols-2 gap-2">
+                  <button
+                    v-for="range in BUDGET_RANGE_OPTIONS"
+                    :key="range"
+                    type="button"
+                    :aria-pressed="qualifyForm.budget === range"
+                    class="rounded-lg border px-3 py-2.5 text-xs font-bold tabular-nums transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+                    :class="
+                      qualifyForm.budget === range
+                        ? 'border-neon-500/50 bg-neon-500/15 text-neon-100'
+                        : 'border-white/10 bg-white/[0.02] text-white/55 hover:border-white/25 hover:text-white'
+                    "
+                    @click="qualifyForm.budget = range"
+                  >
+                    {{ range }}
+                  </button>
+                </div>
+              </fieldset>
+
+              <div class="mt-5">
+                <label for="qualify-profile" :class="FORM_LABEL_CLASS">
+                  {{ t('home.contact.form.qualify.profileLabel') }}
+                </label>
+                <div class="relative">
+                  <select
+                    id="qualify-profile"
+                    v-model="qualifyForm.profile"
+                    name="profile"
+                    :class="[
+                      FORM_FIELD_CLASS,
+                      FORM_FIELD_IDLE_CLASS,
+                      FORM_SELECT_EXTRA_CLASS,
+                      { 'is-placeholder': !qualifyForm.profile },
+                    ]"
+                  >
+                    <option value="" disabled :class="FORM_OPTION_CLASS">
+                      {{ t('home.contact.form.servicePlaceholder') }}
+                    </option>
+                    <option
+                      v-for="option in profileOptions"
+                      :key="option.value"
+                      :value="option.value"
+                      :class="FORM_OPTION_CLASS"
+                    >
+                      {{ option.label }}
+                    </option>
+                  </select>
+                  <svg
+                    :class="FORM_SELECT_CHEVRON_CLASS"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    aria-hidden="true"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Honeypot: mismo patrón que el paso 1, validado en qualify.post.ts. -->
+              <div class="absolute left-[-9999px] opacity-0" aria-hidden="true">
+                <label for="qualify-website">Leave this field empty</label>
+                <input
+                  id="qualify-website"
+                  v-model="qualifyForm.honeypot"
+                  type="text"
+                  name="website"
+                  tabindex="-1"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div class="mt-6 flex items-center gap-4">
+                <button
+                  type="submit"
+                  :disabled="!canSubmitQualify || qualifyStatus === 'submitting'"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg bg-neon-500 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-brand-900 transition-all duration-300 ease-out-expo hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <span v-if="qualifyStatus === 'submitting'" class="contact-spinner" aria-hidden="true" />
+                  {{
+                    qualifyStatus === 'submitting'
+                      ? t('home.contact.form.qualify.submitting')
+                      : t('home.contact.form.qualify.submit')
+                  }}
+                </button>
+                <button
+                  type="button"
+                  class="text-xs font-semibold text-white/55 transition-colors hover:text-white/70"
+                  @click="qualifyDismissed = true"
+                >
+                  {{ t('home.contact.form.qualify.skip') }}
+                </button>
+              </div>
+
+              <p v-if="qualifyStatus === 'error'" role="alert" class="mt-3 text-xs text-red-400">
+                {{ t('home.contact.form.qualify.error') }}
+              </p>
+            </form>
+
+            <div v-else-if="qualifyStatus === 'success'" class="mt-8 w-full border-t border-white/10 pt-8">
+              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.successTitle') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-white/50">
+                {{ t('home.contact.form.qualify.successDesc') }}
+              </p>
+            </div>
+
+            <button type="button" class="mt-8 text-xs font-semibold text-neon-300 hover:underline" @click="resetForm">
               {{ t('home.contact.form.sendAnother') }}
             </button>
           </div>
-        </div>
+        </UiSpotlightCard>
       </div>
     </div>
   </section>

@@ -8,7 +8,7 @@ const { t } = useI18n()
       <div class="mb-8 text-center md:mb-12">
         <h2 class="text-3xl font-black text-white md:text-5xl">
           {{ t('home.presentation.title_1') }}
-          <span class="gradient-text drop-shadow-glow">{{ t('home.presentation.title_span') }}</span>
+          <span class="gradient-text">{{ t('home.presentation.title_span') }}</span>
         </h2>
         <p class="mx-auto mt-4 max-w-2xl text-base text-white/50 md:text-lg">
           {{ t('home.presentation.desc') }}

@@ -11,12 +11,10 @@
  * widget's presence on every page).
  */
 
-type Context = 'general' | 'ecosystem' | 'services' | 'partners'
-
 interface CtaForm {
   name: string
   email: string
-  role: EcosystemRole
+  role: DrawerRole
   message: string
   /** Hidden bot trap — must stay empty for real submissions. */
   honeypot: string
@@ -36,8 +34,6 @@ interface SubscribeResponse {
 // This drawer is the ecosystem funnel (tester / investor / venture partner),
 // deliberately a different option set from the Contact section's B2B service
 // list — see ECOSYSTEM_ROLE_OPTIONS in shared/utils/leadSchemas.ts.
-const DEFAULT_ROLE: EcosystemRole = 'Tester de Acceso Anticipado'
-
 const { t } = useI18n()
 
 const roleLabelKeys: Record<EcosystemRole, string> = {
@@ -46,18 +42,51 @@ const roleLabelKeys: Record<EcosystemRole, string> = {
   'Socio Estratégico': 'ctaDrawer.form.rolePartner',
 }
 
-const roleOptions = computed(() =>
-  ECOSYSTEM_ROLE_OPTIONS.map((value) => ({ value, label: t(roleLabelKeys[value]) })),
-)
-
-function emptyForm(): CtaForm {
-  return { name: '', email: '', role: DEFAULT_ROLE, message: '', honeypot: '', turnstileToken: '' }
+// Mismas etiquetas que usa ContactSection.vue para su select de servicios:
+// es literalmente la misma pregunta, y duplicar las claves haría que las dos
+// superficies divergieran en cuanto alguien editara una.
+const serviceLabelKeys: Record<ContactService, string> = {
+  'Desarrollo de Software a Medida': 'home.contact.form.serviceSoftware',
+  'Soluciones de IA e Integración': 'home.contact.form.serviceAi',
+  'Aplicaciones Web y Móviles': 'home.contact.form.serviceApps',
+  Consultoría: 'home.contact.form.serviceAdvisory',
 }
 
-const isOpen = ref(false)
+// Abierto/cerrado y contexto viven en useCtaDrawer() para que cualquier
+// sección pueda invocar el drawer con su propio copy — ver el composable.
+const { isOpen, context, open, close } = useCtaDrawer()
+
+/**
+ * Abierto desde /services, el drawer deja de ser el embudo de ecosistema:
+ * cambian las opciones del select, la etiqueta del campo, el botón de envío
+ * y el mensaje de éxito. El título y el subtítulo ya cambiaban por contexto
+ * desde el port original — era el resto del formulario el que se quedaba
+ * hablando de testers e inversores.
+ */
+const isServicesFunnel = computed(() => context.value === 'services')
+
+const roleOptions = computed(() =>
+  isServicesFunnel.value
+    ? CONTACT_SERVICE_OPTIONS.map((value) => ({ value, label: t(serviceLabelKeys[value]) }))
+    : ECOSYSTEM_ROLE_OPTIONS.map((value) => ({ value, label: t(roleLabelKeys[value]) })),
+)
+
+function defaultRole(): DrawerRole {
+  return context.value === 'services' ? CONTACT_SERVICE_OPTIONS[0] : 'Tester de Acceso Anticipado'
+}
+
+function emptyForm(): CtaForm {
+  return { name: '', email: '', role: defaultRole(), message: '', honeypot: '', turnstileToken: '' }
+}
+
 const isButtonVisible = ref(false)
-const context = ref<Context>('general')
 const form = reactive<CtaForm>(emptyForm())
+
+/** Raíz del diálogo: la necesitan el foco inicial y el ciclo de tabulación. */
+const drawerEl = ref<HTMLElement | null>(null)
+
+/** Elemento que tenía el foco antes de abrir, para devolvérselo al cerrar. */
+let lastFocused: HTMLElement | null = null
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 const status = ref<Status>('idle')
@@ -79,17 +108,6 @@ const turnstileEnabled = computed(() => !!useRuntimeConfig().public.turnstile?.s
 const title = computed(() => t(`ctaDrawer.title.${context.value}`))
 const subtitle = computed(() => t(`ctaDrawer.subtitle.${context.value}`))
 
-function open(ctx: Context = 'general') {
-  context.value = ctx
-  status.value = 'idle'
-  Object.assign(form, emptyForm())
-  isOpen.value = true
-}
-
-function close() {
-  isOpen.value = false
-}
-
 async function handleSubmit() {
   if (status.value === 'submitting') return
   status.value = 'submitting'
@@ -103,6 +121,71 @@ async function handleSubmit() {
   } catch {
     status.value = 'error'
     turnstileWidget.value?.reset()
+  }
+}
+
+/**
+ * El reset del formulario cuelga de `isOpen` y no de un `open()` local
+ * porque el drawer ya no se abre sólo desde su botón: cualquier sección
+ * puede hacerlo vía useCtaDrawer(), y todas esas rutas deben encontrar el
+ * formulario limpio.
+ *
+ * Aquí vive también lo que le faltaba a un `role="dialog" aria-modal="true"`
+ * para comportarse como tal: mover el foco dentro al abrir, devolverlo al
+ * disparador al cerrar y bloquear el scroll del documento detrás.
+ */
+watch(isOpen, async (value) => {
+  if (!import.meta.client) return
+
+  if (value) {
+    lastFocused = document.activeElement as HTMLElement | null
+    status.value = 'idle'
+    Object.assign(form, emptyForm())
+    document.body.style.overflow = 'hidden'
+    await nextTick()
+    // Se enfoca el contenedor (tabindex="-1"), no el primer campo: enfocar
+    // un input abre el teclado del móvil de golpe sobre un panel que el
+    // visitante todavía no ha leído.
+    drawerEl.value?.focus()
+    return
+  }
+
+  document.body.style.overflow = ''
+  lastFocused?.focus()
+  lastFocused = null
+})
+
+/**
+ * Escape cierra, y Tab queda confinado dentro del diálogo. Sin este ciclo el
+ * foco se escapa al contenido de la página que hay detrás del overlay, que
+ * es justo lo que `aria-modal` promete al lector de pantalla que no ocurre.
+ */
+function handleKeydown(event: KeyboardEvent) {
+  if (!isOpen.value) return
+
+  if (event.key === 'Escape') {
+    close()
+    return
+  }
+
+  if (event.key !== 'Tab' || !drawerEl.value) return
+
+  const focusables = Array.from(
+    drawerEl.value.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]'),
+  ).filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1)
+
+  // `tabIndex !== -1` deja fuera el honeypot, que es un input real y
+  // enfocable por API aunque ningún visitante deba llegar a él tabulando.
+  const first = focusables[0]
+  const last = focusables[focusables.length - 1]
+  if (!first || !last) return
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
   }
 }
 
@@ -121,11 +204,16 @@ function handleScroll() {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('keydown', handleKeydown)
   handleScroll()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('keydown', handleKeydown)
+  // Si el componente se desmonta con el drawer abierto, el documento se
+  // quedaría bloqueado sin nadie que lo libere.
+  if (import.meta.client) document.body.style.overflow = ''
 })
 </script>
 
@@ -166,7 +254,15 @@ onBeforeUnmount(() => {
       enter-from-class="cta-drawer--hidden"
       leave-to-class="cta-drawer--hidden"
     >
-      <div v-if="isOpen" class="cta-drawer" role="dialog" aria-modal="true" :aria-label="title">
+      <div
+        v-if="isOpen"
+        ref="drawerEl"
+        class="cta-drawer"
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
+        :aria-label="title"
+      >
         <div class="flex items-start justify-between gap-4 border-b border-white/10 p-6">
           <div>
             <h3 class="text-xl font-bold tracking-tight text-white">{{ title }}</h3>
@@ -174,7 +270,7 @@ onBeforeUnmount(() => {
           </div>
           <button
             type="button"
-            class="rounded-full border border-white/10 p-2 text-white/70 transition-colors hover:border-neon-500 hover:text-neon-300"
+            class="rounded-lg border border-white/10 p-2 text-white/70 transition-colors hover:border-neon-500 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
             :aria-label="t('ctaDrawer.close')"
             @click="close"
           >
@@ -215,7 +311,9 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="mb-5">
-              <label for="cta-drawer-role" :class="FORM_LABEL_CLASS">{{ t('ctaDrawer.form.role') }}</label>
+              <label for="cta-drawer-role" :class="FORM_LABEL_CLASS">
+                {{ isServicesFunnel ? t('ctaDrawer.form.roleServices') : t('ctaDrawer.form.role') }}
+              </label>
               <!-- The relative wrapper hosts the custom chevron; the native arrow
                    is removed via appearance-none so it cannot render as a
                    dark-on-dark glyph depending on the OS/browser theme. -->
@@ -284,7 +382,13 @@ onBeforeUnmount(() => {
 
             <button type="submit" :disabled="status === 'submitting'" :class="FORM_SUBMIT_CLASS">
               <span v-if="status === 'submitting'" class="cta-spinner" aria-hidden="true" />
-              {{ status === 'submitting' ? t('ctaDrawer.form.submitting') : t('ctaDrawer.form.submit') }}
+              {{
+                status === 'submitting'
+                  ? t('ctaDrawer.form.submitting')
+                  : isServicesFunnel
+                    ? t('ctaDrawer.form.submitServices')
+                    : t('ctaDrawer.form.submit')
+              }}
             </button>
 
             <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-400">
@@ -299,7 +403,9 @@ onBeforeUnmount(() => {
               </svg>
             </div>
             <h4 class="mt-5 text-xl font-bold text-white">{{ t('ctaDrawer.form.successTitle') }}</h4>
-            <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">{{ t('ctaDrawer.form.successDesc') }}</p>
+            <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">
+              {{ isServicesFunnel ? t('ctaDrawer.form.successDescServices') : t('ctaDrawer.form.successDesc') }}
+            </p>
           </div>
         </div>
       </div>
@@ -334,7 +440,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-radius: 999px;
+  border-radius: 0.625rem;
   color: #ffffff;
   cursor: pointer;
   opacity: 0;

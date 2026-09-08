@@ -28,7 +28,7 @@ const solutions = computed(() =>
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-8 md:mb-16">
         <h2 class="text-4xl font-black text-white md:text-6xl">
-          {{ t('home.solutions.title_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.solutions.title_span') }}</span>
+          {{ t('home.solutions.title_1') }} <span class="gradient-text">{{ t('home.solutions.title_span') }}</span>
         </h2>
         <p class="mt-4 text-lg text-white/50">
           {{ t('home.solutions.subtitle') }}

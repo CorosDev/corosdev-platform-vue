@@ -12,7 +12,8 @@
     "langToggleTo": "Switch language to {code}"
   },
   "footer": {
-    "rights": "CorosDev. All rights reserved."
+    "rights": "CorosDev. All rights reserved.",
+    "navLabel": "Site navigation"
   },
   "home": {
     "seo": {
@@ -111,13 +112,13 @@
       "label": "Internal Ventures",
       "title_1": "Our",
       "title_span": "Ecosystem",
-      "subtitle": "Beyond client work—we build our own products. These are the ventures born inside CorosDev, each solving a real problem at scale.",
+      "subtitle": "Beyond client work, we build our own products. These are the ventures born inside CorosDev.",
       "badge": "Early Access",
-      "trd_desc": "Premium automotive accessories e-commerce platform built for performance enthusiasts across LATAM and North America. Curated catalog, fast logistics, and a seamless buying experience.",
+      "trd_desc": "Online store for automotive accessories with a curated catalog, aimed at the LATAM and North American market.",
       "trd_sector": "E-Commerce · Auto",
-      "snapay_desc": "A next-generation payment infrastructure for SMEs in emerging markets. Instant settlements, multi-currency support, and AI-powered fraud prevention - built to democratize fintech.",
+      "snapay_desc": "Payment collection infrastructure for merchants: instant settlement, multi-currency support, and encrypted rails under the PCI-DSS standard.",
       "snapay_sector": "Fintech · Payments",
-      "vorzana_desc": "An AI-powered business intelligence platform that transforms raw operational data into strategic insights. Custom dashboards, predictive analytics, and automated reporting at enterprise grade.",
+      "vorzana_desc": "Business intelligence platform: custom dashboards, analytics over operational data, and automated reporting.",
       "vorzana_sector": "AI · Analytics",
       "sectorLabel": "Sector",
       "ctaText": "Interested in partnering or investing?",
@@ -125,17 +126,49 @@
       "earlyTester": "Want to be an early Tester? →"
     },
     "snapay": {
-      "badge": "A CorosDev Venture",
-      "title_1": "The Future of Payments",
-      "title_span": "for Emerging Markets",
-      "desc": "Next-generation payment infrastructure built for SMEs. Instant settlements, multi-currency support, and AI-powered fraud prevention — democratizing fintech across borders.",
-      "stat1_value": "10K+",
-      "stat1_label": "SMEs Onboarded",
-      "stat2_value": "12+",
-      "stat2_label": "Currencies",
-      "stat3_value": "AI",
-      "stat3_label": "Fraud Prevention",
-      "cta": "Visit Snapay.ai →"
+      "title_1": "Snapay.ai",
+      "title_span": "Instant payment collection infrastructure",
+      "cta": "Visit Snapay.ai",
+      "mockup": {
+        "demoNote": "Illustrative product interface with sample data.",
+        "venue": "Alamitos Restaurant",
+        "invoiceTitle": "Invoice",
+        "table": "Table 23",
+        "tabPending": "Pending invoice",
+        "tabPaid": "Paid",
+        "each": "ea.",
+        "subtotal": "Subtotal",
+        "taxes": "Taxes (15%)",
+        "total": "Total",
+        "tip": "Tip",
+        "totalPaid": "Total paid",
+        "ctaMethod": "Payment method",
+        "ctaComplete": "Complete payment",
+        "back": "Back to invoice",
+        "restart": "Restart demo",
+        "receipt": "Download receipt",
+        "methodGroup": "Select a payment method",
+        "method_full_title": "Full invoice",
+        "method_full_desc": "Pay for every item",
+        "method_split_title": "Split evenly",
+        "method_split_desc": "Across all diners",
+        "method_items_title": "Select items",
+        "method_items_desc": "Choose specific items",
+        "method_custom_title": "Custom amount",
+        "method_custom_desc": "Pay a specific amount",
+        "paidTitle": "Payment complete",
+        "paidSubtitle": "Transaction approved"
+      },
+      "capabilities": {
+        "settlement_title": "Instant Settlement",
+        "settlement_desc": "Funds reach the merchant within the same cycle, with no waiting windows between banks.",
+        "currency_title": "Multi-Currency Support",
+        "currency_desc": "Collections and accounts across several currencies running on a single balance.",
+        "api_title": "API-First Infrastructure",
+        "api_desc": "Every product capability ships first as a documented, versioned API.",
+        "pci_title": "PCI-DSS Standard",
+        "pci_desc": "Card tokenization and end-to-end encryption under the PCI-DSS standard."
+      }
     },
     "solutions": {
       "title_1": "Solutions that",
@@ -177,13 +210,74 @@
       "card6_name": "Velocity VC",
       "card6_role": "Portfolio"
     },
+    "recognition": {
+      "label": "Institutional validation",
+      "title_1": "Backed by",
+      "title_span": "global innovation ecosystems",
+      "subtitle": "Editorial mentions, institutional networks, clients verified in the press, and presence on B2B stages. Where a public source exists, the card links straight to it.",
+      "source": "View source",
+      "forbes_name": "Forbes Central America",
+      "forbes_desc": "Carlos Hernández, CorosDev CEO, named on the Forbes Central America 30 Under 30 list for 2026.",
+      "forbes_kind": "Editorial mention",
+      "truesdays_name": "Truesdays",
+      "truesdays_desc": "CorosDev taking part in the Truesdays OpenMic, a meeting point for Prague's startup community.",
+      "truesdays_kind": "Community · Prague",
+      "startupkitchen_name": "Startup Kitchen",
+      "startupkitchen_desc": "Connection to Prague's startup ecosystem through its founder community and early-stage product programs.",
+      "startupkitchen_kind": "Ecosystem · Prague",
+      "czechinvest_name": "CzechInvest",
+      "czechinvest_desc": "Institutional support network for technology entrepreneurship in Czechia and Central Europe. Active institutional relationship.",
+      "czechinvest_kind": "Institutional network · Czechia",
+      "businessshow_name": "The Business Show Miami",
+      "businessshow_desc": "CorosDev exhibiting in the B2B pavilion of the B2B Marketing Expo, within The Business Show in Miami.",
+      "businessshow_kind": "Exhibitor · Miami",
+      "clients_name": "Dell Technologies and Beehiiv",
+      "clients_desc": "CorosDev clients, per the profile Forbes Central America published on its founder.",
+      "clients_kind": "Clients · Press-verified"
+    },
+    "process": {
+      "label": "How we work",
+      "title_1": "What happens when",
+      "title_span": "you write to us",
+      "subtitle": "No forms landing in a shared inbox, no generic discovery calls. This is the actual path a request takes.",
+      "steps": {
+        "triage_title": "Technical triage",
+        "triage_desc": "An engineer reviews your request, validates the feasibility of the stack you propose, and confirms team availability.",
+        "call_title": "Deep-dive call",
+        "call_desc": "A technical session to understand the real scope, the constraints you already have, and the criteria you will measure success by.",
+        "packet_title": "Documentation packet",
+        "packet_desc": "You receive the proposed team composition, timeline estimates, and the identified risk matrix, in writing."
+      },
+      "faq": {
+        "label": "Frequently asked questions",
+        "ip_q": "Who owns the code and the intellectual property?",
+        "ip_a": "100% of the intellectual property and the code transfers to your company. CorosDev retains no rights over what we build for you.",
+        "response_q": "How quickly do you answer a request?",
+        "response_a": "We reply to every request within 24 business hours. Your message is read by an engineer, not a sales intermediary, so the first reply already comes with concrete technical questions.",
+        "engagement_q": "What engagement models do you offer?",
+        "engagement_a": "We work through dedicated engineering pods, fixed-scope product sprints, and reinforcement of existing teams. The model is defined in the deep-dive call, based on the scope and pace you need.",
+        "nearshore_q": "How does the nearshore model work?",
+        "nearshore_a": "Our engineering centers in Honduras operate in the same time zone as the US central region, with full working-day overlap. We add a presence in Prague for European coverage."
+      }
+    },
     "contact": {
       "h2": "Tell us what you're building",
       "sub": "Get a roadmap, estimate, and risk assessment in 72 hours.",
-      "emailLabel": "Email",
-      "whatsappLabel": "WhatsApp",
       "location": "San Pedro Sula, Honduras · Prague, Czech Republic",
       "remote": "Remote / Nearshore · Global Engineering",
+      "channels": {
+        "label": "Direct channels",
+        "whatsapp_title": "WhatsApp",
+        "email_title": "Email",
+        "ecosystem_title": "Ecosystem & investment",
+        "ecosystem_value": "Tester, investor, or strategic partner"
+      },
+      "commitments": {
+        "label": "Our commitment",
+        "item1": "We reply to every request within 24 business hours.",
+        "item2": "You talk directly to engineering, not to a sales intermediary.",
+        "item3": "NDA available before sharing any technical detail."
+      },
       "form": {
         "nameLabel": "Full name",
         "namePlaceholder": "Your full name",
@@ -212,6 +306,22 @@
           "company": "Company name is too long.",
           "interest": "Select a service.",
           "message": "Message is too long."
+        },
+        "qualify": {
+          "title": "Help us prepare a better proposal?",
+          "desc": "Two optional details. They let us reach the call with context instead of asking you then.",
+          "budgetLabel": "Estimated investment range",
+          "profileLabel": "Company profile",
+          "profileStartup": "Early-stage startup",
+          "profileScaleup": "Growing scale-up",
+          "profileEnterprise": "Established company",
+          "profileAgency": "Agency or consultancy",
+          "submit": "Send context",
+          "submitting": "Sending...",
+          "skip": "Skip",
+          "successTitle": "Context received",
+          "successDesc": "Thank you. We will come to the conversation better prepared.",
+          "error": "Could not send. You can skip this step — your request is already registered."
         }
       }
     }
@@ -222,15 +332,17 @@
       "description": "The visionary minds behind CorosDev, empowering innovation through world-class technology and intelligent systems."
     },
     "hero": {
+      "label": "Leadership",
       "h1_1": "The Minds Behind",
       "h1_span": "Global Innovation.",
       "p": "We are a collective of engineers, designers, and strategists dedicated to bridging the gap between Latin American talent and global technological excellence."
     },
     "team": {
+      "label": "Leadership team",
       "h2_1": "Our",
       "h2_span": "Leadership",
       "h2_2": "Team",
-      "carlos_desc": "Visionary leader driving the strategic direction and growth of CorosDev worldwide.",
+      "carlos_desc": "Visionary leader driving CorosDev's strategic direction and global growth. Active in Prague's tech hub and present on international B2B stages such as The Business Show Miami.",
       "kriscia_desc": "Strategic financial leader managing capital and performance for sustainable innovation.",
       "arturo_desc": "Architect of operational excellence, ensuring seamless delivery across all global projects.",
       "jafet_desc": "Directing product innovation and user-centric architectures for high-impact software.",
@@ -279,6 +391,7 @@
       "h2_1": "Engagements",
       "h2_span": "that scale",
       "sub": "Elite technology solutions designed to fit your unique business stage. Choose your impact level.",
+      "featuredTag": "Most requested",
       "item1_tag": "01 / Innovation",
       "item1_title": "AI & Workflow Automation",
       "item1_desc": "Boost operational efficiency by 40% with intelligent agents and custom GPT integrations tailored to your data.",
@@ -333,20 +446,20 @@
     "ventures": {
       "trd_sector": "E-Commerce · Auto",
       "trd_name": "Accesorios TRD",
-      "trd_desc": "Premium automotive accessories e-commerce platform built for performance enthusiasts across LATAM and North America. Curated catalog, fast logistics, and a seamless buying experience.",
-      "trd_detail": "Accesorios TRD was born from a real gap in the LATAM market: premium automotive parts with no trustworthy online destination. We built the entire platform — storefront, logistics integrations, and inventory management — in-house.",
+      "trd_desc": "Online store for automotive accessories with a curated catalog, aimed at the LATAM and North American market.",
+      "trd_detail": "Accesorios TRD came out of a real gap in the LATAM market: automotive parts with no reliable online destination. We built the entire platform — storefront, logistics integrations, and inventory management — in house.",
       "trd_stage": "Growth & Scale",
       "trd_sectorValue": "E-Commerce",
       "snapay_sector": "Fintech · Payments",
       "snapay_name": "Snapay",
-      "snapay_desc": "A next-generation payment infrastructure for SMEs in emerging markets. Instant settlements, multi-currency support, and AI-powered fraud prevention - built to democratize fintech.",
-      "snapay_detail": "Snapay addresses the fragmented payment landscape in LATAM where 60% of SMEs remain underserved by traditional banking. Our API-first architecture enables any merchant to accept payments in under 10 minutes.",
+      "snapay_desc": "Payment collection infrastructure for merchants: instant settlement, multi-currency support, and encrypted rails under the PCI-DSS standard.",
+      "snapay_detail": "Snapay addresses the fragmentation of payments across LATAM, where a large share of SMEs remains out of reach of traditional banking. Its API-first architecture is designed so a merchant can start accepting payments without a bespoke integration.",
       "snapay_stage": "Beta Validation",
       "snapay_sectorValue": "Fintech",
       "vorzana_sector": "AI · Analytics",
       "vorzana_name": "Vorzana",
-      "vorzana_desc": "An AI-powered business intelligence platform that transforms raw operational data into strategic insights. Custom dashboards, predictive analytics, and automated reporting at enterprise grade.",
-      "vorzana_detail": "Vorzana emerged from the operational pain our own clients faced: drowning in data but starving for insight. We built an AI layer that speaks your business language, not technical jargon.",
+      "vorzana_desc": "Business intelligence platform: custom dashboards, analytics over operational data, and automated reporting.",
+      "vorzana_detail": "Vorzana grew out of an operational pain we kept seeing in our own clients: plenty of data accumulated, little actionable reading of it. We built an analytics layer that answers in the language of the business.",
       "vorzana_stage": "MVP Phase",
       "vorzana_sectorValue": "AI / Analytics",
       "statusLabel": "Status",
@@ -421,12 +534,15 @@
       "roleTester": "Early Beta Tester",
       "roleInvestor": "Angel Investor / VC Fund",
       "rolePartner": "Strategic Venture Partner",
+      "roleServices": "What do you need built?",
       "message": "Your background",
       "messagePlaceholder": "Tell us briefly about your experience, fund, or interest...",
       "submit": "Apply to ecosystem",
+      "submitServices": "Request a proposal",
       "submitting": "Sending...",
       "successTitle": "Application Received!",
       "successDesc": "Thank you! Our team will review your application and reach out soon.",
+      "successDescServices": "Thank you. An engineer will review your case and reply with the next steps.",
       "error": "Something went wrong. Please try again."
     },
     "close": "Close"

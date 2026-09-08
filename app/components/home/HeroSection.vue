@@ -26,7 +26,7 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
             {{ t('home.hero.tag') }}
           </p>
           <h1 class="mt-4 text-5xl font-extrabold leading-[1.1] md:text-7xl">
-            {{ t('home.hero.h1_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.hero.h1_span') }}</span>
+            {{ t('home.hero.h1_1') }} <span class="gradient-text">{{ t('home.hero.h1_span') }}</span>
             {{ t('home.hero.h1_2') }}
           </h1>
           <p class="mt-5 max-w-xl text-lg text-white/80">
@@ -37,7 +37,7 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
               :href="bookingUrl"
               target="_blank"
               rel="noopener"
-              class="rounded-xl bg-neon-500 px-6 py-3 font-semibold text-brand-900 drop-shadow-glow transition-transform hover:scale-105"
+              class="rounded-lg bg-neon-500 px-6 py-3 font-semibold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
             >
               {{ t('home.hero.cta1') }}
             </a>
@@ -50,9 +50,9 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
           </div>
           <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
             <span>{{ t('home.hero.pill1') }}</span>
-            <span class="opacity-50">&bull;</span>
+            <span class="opacity-60" aria-hidden="true">&bull;</span>
             <span>{{ t('home.hero.pill2') }}</span>
-            <span class="opacity-50">&bull;</span>
+            <span class="opacity-60" aria-hidden="true">&bull;</span>
             <span>{{ t('home.hero.pill3') }}</span>
           </div>
         </div>

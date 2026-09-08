@@ -157,6 +157,7 @@ export default defineNuxtConfig({
     '/cities/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/globe/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/logos/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/images/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/favicon.ico': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/favicon.svg': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/coros.png': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },

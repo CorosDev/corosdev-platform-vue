@@ -23,7 +23,7 @@ const blocks = computed<MissionBlock[]>(() => [
   <section id="mission" class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6 text-center">
       <h2 class="mb-6 text-4xl font-black text-white md:mb-8 md:text-6xl">
-        {{ t('home.mission.h2_1') }} <span class="gradient-text drop-shadow-glow">{{ t('home.mission.h2_span') }}</span>
+        {{ t('home.mission.h2_1') }} <span class="gradient-text">{{ t('home.mission.h2_span') }}</span>
       </h2>
       <p class="mx-auto max-w-4xl text-xl font-medium leading-relaxed text-white/80 md:text-2xl">
         {{ t('home.mission.p') }}

@@ -14,7 +14,7 @@ const localePath = useLocalePath()
         <div class="mt-8">
           <a
             :href="`${localePath('/')}#contact`"
-            class="inline-flex items-center gap-2 rounded-2xl bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all hover:scale-105"
+            class="inline-flex items-center gap-2 rounded-lg bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
           >
             {{ t('partners.cta.link') }}
           </a>
