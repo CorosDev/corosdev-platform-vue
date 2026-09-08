@@ -25,7 +25,7 @@
  */
 const { t } = useI18n()
 
-type RecognitionId = 'forbes' | 'truesdays' | 'startupkitchen' | 'czechinvest' | 'businessshow'
+type RecognitionId = 'forbes' | 'truesdays' | 'startupkitchen' | 'czechinvest' | 'businessshow' | 'clients'
 
 interface Recognition {
   id: RecognitionId
@@ -77,7 +77,7 @@ const recognitionMeta: Recognition[] = [
     width: 480,
     height: 58,
     url: null,
-    span: 'lg:col-span-6',
+    span: 'lg:col-span-4',
   },
   {
     id: 'businessshow',
@@ -85,7 +85,26 @@ const recognitionMeta: Recognition[] = [
     width: 1095,
     height: 1095,
     url: null,
-    span: 'lg:col-span-6',
+    span: 'lg:col-span-4',
+  },
+  {
+    // Deliberadamente SIN logo, y no por falta de archivo: reproducir las
+    // marcas de Dell y Beehiiv en la web de su proveedor es terreno de marca
+    // registrada que nadie nos ha autorizado a pisar. El glyph de reserva
+    // cubre exactamente este caso, que es para lo que se conservó la rama.
+    //
+    // El dato viene del perfil que Forbes Centroamérica publicó sobre Carlos
+    // ("Ha trabajado con clientes como Dell Technologies y Beehiiv"), así que
+    // enlaza a esa misma fuente y el copy la atribuye en lugar de afirmarlo
+    // por cuenta propia.
+    id: 'clients',
+    logo: null,
+    width: 0,
+    height: 0,
+    url: 'https://forbescentroamerica.com/2026/07/07/estos-son-los-30-under-30-forbes-centroamerica-2026/#:~:text=Carlos%20Daniel%20Hernandez%20Zuniga,ecommerce%20automotriz.',
+    span: 'lg:col-span-4',
+    // Maletín: enterprise neutro, sin parecido con ninguna marca real.
+    placeholder: 'M4 8.5h16a1 1 0 011 1v8.5a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5a1 1 0 011-1zm5 0v-2a2 2 0 012-2h2a2 2 0 012 2v2M3 13.5h18',
   },
 ]
 
@@ -114,7 +133,10 @@ const MAX_LOGO_HEIGHT = 68
 
 const recognitions = computed(() =>
   recognitionMeta.map((recognition) => {
-    const aspect = recognition.width / recognition.height
+    // Un sello sin archivo declara 0x0; sin esta guarda el cociente sería
+    // NaN y arrastraría NaN hasta el style del elemento en cuanto alguien le
+    // añadiera un logo sin corregir las dimensiones.
+    const aspect = recognition.width && recognition.height ? recognition.width / recognition.height : 1
     const displayHeight = Math.min(
       MAX_LOGO_HEIGHT,
       Math.max(MIN_LOGO_HEIGHT, Math.round(Math.sqrt(TARGET_LOGO_AREA / aspect))),
@@ -206,7 +228,7 @@ const recognitions = computed(() =>
             />
             <svg
               v-else-if="recognition.placeholder"
-              class="h-10 w-10 text-white/55 transition-colors duration-500 ease-out-expo group-hover/spot:text-white/80"
+              class="h-14 w-14 text-white/55 transition-colors duration-500 ease-out-expo group-hover/spot:text-white/80"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

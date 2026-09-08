@@ -214,7 +214,7 @@
       "label": "Institutional validation",
       "title_1": "Backed by",
       "title_span": "global innovation ecosystems",
-      "subtitle": "Editorial mentions, institutional networks, and presence on B2B stages. Where a public source exists, the card links straight to it.",
+      "subtitle": "Editorial mentions, institutional networks, clients verified in the press, and presence on B2B stages. Where a public source exists, the card links straight to it.",
       "source": "View source",
       "forbes_name": "Forbes Central America",
       "forbes_desc": "Carlos Hernández, CorosDev CEO, named on the Forbes Central America 30 Under 30 list for 2026.",
@@ -230,7 +230,10 @@
       "czechinvest_kind": "Institutional network · Czechia",
       "businessshow_name": "The Business Show Miami",
       "businessshow_desc": "CorosDev exhibiting in the B2B pavilion of the B2B Marketing Expo, within The Business Show in Miami.",
-      "businessshow_kind": "Exhibitor · Miami"
+      "businessshow_kind": "Exhibitor · Miami",
+      "clients_name": "Dell Technologies and Beehiiv",
+      "clients_desc": "CorosDev clients, per the profile Forbes Central America published on its founder.",
+      "clients_kind": "Clients · Press-verified"
     },
     "process": {
       "label": "How we work",
