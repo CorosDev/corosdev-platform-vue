@@ -180,7 +180,18 @@ const recognitions = computed(() =>
                porque es de esas medidas de donde deduce qué recorte pedir.
                Las de render conservan exactamente la misma relación de
                aspecto — se derivan de ella — y además dejan que @nuxt/image
-               emita el srcset 2x correcto para pantallas de alta densidad. -->
+               emita el srcset 2x correcto para pantallas de alta densidad.
+
+               El tamaño se fija además por CSS, y NO con `w-auto h-auto`:
+               esas dos utilidades declaran `width:auto;height:auto`, que
+               anula los atributos width/height del HTML y hace que el
+               navegador use el tamaño natural del recurso. IPX entrega los
+               SVG sin reescalar, así que el natural son los 1095px del
+               archivo y `max-w-full` los estiraba hasta el ancho de la
+               tarjeta. Con ambas medidas explícitas el resultado no depende
+               de qué tamaño intrínseco reporte cada formato, y
+               `object-contain` protege la proporción si `max-w-full` llega
+               a recortar el ancho en una tarjeta estrecha. -->
           <div class="flex h-20 items-center">
             <NuxtImg
               v-if="recognition.logo"
@@ -190,7 +201,8 @@ const recognitions = computed(() =>
               :width="recognition.displayWidth"
               :height="recognition.displayHeight"
               loading="lazy"
-              class="h-auto w-auto max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
+              :style="{ width: `${recognition.displayWidth}px`, height: `${recognition.displayHeight}px` }"
+              class="max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
             />
             <svg
               v-else-if="recognition.placeholder"
