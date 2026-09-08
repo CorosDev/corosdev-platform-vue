@@ -172,6 +172,7 @@ const capabilities = computed(() =>
                  es menor que el exterior por el grosor del marco, que es lo
                  que hace que las esquinas se lean concéntricas. -->
             <div
+              v-tilt="6"
               class="relative rounded-[36px] border border-[#30363d] bg-[#0d1117] p-3 shadow-[0_30px_80px_-25px_rgb(0_0_0/0.9)]"
             >
               <div class="relative overflow-hidden rounded-[26px] bg-white">
@@ -195,8 +196,12 @@ const capabilities = computed(() =>
                   </div>
                 </div>
 
-                <!-- Lámina de contenido -->
-                <div class="relative -mt-5 min-h-[452px] rounded-t-[22px] bg-white px-5 pb-6 pt-5">
+                <!-- Lámina de contenido. `min-h` calibrado al paso más alto
+                     (la factura, con las 4 líneas de comanda) para que el
+                     marco no encoja al llegar a método/confirmación, que
+                     tienen menos contenido — cero salto de layout durante el
+                     flujo. -->
+                <div class="relative -mt-5 min-h-[520px] rounded-t-[22px] bg-white px-5 pb-6 pt-5">
                   <div :key="step" class="screen">
                     <!-- 1 · Factura -->
                     <template v-if="step === 'invoice'">
