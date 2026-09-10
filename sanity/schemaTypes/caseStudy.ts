@@ -108,12 +108,13 @@ export default {
     {
       name: 'technologies',
       title: 'Technologies',
+      // Free-text tags for the stack. Sanity forbids an array `of` that mixes
+      // a primitive (`string`) with an object type (`reference`), so this is
+      // strings only — cross-linking to `category` docs, if ever needed,
+      // would be a separate reference array.
       type: 'array',
-      description: 'Stack used — reference an existing category/tech, or type a free-text name.',
-      of: [
-        { type: 'reference', title: 'Category / technology (reference)', to: [{ type: 'category' }] },
-        { type: 'string', title: 'Technology (free text)' },
-      ],
+      description: 'Stack used — type each technology name and press enter.',
+      of: [{ type: 'string' }],
       options: { layout: 'tags' },
     },
     {

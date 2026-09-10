@@ -30,12 +30,6 @@ export interface CaseStudyMetric {
   impact?: string | null
 }
 
-export interface CaseStudyTech {
-  label: string
-  /** Presente sólo cuando la tecnología es una referencia a `category`. */
-  slug?: string | null
-}
-
 export interface CaseStudySeo {
   metaTitle?: string | null
   metaDescription?: string | null
@@ -59,7 +53,7 @@ export interface CaseStudyCard {
 export interface CaseStudy extends CaseStudyCard {
   body?: PortableTextBlockLike[] | null
   keyMetrics?: CaseStudyMetric[] | null
-  technologies?: CaseStudyTech[] | null
+  technologies?: string[] | null
   seo?: CaseStudySeo | null
 }
 
@@ -141,10 +135,7 @@ const CASE_STUDY_QUERY = groq`*[_type == "caseStudy" && slug.current == $slug] [
   ${CARD_PROJECTION},
   body,
   keyMetrics[]{ label, value, impact },
-  "technologies": technologies[]{
-    _type == "reference" => { "label": @->title, "slug": @->slug.current },
-    _type != "reference" => { "label": @ }
-  },
+  technologies,
   seo{
     metaTitle,
     metaDescription,

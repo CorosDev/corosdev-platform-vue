@@ -160,10 +160,10 @@ useHead(() => ({
           <ul class="flex flex-wrap gap-2">
             <li
               v-for="(tech, i) in caseStudy.technologies"
-              :key="`${tech.label}-${i}`"
+              :key="`${tech}-${i}`"
               class="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-white/70"
             >
-              {{ tech.label }}
+              {{ tech }}
             </li>
           </ul>
         </section>
