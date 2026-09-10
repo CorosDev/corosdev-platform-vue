@@ -1,14 +1,18 @@
 /**
- * Sanity schema registry for the "Enterprise Insights Engine" blog.
+ * Sanity schema registry.
  *
- * Phase 1 delivers the schema definitions only. When the Studio is scaffolded
- * (Phase 2) its `sanity.config.ts` consumes this array as `schema.types`.
- * Definitions are kept as plain objects so they carry zero dependency on the
- * `sanity` toolkit until the Studio itself is added.
+ * Consumed as `schema.types` by the Studio's `sanity.config.ts`. Definitions
+ * are kept as plain objects so they carry zero dependency on the `sanity`
+ * toolkit outside the Studio.
+ *
+ * - "Enterprise Insights Engine" (blog): post, author, category, blockContent
+ * - "Portfolio & Case Studies Engine": caseStudy
+ * - Shared: blockContent (Portable Text), seo
  */
 import post from './post'
 import author from './author'
 import category from './category'
+import caseStudy from './caseStudy'
 import blockContent from './blockContent'
 import seo from './seo'
 
@@ -17,6 +21,7 @@ export const schemaTypes = [
   post,
   author,
   category,
+  caseStudy,
   // Objects
   blockContent,
   seo,

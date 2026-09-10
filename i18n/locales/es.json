@@ -5,9 +5,12 @@
     "partners": "Aliados",
     "services": "Servicios",
     "about": "Nosotros",
+    "company": "Compañía",
+    "portfolio": "Portafolio",
     "insights": "Insights",
     "contact": "Contacto",
     "cta": "Agenda una demo",
+    "menuToggle": "Abrir o cerrar el menú",
     "langToggle": "Cambiar idioma",
     "aiDrivenCompany": "Empresa impulsada por IA",
     "langToggleTo": "Cambiar idioma a {code}"
@@ -563,6 +566,57 @@
       "title_span": "tu proyecto?",
       "body": "Si algo de lo que leíste conecta con lo que estás construyendo, cuéntanoslo. Revisamos cada caso con un ingeniero.",
       "button": "Iniciar conversación"
+    }
+  },
+  "portfolio": {
+    "seo": {
+      "title": "Portafolio y Casos de Éxito — CorosDev",
+      "description": "Resultados reales: cómo empresas innovadoras escalaron su producto y su crecimiento con la ingeniería de CorosDev. Métricas, contexto y stack de cada proyecto."
+    },
+    "hero": {
+      "tag": "Portfolio & Case Studies Engine",
+      "title_1": "Resultados que",
+      "title_span": "se miden",
+      "subtitle": "Una selección de proyectos con el problema, la solución de ingeniería y el impacto en número — sin adornos."
+    },
+    "filters": {
+      "all": "Todas"
+    },
+    "search": {
+      "label": "Buscar casos de éxito",
+      "placeholder": "Buscar por cliente, industria o tema..."
+    },
+    "featured": {
+      "badge": "Destacado"
+    },
+    "card": {
+      "viewCase": "Ver caso"
+    },
+    "detail": {
+      "backToPortfolio": "Volver al portafolio",
+      "metricsTitle": "Métricas clave",
+      "technologiesTitle": "Tecnologías"
+    },
+    "pager": {
+      "label": "Paginación del portafolio",
+      "prev": "Anteriores",
+      "next": "Siguientes",
+      "status": "Página {current} de {total}"
+    },
+    "states": {
+      "maintenanceTitle": "Estamos afinando el motor de portafolio",
+      "maintenanceBody": "El portafolio no está disponible en este momento. Vuelve en unos minutos — el resto del sitio sigue funcionando con normalidad.",
+      "backHome": "Ir al inicio",
+      "emptyTitle": "Aún no hay casos publicados",
+      "emptyBody": "Estamos preparando los primeros casos de éxito. Vuelve pronto.",
+      "emptyFiltered": "No encontramos casos que coincidan con tu búsqueda o filtro.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "cta": {
+      "title_1": "¿Listo para tu",
+      "title_span": "próximo caso de éxito?",
+      "body": "Diseñemos y construyamos el sistema que lleve tu producto al siguiente número. Revisamos cada caso con un ingeniero.",
+      "button": "Hablar con un ingeniero"
     }
   },
   "ctaDrawer": {

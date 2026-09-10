@@ -15,10 +15,12 @@
  *   npx sanity dev            # http://localhost:3333
  *   npx sanity deploy         # publica en https://<slug>.sanity.studio
  *
- * Lee el projectId/dataset del entorno — los mismos SANITY_PROJECT_ID /
- * SANITY_DATASET que consume `nuxt.config.ts`. La CLI de Sanity carga
- * `.env` automáticamente (prefijo `SANITY_STUDIO_` para exponer vars al
- * bundle del Studio; aquí se leen en build-time, no hace falta el prefijo).
+ * Lee el projectId/dataset del entorno — primero las vars `SANITY_STUDIO_*`
+ * (las únicas que la CLI de Sanity inyecta en el bundle del Studio), luego
+ * las `SANITY_*` que comparte con `nuxt.config.ts`, y como último recurso un
+ * fallback ESTÁTICO al proyecto real. Ese fallback existe porque el Studio
+ * desplegado en la nube no siempre recibe el entorno, y sin projectId
+ * `defineConfig` aborta el arranque con "projectId is required".
  * ─────────────────────────────────────────────────────────────────────────
  */
 import { defineConfig } from 'sanity'
@@ -27,8 +29,10 @@ import { visionTool } from '@sanity/vision'
 
 import { schemaTypes } from './sanity/schemaTypes'
 
-const projectId = process.env.SANITY_PROJECT_ID || process.env.SANITY_STUDIO_PROJECT_ID || ''
-const dataset = process.env.SANITY_DATASET || process.env.SANITY_STUDIO_DATASET || 'production'
+const projectId
+  = process.env.SANITY_STUDIO_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'g3zssgrv'
+const dataset
+  = process.env.SANITY_STUDIO_DATASET || process.env.SANITY_DATASET || 'production'
 
 export default defineConfig({
   name: 'corosdev-insights',

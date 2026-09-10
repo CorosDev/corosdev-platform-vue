@@ -5,9 +5,12 @@
     "partners": "Partners",
     "services": "Services",
     "about": "About Us",
+    "company": "Company",
+    "portfolio": "Portfolio",
     "insights": "Insights",
     "contact": "Contact",
     "cta": "Book a demo",
+    "menuToggle": "Toggle menu",
     "langToggle": "Switch language",
     "aiDrivenCompany": "AI Driven Company",
     "langToggleTo": "Switch language to {code}"
@@ -563,6 +566,57 @@
       "title_span": "your project?",
       "body": "If something you read here resonates with what you're building, tell us. We review every case with an engineer.",
       "button": "Start a conversation"
+    }
+  },
+  "portfolio": {
+    "seo": {
+      "title": "Portfolio & Case Studies — CorosDev",
+      "description": "Real outcomes: how innovative companies scaled their product and growth with CorosDev engineering. Metrics, context and stack for every project."
+    },
+    "hero": {
+      "tag": "Portfolio & Case Studies Engine",
+      "title_1": "Outcomes you",
+      "title_span": "can measure",
+      "subtitle": "A selection of projects with the problem, the engineering solution and the impact in numbers — no fluff."
+    },
+    "filters": {
+      "all": "All"
+    },
+    "search": {
+      "label": "Search case studies",
+      "placeholder": "Search by client, industry or topic..."
+    },
+    "featured": {
+      "badge": "Featured"
+    },
+    "card": {
+      "viewCase": "View case"
+    },
+    "detail": {
+      "backToPortfolio": "Back to portfolio",
+      "metricsTitle": "Key metrics",
+      "technologiesTitle": "Technologies"
+    },
+    "pager": {
+      "label": "Portfolio pagination",
+      "prev": "Previous",
+      "next": "Next",
+      "status": "Page {current} of {total}"
+    },
+    "states": {
+      "maintenanceTitle": "We're tuning the portfolio engine",
+      "maintenanceBody": "The portfolio is unavailable right now. Check back in a few minutes — the rest of the site is working normally.",
+      "backHome": "Go to home",
+      "emptyTitle": "No case studies published yet",
+      "emptyBody": "We're preparing the first case studies. Check back soon.",
+      "emptyFiltered": "We couldn't find any case studies matching your search or filter.",
+      "clearFilters": "Clear filters"
+    },
+    "cta": {
+      "title_1": "Ready for your",
+      "title_span": "next success story?",
+      "body": "Let's design and build the system that takes your product to the next number. We review every case with an engineer.",
+      "button": "Talk to an engineer"
     }
   },
   "ctaDrawer": {

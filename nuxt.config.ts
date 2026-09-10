@@ -133,7 +133,7 @@ export default defineNuxtConfig({
   // hreflang (`_i18nTransform`). El endpoint devuelve [] si Sanity no
   // responde — ver server/api/__sitemap__/blog.ts.
   sitemap: {
-    sources: ['/api/__sitemap__/blog'],
+    sources: ['/api/__sitemap__/blog', '/api/__sitemap__/portfolio'],
   },
 
   // robots.txt: `sitemap` is resolved to an absolute URL automatically via

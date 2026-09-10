@@ -1,19 +1,64 @@
 <script setup lang="ts">
 const { t, locale, setLocale } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
 
-// Enlaces y agenda salen de useSiteNav(), compartido con AppFooter.
+// Enlaces y agenda salen de useSiteNav(), compartido con AppFooter. Cada
+// item es un enlace o un grupo con desplegable (`'children' in item`).
 const { navLinks, bookingUrl } = useSiteNav()
 
 const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
 
+// Desplegable de escritorio: guarda la `key` del grupo abierto (uno a la vez).
+const openDropdownKey = ref<string | null>(null)
+// Acordeón del menú móvil: misma idea, estado independiente.
+const openMobileGroup = ref<string | null>(null)
+
+const header = ref<HTMLElement | null>(null)
+
 function toggleMobileMenu() {
   mobileMenuOpen.value = !mobileMenuOpen.value
+  if (!mobileMenuOpen.value) openMobileGroup.value = null
 }
 
 function closeMobileMenu() {
   mobileMenuOpen.value = false
+  openMobileGroup.value = null
+}
+
+function toggleMobileGroup(key: string) {
+  openMobileGroup.value = openMobileGroup.value === key ? null : key
+}
+
+function openDropdown(key: string) {
+  openDropdownKey.value = key
+}
+
+function closeDropdown() {
+  openDropdownKey.value = null
+}
+
+function toggleDropdown(key: string) {
+  openDropdownKey.value = openDropdownKey.value === key ? null : key
+}
+
+// Esc dentro del grupo: cierra y devuelve el foco a su botón disparador
+// (patrón "Disclosure Navigation Menu" de la WAI-ARIA APG).
+function onGroupEscape(event: KeyboardEvent) {
+  if (!openDropdownKey.value) return
+  closeDropdown()
+  const wrapper = event.currentTarget as HTMLElement | null
+  wrapper?.querySelector<HTMLButtonElement>('button')?.focus()
+}
+
+// El foco salió del grupo (Tab hacia fuera): ciérralo.
+function onGroupFocusout(event: FocusEvent, key: string) {
+  const wrapper = event.currentTarget as HTMLElement | null
+  const next = event.relatedTarget as Node | null
+  if (openDropdownKey.value === key && wrapper && !wrapper.contains(next)) {
+    closeDropdown()
+  }
 }
 
 // Toggles between the two configured locales — shows the language you'd
@@ -26,18 +71,33 @@ function handleScroll() {
   scrolled.value = window.scrollY > 8
 }
 
+// Click fuera del header: cierra cualquier desplegable abierto.
+function onDocumentClick(event: MouseEvent) {
+  if (openDropdownKey.value && header.value && !header.value.contains(event.target as Node)) {
+    closeDropdown()
+  }
+}
+
+// Cambiar de ruta cierra todo lo que estuviera abierto.
+watch(() => route.fullPath, () => {
+  closeDropdown()
+  closeMobileMenu()
+})
+
 onMounted(() => {
   handleScroll()
   window.addEventListener('scroll', handleScroll, { passive: true })
+  document.addEventListener('click', onDocumentClick)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', onDocumentClick)
 })
 </script>
 
 <template>
-  <header class="fixed top-0 left-0 right-0 z-50">
+  <header ref="header" class="fixed top-0 left-0 right-0 z-50">
     <div
       class="glass mx-auto max-w-7xl rounded-b-2xl px-6 py-3 shadow-2xl transition-colors duration-300"
       :class="scrolled ? 'bg-brand-900/85' : 'bg-brand-900/60'"
@@ -47,8 +107,9 @@ onUnmounted(() => {
         <button
           type="button"
           class="flex h-8 w-8 flex-col justify-center gap-1.5 md:hidden"
-          aria-label="Toggle menu"
+          :aria-label="t('nav.menuToggle')"
           :aria-expanded="mobileMenuOpen"
+          aria-controls="mobile-nav"
           @click="toggleMobileMenu"
         >
           <span
@@ -86,15 +147,81 @@ onUnmounted(() => {
         </NuxtLink>
 
         <!-- Desktop nav -->
-        <nav class="hidden items-center gap-8 text-sm font-semibold uppercase tracking-widest text-white/80 md:flex">
-          <NuxtLink
-            v-for="link in navLinks"
-            :key="link.key"
-            :to="link.to"
-            class="transition-colors hover:text-neon-500"
-          >
-            {{ link.label }}
-          </NuxtLink>
+        <nav class="hidden items-center gap-8 text-sm font-semibold tracking-tight text-white/80 md:flex">
+          <template v-for="item in navLinks" :key="item.key">
+            <!-- Grupo con desplegable -->
+            <div
+              v-if="'children' in item"
+              class="relative"
+              @mouseenter="openDropdown(item.key)"
+              @mouseleave="closeDropdown()"
+              @focusout="onGroupFocusout($event, item.key)"
+              @keydown.escape="onGroupEscape"
+            >
+              <button
+                type="button"
+                class="flex items-center gap-1 text-sm font-semibold tracking-tight transition-colors hover:text-neon-500"
+                :class="openDropdownKey === item.key ? 'text-neon-500' : 'text-white/80'"
+                :aria-expanded="openDropdownKey === item.key"
+                aria-haspopup="true"
+                :aria-controls="`nav-dd-${item.key}`"
+                @click="toggleDropdown(item.key)"
+              >
+                {{ item.label }}
+                <svg
+                  class="h-3 w-3 transition-transform duration-200"
+                  :class="openDropdownKey === item.key ? 'rotate-180' : ''"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <Transition
+                enter-active-class="transition duration-150 ease-out"
+                enter-from-class="opacity-0 -translate-y-1"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition duration-100 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 -translate-y-1"
+              >
+                <!-- `v-show` (no `v-if`) para que el `<ul>` referido por
+                     `aria-controls` exista siempre en el DOM. El `pt-3` es un
+                     puente invisible: al ser descendiente del wrapper, cruzar
+                     el hueco botón→panel con el ratón no dispara `mouseleave`
+                     y el panel no parpadea. -->
+                <div v-show="openDropdownKey === item.key" class="absolute left-0 top-full z-50 pt-3">
+                  <ul
+                    :id="`nav-dd-${item.key}`"
+                    class="glass min-w-[12rem] rounded-xl bg-brand-900/95 p-2 shadow-2xl"
+                  >
+                    <li v-for="child in item.children" :key="child.key">
+                      <NuxtLink
+                        :to="child.to"
+                        class="block rounded-lg px-3 py-2 text-xs font-semibold tracking-tight text-white/75 transition-colors hover:bg-white/5 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+                        @click="closeDropdown"
+                      >
+                        {{ child.label }}
+                      </NuxtLink>
+                    </li>
+                  </ul>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- Enlace simple -->
+            <NuxtLink
+              v-else
+              :to="item.to"
+              class="transition-colors hover:text-neon-500"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </template>
         </nav>
 
         <!-- Right side: lang toggle + CTA -->
@@ -122,26 +249,64 @@ onUnmounted(() => {
       <Transition
         enter-active-class="transition-all duration-300 ease-out"
         enter-from-class="max-h-0 opacity-0"
-        enter-to-class="max-h-96 opacity-100"
+        enter-to-class="max-h-[40rem] opacity-100"
         leave-active-class="transition-all duration-300 ease-in"
-        leave-from-class="max-h-96 opacity-100"
+        leave-from-class="max-h-[40rem] opacity-100"
         leave-to-class="max-h-0 opacity-0"
       >
-        <nav v-if="mobileMenuOpen" class="overflow-hidden px-2 pb-2 md:hidden">
-          <NuxtLink
-            v-for="link in navLinks"
-            :key="link.key"
-            :to="link.to"
-            class="block border-b border-white/5 py-3 text-sm font-semibold uppercase tracking-widest text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
-            @click="closeMobileMenu"
-          >
-            {{ link.label }}
-          </NuxtLink>
+        <nav v-if="mobileMenuOpen" id="mobile-nav" class="overflow-hidden px-2 pb-2 md:hidden">
+          <template v-for="item in navLinks" :key="item.key">
+            <!-- Grupo: acordeón -->
+            <div v-if="'children' in item" class="border-b border-white/5">
+              <button
+                type="button"
+                class="flex w-full items-center justify-between py-3 text-sm font-semibold tracking-tight text-white/70 transition-colors hover:text-neon-500"
+                :aria-expanded="openMobileGroup === item.key"
+                :aria-controls="`m-dd-${item.key}`"
+                @click="toggleMobileGroup(item.key)"
+              >
+                {{ item.label }}
+                <svg
+                  class="h-3.5 w-3.5 transition-transform duration-200"
+                  :class="openMobileGroup === item.key ? 'rotate-180' : ''"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div v-show="openMobileGroup === item.key" :id="`m-dd-${item.key}`" class="pb-2">
+                <NuxtLink
+                  v-for="child in item.children"
+                  :key="child.key"
+                  :to="child.to"
+                  class="block py-2 pl-4 text-xs font-semibold tracking-tight text-white/60 transition-colors hover:text-neon-500"
+                  @click="closeMobileMenu"
+                >
+                  {{ child.label }}
+                </NuxtLink>
+              </div>
+            </div>
+
+            <!-- Enlace simple -->
+            <NuxtLink
+              v-else
+              :to="item.to"
+              class="block border-b border-white/5 py-3 text-sm font-semibold tracking-tight text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
+              @click="closeMobileMenu"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </template>
+
           <a
             :href="bookingUrl"
             target="_blank"
             rel="noopener"
-            class="block py-3 text-sm font-bold uppercase tracking-widest text-neon-500"
+            class="block py-3 text-sm font-bold tracking-tight text-neon-500"
             @click="closeMobileMenu"
           >
             {{ t('nav.cta') }}

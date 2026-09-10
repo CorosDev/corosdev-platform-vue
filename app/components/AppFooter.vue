@@ -8,7 +8,9 @@
  * para que no puedan divergir.
  */
 const { t } = useI18n()
-const { navLinks } = useSiteNav()
+// `footerLinks` es la lista aplanada: el footer muestra todos los destinos
+// sin la jerarquía de desplegables que usa el navbar.
+const { footerLinks } = useSiteNav()
 const localePath = useLocalePath()
 
 const year = new Date().getFullYear()
@@ -37,7 +39,7 @@ const year = new Date().getFullYear()
 
         <nav :aria-label="t('footer.navLabel')" class="grid grid-cols-2 gap-x-10 gap-y-3 sm:grid-cols-3 lg:gap-x-16">
           <NuxtLink
-            v-for="link in navLinks"
+            v-for="link in footerLinks"
             :key="link.key"
             :to="link.to"
             class="rounded text-sm font-semibold text-white/55 transition-colors duration-300 ease-out-expo hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
