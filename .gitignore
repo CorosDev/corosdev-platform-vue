@@ -33,6 +33,9 @@ Thumbs.db
 .nitro
 .cache
 
+# Sanity local runtime/cache (Studio is a separate app; nothing here is versioned)
+.sanity
+
 # Guía de ingeniería local (no se versiona)
 CLAUDE.md
 
