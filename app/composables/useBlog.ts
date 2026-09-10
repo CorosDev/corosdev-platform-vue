@@ -90,6 +90,9 @@ function emptyIndex(): BlogIndexData {
   return { posts: [], featuredPost: null, categories: [], total: 0, error: true }
 }
 
+// `SANITY_TIMEOUT_MS`, `sanityFetchOpts()` y `cachedSanityData()` viven en
+// `app/utils/sanityFetch.ts` (auto-importados) — compartidos con useCaseStudies.
+
 // Proyección compartida por el listado, el destacado y el detalle, para que
 // una tarjeta y su artículo nunca diverjan en forma. Incluye `author.bio`
 // aunque las tarjetas no lo pinten: así el detalle NO necesita volver a
@@ -183,7 +186,10 @@ export async function useBlogIndex(options: {
   const sanity = projectId ? useSanity() : null
 
   const query = await useAsyncData<BlogIndexData>(
-    'blog:index',
+    // Clave por combinación de filtro+página: cada vista se cachea por
+    // separado, así volver a un filtro ya visto es instantáneo vía
+    // `getCachedData` en vez de re-consultar.
+    () => `blog:index:${unref(category) ?? 'all'}:${unref(page)}`,
     async () => {
       if (!sanity) return emptyIndex()
 
@@ -194,10 +200,10 @@ export async function useBlogIndex(options: {
 
       try {
         const [posts, featuredPost, categories, total] = await Promise.all([
-          sanity.fetch<BlogPostCard[]>(POSTS_QUERY, { category: cat, start, end }),
-          sanity.fetch<BlogPostCard | null>(FEATURED_QUERY),
-          sanity.fetch<BlogCategory[]>(CATEGORIES_QUERY),
-          sanity.fetch<number>(POSTS_COUNT_QUERY, { category: cat }),
+          sanity.fetch<BlogPostCard[]>(POSTS_QUERY, { category: cat, start, end }, sanityFetchOpts()),
+          sanity.fetch<BlogPostCard | null>(FEATURED_QUERY, {}, sanityFetchOpts()),
+          sanity.fetch<BlogCategory[]>(CATEGORIES_QUERY, {}, sanityFetchOpts()),
+          sanity.fetch<number>(POSTS_COUNT_QUERY, { category: cat }, sanityFetchOpts()),
         ])
         return {
           posts: posts ?? [],
@@ -214,6 +220,7 @@ export async function useBlogIndex(options: {
     },
     {
       default: emptyIndex,
+      getCachedData: (key, nuxtApp) => cachedSanityData<BlogIndexData>(key, nuxtApp),
       watch: [category, page],
     },
   )
@@ -238,7 +245,11 @@ export async function useBlogPost(slug: MaybeRefOrGetter<string>) {
       if (!slugRef.value) return { post: null, error: false }
 
       try {
-        const post = await sanity.fetch<BlogPost | null>(POST_QUERY, { slug: slugRef.value })
+        const post = await sanity.fetch<BlogPost | null>(
+          POST_QUERY,
+          { slug: slugRef.value },
+          sanityFetchOpts(),
+        )
         // Log defensivo, sólo en dev: distingue "no existe" de "falló la
         // query" sin tener que abrir la pestaña de red.
         if (import.meta.dev && !post) {
@@ -253,6 +264,7 @@ export async function useBlogPost(slug: MaybeRefOrGetter<string>) {
     },
     {
       default: () => ({ post: null, error: false }),
+      getCachedData: (key, nuxtApp) => cachedSanityData<BlogPostData>(key, nuxtApp),
       watch: [slugRef],
     },
   )

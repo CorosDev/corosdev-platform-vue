@@ -201,6 +201,24 @@ export default defineNuxtConfig({
     '/favicon.svg': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/coros.png': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     '/_ipx/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+
+    // Blog y portafolio: Stale-While-Revalidate. Nitro (y la CDN de Vercel)
+    // sirven el HTML ya cacheado al INSTANTE y revalidan en segundo plano una
+    // vez por hora, así ningún visitante espera la respuesta de Sanity salvo
+    // el primer render tras expirar la caché. Ese único render sin caché
+    // tiene además un techo de 8 s por consulta (ver useBlog.ts /
+    // useCaseStudies.ts): si Sanity no responde a tiempo degrada a Modo
+    // Mantenimiento y la siguiente petición ya lo revalida solo.
+    // Se enumeran los prefijos de idioma porque i18n usa `prefix_except_default`
+    // (es en `/`, en en `/en/...`) y las routeRules casan por path literal.
+    '/blog': { swr: 3600 },
+    '/blog/**': { swr: 3600 },
+    '/en/blog': { swr: 3600 },
+    '/en/blog/**': { swr: 3600 },
+    '/portfolio': { swr: 3600 },
+    '/portfolio/**': { swr: 3600 },
+    '/en/portfolio': { swr: 3600 },
+    '/en/portfolio/**': { swr: 3600 },
   },
 
   // Server-only (no `public.` prefix, so none of these reach the client

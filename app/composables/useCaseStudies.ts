@@ -163,7 +163,10 @@ export async function useCaseStudiesIndex(options: {
   const sanity = projectId ? useSanity() : null
 
   const query = await useAsyncData<CaseStudiesIndexData>(
-    'case-studies:index',
+    // Clave por combinación de industria+página: cada vista se cachea por
+    // separado, así volver a un filtro ya visto es instantáneo vía
+    // `getCachedData` en vez de re-consultar.
+    () => `case-studies:index:${unref(industry) ?? 'all'}:${unref(page)}`,
     async () => {
       if (!sanity) return emptyIndex()
 
@@ -174,10 +177,10 @@ export async function useCaseStudiesIndex(options: {
 
       try {
         const [caseStudies, featured, industryRows, total] = await Promise.all([
-          sanity.fetch<CaseStudyCard[]>(CASE_STUDIES_QUERY, { industry: sector, start, end }),
-          sanity.fetch<CaseStudyCard | null>(FEATURED_CASE_STUDY_QUERY),
-          sanity.fetch<Array<{ value?: string | null }>>(INDUSTRIES_QUERY),
-          sanity.fetch<number>(CASE_STUDIES_COUNT_QUERY, { industry: sector }),
+          sanity.fetch<CaseStudyCard[]>(CASE_STUDIES_QUERY, { industry: sector, start, end }, sanityFetchOpts()),
+          sanity.fetch<CaseStudyCard | null>(FEATURED_CASE_STUDY_QUERY, {}, sanityFetchOpts()),
+          sanity.fetch<Array<{ value?: string | null }>>(INDUSTRIES_QUERY, {}, sanityFetchOpts()),
+          sanity.fetch<number>(CASE_STUDIES_COUNT_QUERY, { industry: sector }, sanityFetchOpts()),
         ])
         return {
           caseStudies: caseStudies ?? [],
@@ -194,6 +197,7 @@ export async function useCaseStudiesIndex(options: {
     },
     {
       default: emptyIndex,
+      getCachedData: (key, nuxtApp) => cachedSanityData<CaseStudiesIndexData>(key, nuxtApp),
       watch: [industry, page],
     },
   )
@@ -218,9 +222,11 @@ export async function useCaseStudy(slug: MaybeRefOrGetter<string>) {
       if (!slugRef.value) return { caseStudy: null, error: false }
 
       try {
-        const caseStudy = await sanity.fetch<CaseStudy | null>(CASE_STUDY_QUERY, {
-          slug: slugRef.value,
-        })
+        const caseStudy = await sanity.fetch<CaseStudy | null>(
+          CASE_STUDY_QUERY,
+          { slug: slugRef.value },
+          sanityFetchOpts(),
+        )
         return { caseStudy: caseStudy ?? null, error: false }
       }
       catch (err) {
@@ -230,6 +236,7 @@ export async function useCaseStudy(slug: MaybeRefOrGetter<string>) {
     },
     {
       default: () => ({ caseStudy: null, error: false }),
+      getCachedData: (key, nuxtApp) => cachedSanityData<CaseStudyData>(key, nuxtApp),
       watch: [slugRef],
     },
   )
