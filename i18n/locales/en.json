@@ -5,6 +5,7 @@
     "partners": "Partners",
     "services": "Services",
     "about": "About Us",
+    "insights": "Insights",
     "contact": "Contact",
     "cta": "Book a demo",
     "langToggle": "Switch language",
@@ -508,6 +509,60 @@
       "h3": "Interested in becoming a CorosDev partner?",
       "p": "We are always looking to grow our network of strategic technology, capital, and data allies.",
       "link": "Let's talk →"
+    }
+  },
+  "blog": {
+    "seo": {
+      "title": "CorosDev Insights — Engineering, product & growth",
+      "description": "Analysis, guides and lessons from the CorosDev team on software engineering, product and growth systems for innovative companies."
+    },
+    "hero": {
+      "tag": "Enterprise Insights Engine",
+      "title_1": "Ideas that move",
+      "title_span": "the business",
+      "subtitle": "Practical perspectives from our team on engineering, product and scaling — no fluff, real context."
+    },
+    "search": {
+      "label": "Search articles",
+      "placeholder": "Search by title or topic..."
+    },
+    "categories": {
+      "all": "All"
+    },
+    "featured": {
+      "badge": "Featured"
+    },
+    "card": {
+      "by": "By {name}",
+      "readMore": "Read"
+    },
+    "article": {
+      "backToBlog": "Back to blog",
+      "readingTime": "{minutes} min read"
+    },
+    "progress": {
+      "label": "Article reading progress"
+    },
+    "pager": {
+      "label": "Blog pagination",
+      "prev": "Previous",
+      "next": "Next",
+      "status": "Page {current} of {total}"
+    },
+    "states": {
+      "maintenanceTitle": "We're tuning the content engine",
+      "maintenanceBody": "The blog is unavailable right now. Check back in a few minutes — the rest of the site is working normally.",
+      "backHome": "Go to home",
+      "emptyTitle": "No articles published yet",
+      "emptyBody": "We're preparing the first insights. Check back soon.",
+      "emptyFiltered": "We couldn't find any articles matching your search or filter.",
+      "clearFilters": "Clear filters"
+    },
+    "cta": {
+      "title_1": "Want to talk about",
+      "title_span": "your project?",
+      "body": "If something you read here resonates with what you're building, tell us. We review every case with an engineer.",
+      "button": "Start a conversation"
     }
   },
   "ctaDrawer": {

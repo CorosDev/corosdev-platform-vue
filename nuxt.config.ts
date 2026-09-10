@@ -1,6 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import tailwindcss from '@tailwindcss/vite'
 
+// nuxt.config.ts is evaluated in Node (dev server / build). Reaching the env
+// off globalThis keeps this typed without pulling in @types/node, which this
+// project deliberately ships without (see .nuxt/tsconfig.node.json `types: []`).
+const nodeEnv
+  = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // Nuxt 4 architecture: app code lives in /app, server code in /server.
@@ -31,6 +37,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
     '@nuxtjs/turnstile',
+    '@nuxtjs/sanity',
   ],
 
   // Shared by the whole Nuxt SEO module family (sitemap, robots) via
@@ -121,7 +128,13 @@ export default defineNuxtConfig({
   // see the i18n block above) and emits the correct <xhtml:link
   // rel="alternate" hreflang="..."> entries plus locale-prefixed <loc> URLs
   // (/, /en/, /about, /en/about...) for every route on its own.
-  sitemap: {},
+  // `/blog` (ruta estática) ya entra por el escaneo del router; este source
+  // añade un <url> por cada artículo publicado en Sanity, con sus alternates
+  // hreflang (`_i18nTransform`). El endpoint devuelve [] si Sanity no
+  // responde — ver server/api/__sitemap__/blog.ts.
+  sitemap: {
+    sources: ['/api/__sitemap__/blog'],
+  },
 
   // robots.txt: `sitemap` is resolved to an absolute URL automatically via
   // the shared `site.url` above — no need to hardcode the full
@@ -134,6 +147,32 @@ export default defineNuxtConfig({
   robots: {
     sitemap: '/sitemap.xml',
     allow: ['/'],
+  },
+
+  // "Enterprise Insights Engine" — headless blog/CMS on Sanity.io, scoped to
+  // the /blog and /blog/[slug] routes only. projectId + dataset come from the
+  // environment (SANITY_PROJECT_ID / SANITY_DATASET) so nothing account-
+  // specific is committed; the matching entries live in .env.example.
+  //
+  // These are NOT secrets — a Sanity projectId/dataset are public identifiers
+  // that ship to the browser in every query URL (same category as the
+  // Turnstile site key above), so they belong here rather than in the
+  // server-only runtimeConfig block. Any write token would be server-only and
+  // is deliberately not wired up: Phase 1 is read-only content delivery.
+  //
+  // When SANITY_PROJECT_ID is unset (e.g. a fresh clone with no .env),
+  // @nuxtjs/sanity logs a warning and the client simply has no project to hit
+  // — queries then reject at request time, which the /blog data layer is
+  // expected to catch and degrade to empty results rather than a 500.
+  sanity: {
+    projectId: nodeEnv.SANITY_PROJECT_ID || '',
+    dataset: nodeEnv.SANITY_DATASET || 'production',
+    // Pinned so query results are reproducible across deploys (Sanity's API is
+    // date-versioned; omitting this floats to "latest" and can shift shapes).
+    apiVersion: '2024-03-01',
+    // Public read traffic goes through Sanity's CDN (cached, cheaper, faster);
+    // fine for published blog content where a few minutes' staleness is OK.
+    useCdn: true,
   },
 
   // Static brand/city assets in /public are served by Nitro with only
@@ -291,7 +330,21 @@ export default defineNuxtConfig({
       },
       contentSecurityPolicy: {
         'frame-src': ["'self'", 'https://www.youtube.com', 'https://challenges.cloudflare.com'],
-        'connect-src': ["'self'", 'https://challenges.cloudflare.com'],
+        // 'self' for same-origin XHR, Cloudflare for Turnstile, and Sanity's
+        // query API for the /blog GROQ requests fired from the browser on
+        // client-side navigation. With `useCdn: true` (nuxt.config `sanity`
+        // block) the endpoint is https://<projectId>.apicdn.sanity.io; the
+        // non-CDN api.sanity.io host is kept for cache-busting fallbacks.
+        'connect-src': [
+          "'self'",
+          'https://challenges.cloudflare.com',
+          'https://*.apicdn.sanity.io',
+          'https://*.api.sanity.io',
+        ],
+        // nuxt-security's default is `'self' data:` — Sanity's asset CDN is
+        // added so <SanityImage> (body images) and the plain <img> cover /
+        // OG thumbnails served from cdn.sanity.io/images/... can load.
+        'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
       },
     },
     // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`

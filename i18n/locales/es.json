@@ -5,6 +5,7 @@
     "partners": "Aliados",
     "services": "Servicios",
     "about": "Nosotros",
+    "insights": "Insights",
     "contact": "Contacto",
     "cta": "Agenda una demo",
     "langToggle": "Cambiar idioma",
@@ -508,6 +509,60 @@
       "h3": "¿Interesado en ser aliado de CorosDev?",
       "p": "Siempre estamos buscando ampliar nuestra red de aliados estratégicos en tecnología, capital y datos.",
       "link": "Hablemos →"
+    }
+  },
+  "blog": {
+    "seo": {
+      "title": "Insights de CorosDev — Ingeniería, producto y crecimiento",
+      "description": "Análisis, guías y aprendizajes del equipo de CorosDev sobre ingeniería de software, producto y sistemas de crecimiento para empresas innovadoras."
+    },
+    "hero": {
+      "tag": "Enterprise Insights Engine",
+      "title_1": "Ideas que mueven",
+      "title_span": "el negocio",
+      "subtitle": "Perspectivas prácticas de nuestro equipo sobre ingeniería, producto y escalado — sin humo, con contexto real."
+    },
+    "search": {
+      "label": "Buscar artículos",
+      "placeholder": "Buscar por título o tema..."
+    },
+    "categories": {
+      "all": "Todos"
+    },
+    "featured": {
+      "badge": "Destacado"
+    },
+    "card": {
+      "by": "Por {name}",
+      "readMore": "Leer"
+    },
+    "article": {
+      "backToBlog": "Volver al blog",
+      "readingTime": "{minutes} min de lectura"
+    },
+    "progress": {
+      "label": "Progreso de lectura del artículo"
+    },
+    "pager": {
+      "label": "Paginación del blog",
+      "prev": "Anteriores",
+      "next": "Siguientes",
+      "status": "Página {current} de {total}"
+    },
+    "states": {
+      "maintenanceTitle": "Estamos afinando el motor de contenidos",
+      "maintenanceBody": "El blog no está disponible en este momento. Vuelve en unos minutos — el resto del sitio sigue funcionando con normalidad.",
+      "backHome": "Ir al inicio",
+      "emptyTitle": "Aún no hay artículos publicados",
+      "emptyBody": "Estamos preparando los primeros insights. Vuelve pronto.",
+      "emptyFiltered": "No encontramos artículos que coincidan con tu búsqueda o filtro.",
+      "clearFilters": "Limpiar filtros"
+    },
+    "cta": {
+      "title_1": "¿Hablamos de",
+      "title_span": "tu proyecto?",
+      "body": "Si algo de lo que leíste conecta con lo que estás construyendo, cuéntanoslo. Revisamos cada caso con un ingeniero.",
+      "button": "Iniciar conversación"
     }
   },
   "ctaDrawer": {
