@@ -31,6 +31,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxtjs/robots',
     '@nuxtjs/turnstile',
+    '@nuxtjs/sanity',
   ],
 
   // Shared by the whole Nuxt SEO module family (sitemap, robots) via
@@ -134,6 +135,32 @@ export default defineNuxtConfig({
   robots: {
     sitemap: '/sitemap.xml',
     allow: ['/'],
+  },
+
+  // "Enterprise Insights Engine" — headless blog/CMS on Sanity.io, scoped to
+  // the /blog and /blog/[slug] routes only. projectId + dataset come from the
+  // environment (SANITY_PROJECT_ID / SANITY_DATASET) so nothing account-
+  // specific is committed; the matching entries live in .env.example.
+  //
+  // These are NOT secrets — a Sanity projectId/dataset are public identifiers
+  // that ship to the browser in every query URL (same category as the
+  // Turnstile site key above), so they belong here rather than in the
+  // server-only runtimeConfig block. Any write token would be server-only and
+  // is deliberately not wired up: Phase 1 is read-only content delivery.
+  //
+  // When SANITY_PROJECT_ID is unset (e.g. a fresh clone with no .env),
+  // @nuxtjs/sanity logs a warning and the client simply has no project to hit
+  // — queries then reject at request time, which the /blog data layer is
+  // expected to catch and degrade to empty results rather than a 500.
+  sanity: {
+    projectId: process.env.SANITY_PROJECT_ID || '',
+    dataset: process.env.SANITY_DATASET || 'production',
+    // Pinned so query results are reproducible across deploys (Sanity's API is
+    // date-versioned; omitting this floats to "latest" and can shift shapes).
+    apiVersion: '2024-03-01',
+    // Public read traffic goes through Sanity's CDN (cached, cheaper, faster);
+    // fine for published blog content where a few minutes' staleness is OK.
+    useCdn: true,
   },
 
   // Static brand/city assets in /public are served by Nitro with only
