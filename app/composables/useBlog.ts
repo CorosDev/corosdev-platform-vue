@@ -91,7 +91,10 @@ function emptyIndex(): BlogIndexData {
 }
 
 // Proyección compartida por el listado, el destacado y el detalle, para que
-// una tarjeta y su artículo nunca diverjan en forma.
+// una tarjeta y su artículo nunca diverjan en forma. Incluye `author.bio`
+// aunque las tarjetas no lo pinten: así el detalle NO necesita volver a
+// declarar `"author"` (una clave repetida en la proyección es un error de
+// parseo de GROQ — la petición lanza y la vista cae en Modo Mantenimiento).
 const CARD_PROJECTION = /* groq */ `
   _id,
   title,
@@ -99,7 +102,7 @@ const CARD_PROJECTION = /* groq */ `
   excerpt,
   publishedAt,
   "cover": mainImage{ "url": asset->url, "lqip": asset->metadata.lqip, alt },
-  "author": author->{ name, role, "image": image.asset->url },
+  "author": author->{ name, role, bio, "image": image.asset->url },
   "category": category->{ title, "slug": slug.current }
 `
 
@@ -126,10 +129,14 @@ const CATEGORIES_QUERY = groq`*[_type == "category" && defined(slug.current)] | 
   "count": count(*[_type == "post" && references(^._id) && defined(slug.current)])
 }`
 
+// Detalle: la MISMA proyección de tarjeta (que ya trae `author.bio`) más el
+// cuerpo y el bloque SEO. Sin re-declarar `"author"` — ver la nota en
+// `CARD_PROJECTION`. El filtro es por el slug tal cual llega de la ruta
+// (`slug.current == $slug`): el `post` no es un documento localizado, así
+// que `/blog/x` y `/en/blog/x` resuelven el mismo doc, sin fallback de idioma.
 const POST_QUERY = groq`*[_type == "post" && slug.current == $slug] [0] {
   ${CARD_PROJECTION},
   body,
-  "author": author->{ name, role, bio, "image": image.asset->url },
   seo{
     metaTitle,
     metaDescription,
@@ -232,10 +239,15 @@ export async function useBlogPost(slug: MaybeRefOrGetter<string>) {
 
       try {
         const post = await sanity.fetch<BlogPost | null>(POST_QUERY, { slug: slugRef.value })
+        // Log defensivo, sólo en dev: distingue "no existe" de "falló la
+        // query" sin tener que abrir la pestaña de red.
+        if (import.meta.dev && !post) {
+          console.warn(`[useBlog] sin resultado para slug="${slugRef.value}" — el post no existe o el slug no coincide con slug.current`)
+        }
         return { post: post ?? null, error: false }
       }
       catch (err) {
-        console.error('[useBlog] artículo falló — degradando a Modo Mantenimiento:', err)
+        console.error(`[useBlog] la query del artículo (slug="${slugRef.value}") lanzó — Modo Mantenimiento:`, err)
         return { post: null, error: true }
       }
     },
