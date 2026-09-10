@@ -6,10 +6,11 @@ import { defineCliConfig } from 'sanity/cli'
 
 export default defineCliConfig({
   api: {
-    projectId: process.env.SANITY_PROJECT_ID || process.env.SANITY_STUDIO_PROJECT_ID || '',
-    dataset: process.env.SANITY_DATASET || process.env.SANITY_STUDIO_DATASET || 'production',
+    projectId: 'g3zssgrv',
+    dataset: 'production'
   },
-  // El bundle del Studio se sirve aparte del sitio; sin autoUpdates para
-  // fijar la versión del toolkit por commit.
-  autoUpdates: false,
+  deployment: {
+    appId: 'hiekr6iisyi6s6vjxymugg1k',
+    autoUpdates: false
+  }
 })
