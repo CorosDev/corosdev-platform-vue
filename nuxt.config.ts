@@ -128,7 +128,13 @@ export default defineNuxtConfig({
   // see the i18n block above) and emits the correct <xhtml:link
   // rel="alternate" hreflang="..."> entries plus locale-prefixed <loc> URLs
   // (/, /en/, /about, /en/about...) for every route on its own.
-  sitemap: {},
+  // `/blog` (ruta estática) ya entra por el escaneo del router; este source
+  // añade un <url> por cada artículo publicado en Sanity, con sus alternates
+  // hreflang (`_i18nTransform`). El endpoint devuelve [] si Sanity no
+  // responde — ver server/api/__sitemap__/blog.ts.
+  sitemap: {
+    sources: ['/api/__sitemap__/blog'],
+  },
 
   // robots.txt: `sitemap` is resolved to an absolute URL automatically via
   // the shared `site.url` above — no need to hardcode the full

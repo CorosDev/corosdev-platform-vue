@@ -20,6 +20,7 @@ export function useSiteNav() {
     { key: 'partners', label: t('nav.partners'), to: localePath('/partners') },
     { key: 'services', label: t('nav.services'), to: localePath('/services') },
     { key: 'about', label: t('nav.about'), to: localePath('/about') },
+    { key: 'insights', label: t('nav.insights'), to: localePath('/blog') },
     { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact` },
   ])
 
