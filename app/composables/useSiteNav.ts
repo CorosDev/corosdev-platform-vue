@@ -19,6 +19,12 @@ export interface NavLink {
   key: string
   label: string
   to: string
+  /**
+   * Cuando es `true`, el navbar pinta este item como botón que abre el modal
+   * de contacto (`useContactModal`) en vez de un enlace. El footer lo ignora
+   * y sigue usando `to` (que apunta a la sección de contacto del home).
+   */
+  openModal?: boolean
 }
 
 export interface NavGroup {
@@ -54,7 +60,7 @@ export function useSiteNav() {
     { key: 'services', label: t('nav.services'), to: localePath('/services') },
     { key: 'portfolio', label: t('nav.portfolio'), to: localePath('/portfolio') },
     { key: 'insights', label: t('nav.insights'), to: localePath('/blog') },
-    { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact` },
+    { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact`, openModal: true },
   ])
 
   /** Lista plana de todos los destinos, para el footer (sin desplegables). */

@@ -619,6 +619,55 @@
       "button": "Talk to an engineer"
     }
   },
+  "contactModal": {
+    "title": "Tell us what you want to build",
+    "subtitle": "We reply to every request within one business day, straight from engineering.",
+    "close": "Close",
+    "optional": "(optional)",
+    "selectPlaceholder": "Select an option",
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "company": "Company",
+      "projectType": "Project type",
+      "budget": "Estimated budget",
+      "message": "Tell us more"
+    },
+    "placeholders": {
+      "name": "Your full name",
+      "email": "Your work email",
+      "company": "Your company name",
+      "message": "Goal, scope, timeline, context..."
+    },
+    "projectTypes": {
+      "web": "Web app / platform",
+      "mobile": "Mobile app",
+      "ai": "AI / model integration",
+      "audit": "Technical audit",
+      "other": "Other"
+    },
+    "budgets": {
+      "lt10k": "Under $10k",
+      "r10_25k": "$10k – $25k",
+      "r25_50k": "$25k – $50k",
+      "r50_100k": "$50k – $100k",
+      "gt100k": "$100k+"
+    },
+    "submit": "Send request",
+    "submitting": "Sending...",
+    "successTitle": "Request received!",
+    "successBody": "Thanks. An engineer will review your case and reply with the next steps.",
+    "done": "Done",
+    "errorBanner": "Something went wrong while sending. Please try again.",
+    "errors": {
+      "name": "Enter a valid name (at least 2 characters).",
+      "email": "Enter a valid email address.",
+      "company": "The company name is too long.",
+      "projectType": "Select a project type.",
+      "budget": "Select a budget range.",
+      "message": "Tell us a bit more (at least 10 characters)."
+    }
+  },
   "ctaDrawer": {
     "floatingLabel": "Partner / Invest",
     "title": {

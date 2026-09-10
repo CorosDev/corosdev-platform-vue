@@ -13,7 +13,7 @@
  * shape de fallback, `useAsyncData.error` se queda en `null` y el render
  * continúa con datos vacíos.
  */
-import type { MaybeRefOrGetter, Ref } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
 
 /**
  * Forma estructural mínima de un bloque de Portable Text — lo justo para
@@ -73,10 +73,11 @@ export interface BlogPost extends BlogPostCard {
 }
 
 interface BlogIndexData {
+  /** TODOS los posts publicados (acotados a `POSTS_LIMIT`); el filtrado por
+   *  categoría y la búsqueda ocurren en memoria en la vista. */
   posts: BlogPostCard[]
   featuredPost: BlogPostCard | null
   categories: BlogCategory[]
-  total: number
   error: boolean
 }
 
@@ -86,8 +87,12 @@ interface BlogPostData {
   error: boolean
 }
 
+/** Techo de posts que trae el índice de una vez. Un blog editorial no llega
+ *  a esto en años; si algún día lo hace, toca paginar en servidor otra vez. */
+const POSTS_LIMIT = 200
+
 function emptyIndex(): BlogIndexData {
-  return { posts: [], featuredPost: null, categories: [], total: 0, error: true }
+  return { posts: [], featuredPost: null, categories: [], error: true }
 }
 
 // `SANITY_TIMEOUT_MS`, `sanityFetchOpts()` y `cachedSanityData()` viven en
@@ -109,17 +114,21 @@ const CARD_PROJECTION = /* groq */ `
   "category": category->{ title, "slug": slug.current }
 `
 
-// `$category` opcional: si llega `null` el filtro se desactiva por completo
-// (`!defined($category)`), sin interpolar strings dentro de la query.
+// El índice trae TODOS los posts publicados de una vez (acotado a `$limit`)
+// y el filtro por categoría + la búsqueda se resuelven en memoria con un
+// `computed()` en `/blog/index.vue` — cero roundtrips a Sanity por filtrar.
 const POSTS_QUERY = groq`*[
-  _type == "post" && defined(slug.current) &&
-  (!defined($category) || category->slug.current == $category)
-] | order(publishedAt desc) [$start...$end] {${CARD_PROJECTION}}`
+  _type == "post" && defined(slug.current)
+] | order(publishedAt desc) [0...$limit] {${CARD_PROJECTION}}`
 
-const POSTS_COUNT_QUERY = groq`count(*[
-  _type == "post" && defined(slug.current) &&
-  (!defined($category) || category->slug.current == $category)
-])`
+// Filtrado directo por categoría con la referencia YA dereferenciada
+// (`category->slug.current == $category`, no el `_ref` crudo). El índice no
+// lo usa —filtra en cliente—, pero queda como la forma canónica para
+// cualquier consumo server-side que sí quiera pedirle a Sanity una sola
+// categoría (p. ej. un feed por categoría o SSG por ruta).
+export const POSTS_BY_CATEGORY_QUERY = groq`*[
+  _type == "post" && defined(slug.current) && category->slug.current == $category
+] | order(publishedAt desc) {${CARD_PROJECTION}}`
 
 const FEATURED_QUERY = groq`*[
   _type == "post" && defined(slug.current)
@@ -169,47 +178,31 @@ export function estimateReadingTime(blocks?: PortableTextBlockLike[] | null): nu
 }
 
 /**
- * Listado del blog con filtro por categoría y paginación (server-side vía
- * GROQ). La búsqueda rápida se resuelve en cliente sobre la página ya
- * cargada — ver `/blog/index.vue`.
+ * Índice del blog: una sola lectura que trae todos los posts publicados, el
+ * destacado y las categorías. El filtro por categoría y la búsqueda NO
+ * vuelven a tocar Sanity — se resuelven con `computed()` sobre `data.posts`
+ * en `/blog/index.vue`. Con SWR + `getCachedData` esta lectura es instantánea
+ * salvo el primer render tras expirar la caché.
  */
-export async function useBlogIndex(options: {
-  category?: Ref<string | null>
-  page?: Ref<number>
-  pageSize?: number
-} = {}) {
-  const pageSize = options.pageSize ?? 9
-  const category = options.category ?? ref<string | null>(null)
-  const page = options.page ?? ref(1)
-
+export async function useBlogIndex() {
   const { projectId } = useSanityConfig()
   const sanity = projectId ? useSanity() : null
 
-  const query = await useAsyncData<BlogIndexData>(
-    // Clave por combinación de filtro+página: cada vista se cachea por
-    // separado, así volver a un filtro ya visto es instantáneo vía
-    // `getCachedData` en vez de re-consultar.
-    () => `blog:index:${unref(category) ?? 'all'}:${unref(page)}`,
+  return await useAsyncData<BlogIndexData>(
+    'blog:index',
     async () => {
       if (!sanity) return emptyIndex()
 
-      const current = Math.max(1, Math.floor(unref(page)))
-      const start = (current - 1) * pageSize
-      const end = start + pageSize
-      const cat = unref(category) || null
-
       try {
-        const [posts, featuredPost, categories, total] = await Promise.all([
-          sanity.fetch<BlogPostCard[]>(POSTS_QUERY, { category: cat, start, end }, sanityFetchOpts()),
+        const [posts, featuredPost, categories] = await Promise.all([
+          sanity.fetch<BlogPostCard[]>(POSTS_QUERY, { limit: POSTS_LIMIT }, sanityFetchOpts()),
           sanity.fetch<BlogPostCard | null>(FEATURED_QUERY, {}, sanityFetchOpts()),
           sanity.fetch<BlogCategory[]>(CATEGORIES_QUERY, {}, sanityFetchOpts()),
-          sanity.fetch<number>(POSTS_COUNT_QUERY, { category: cat }, sanityFetchOpts()),
         ])
         return {
           posts: posts ?? [],
           featuredPost: featuredPost ?? null,
           categories: categories ?? [],
-          total: total ?? 0,
           error: false,
         }
       }
@@ -221,11 +214,8 @@ export async function useBlogIndex(options: {
     {
       default: emptyIndex,
       getCachedData: (key, nuxtApp) => cachedSanityData<BlogIndexData>(key, nuxtApp),
-      watch: [category, page],
     },
   )
-
-  return { ...query, pageSize, page, category }
 }
 
 /**

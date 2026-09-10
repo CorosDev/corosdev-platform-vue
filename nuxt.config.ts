@@ -231,6 +231,11 @@ export default defineNuxtConfig({
   // NUXT_BREVO_* vars below; a blank/zero default fails loudly in
   // server/utils/brevo.ts rather than silently posting to nowhere.
   runtimeConfig: {
+    // NUXT_CRM_WEBHOOK_URL — opcional. Si se define, server/api/lead.post.ts
+    // hace POST de cada lead validado ahí (catch-hook de Zapier / Make / n8n /
+    // HubSpot...). Sin definir, los leads se loguean en el servidor hasta que
+    // se cablee el CRM. Server-only (sin prefijo `public.`).
+    crmWebhookUrl: '',
     // NUXT_BREVO_API_KEY
     brevoApiKey: '',
     // NUXT_BREVO_CONTACT_LIST_ID — the full Contact-section form (name/email/company/interest/message)

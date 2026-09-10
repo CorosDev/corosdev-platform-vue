@@ -619,6 +619,55 @@
       "button": "Hablar con un ingeniero"
     }
   },
+  "contactModal": {
+    "title": "Cuéntanos qué quieres construir",
+    "subtitle": "Respondemos cada solicitud en menos de 24 horas hábiles, directo desde ingeniería.",
+    "close": "Cerrar",
+    "optional": "(opcional)",
+    "selectPlaceholder": "Selecciona una opción",
+    "fields": {
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "company": "Empresa",
+      "projectType": "Tipo de proyecto",
+      "budget": "Presupuesto estimado",
+      "message": "Cuéntanos más"
+    },
+    "placeholders": {
+      "name": "Tu nombre completo",
+      "email": "Tu correo corporativo",
+      "company": "Nombre de tu empresa",
+      "message": "Objetivo, alcance, tiempos, contexto..."
+    },
+    "projectTypes": {
+      "web": "Aplicación web / plataforma",
+      "mobile": "App móvil",
+      "ai": "IA / integración de modelos",
+      "audit": "Auditoría técnica",
+      "other": "Otro"
+    },
+    "budgets": {
+      "lt10k": "Menos de $10k",
+      "r10_25k": "$10k – $25k",
+      "r25_50k": "$25k – $50k",
+      "r50_100k": "$50k – $100k",
+      "gt100k": "$100k+"
+    },
+    "submit": "Enviar solicitud",
+    "submitting": "Enviando...",
+    "successTitle": "¡Solicitud recibida!",
+    "successBody": "Gracias. Un ingeniero revisará tu caso y te responderá con los siguientes pasos.",
+    "done": "Listo",
+    "errorBanner": "Hubo un problema al enviar. Por favor intenta de nuevo.",
+    "errors": {
+      "name": "Ingresa un nombre válido (mínimo 2 caracteres).",
+      "email": "Ingresa un correo electrónico válido.",
+      "company": "El nombre de la empresa es demasiado largo.",
+      "projectType": "Selecciona un tipo de proyecto.",
+      "budget": "Selecciona un rango de presupuesto.",
+      "message": "Cuéntanos un poco más (mínimo 10 caracteres)."
+    }
+  },
   "ctaDrawer": {
     "floatingLabel": "Socio / Inversor",
     "title": {

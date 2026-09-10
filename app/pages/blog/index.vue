@@ -2,23 +2,22 @@
 /**
  * /blog — índice del "Enterprise Insights Engine".
  *
- * Toda la data entra por `useBlogIndex`, que nunca lanza: si Sanity no
- * responde, `data.error` es `true` y se pinta el panel de Modo Mantenimiento
- * en lugar de un 500. Filtro por categoría y paginación van server-side
- * (GROQ); la búsqueda rápida filtra en cliente sobre la página cargada.
+ * `useBlogIndex` hace UNA lectura (todos los posts + destacado + categorías)
+ * y nunca lanza: si Sanity no responde, `data.error` es `true` y se pinta el
+ * panel de Modo Mantenimiento. El filtro por categoría, la búsqueda y la
+ * paginación se resuelven aquí en memoria con `computed()` — cero roundtrips
+ * a Sanity al filtrar.
  */
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const activeCategory = ref<string | null>(null)
-const page = ref(1)
-const search = ref('')
+const PAGE_SIZE = 9
 
-const { data, pending } = await useBlogIndex({
-  category: activeCategory,
-  page,
-  pageSize: 9,
-})
+const activeCategory = ref<string | null>(null)
+const search = ref('')
+const page = ref(1)
+
+const { data } = await useBlogIndex()
 
 usePageSeo({
   title: () => t('blog.seo.title'),
@@ -27,16 +26,13 @@ usePageSeo({
 
 const isMaintenance = computed(() => data.value.error)
 
-// El destacado sólo tiene sentido en la vista "limpia": primera página, sin
-// categoría y sin búsqueda activa.
-const featured = computed(() => {
-  if (activeCategory.value || page.value > 1 || search.value.trim()) return null
-  return data.value.featuredPost
-})
-
-const gridPosts = computed(() => {
+// Núcleo del arreglo: filtrado por categoría + búsqueda 100% en memoria.
+const filteredPosts = computed(() => {
   let list = data.value.posts
-  if (featured.value) list = list.filter(p => p._id !== featured.value!._id)
+
+  if (activeCategory.value) {
+    list = list.filter(p => p.category?.slug === activeCategory.value)
+  }
 
   const q = search.value.trim().toLowerCase()
   if (q) {
@@ -49,19 +45,41 @@ const gridPosts = computed(() => {
   return list
 })
 
-const totalPages = computed(() => Math.max(1, Math.ceil(data.value.total / 9)))
+// Cualquier cambio de filtro vuelve a la primera página.
+watch([activeCategory, search], () => {
+  page.value = 1
+})
+
+// El destacado sólo en la vista "limpia": sin categoría, sin búsqueda, página 1.
+const featured = computed(() => {
+  if (activeCategory.value || search.value.trim() || page.value > 1) return null
+  return data.value.featuredPost
+})
+
+// Pool visible = filtrados menos el destacado (si se está mostrando).
+const visiblePool = computed(() =>
+  featured.value
+    ? filteredPosts.value.filter(p => p._id !== featured.value!._id)
+    : filteredPosts.value,
+)
+
+const totalPages = computed(() => Math.max(1, Math.ceil(visiblePool.value.length / PAGE_SIZE)))
+
+const gridPosts = computed(() =>
+  visiblePool.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE),
+)
+
 const isEmpty = computed(
-  () => !isMaintenance.value && !featured.value && gridPosts.value.length === 0,
+  () => !isMaintenance.value && !featured.value && visiblePool.value.length === 0,
 )
 
 function selectCategory(slug: string | null) {
   activeCategory.value = slug
-  page.value = 1
 }
 
 function clearFilters() {
   search.value = ''
-  selectCategory(null)
+  activeCategory.value = null
 }
 
 function goToPage(next: number) {
@@ -201,12 +219,12 @@ function featuredDate(iso?: string | null) {
         </button>
       </UiSpotlightCard>
 
-      <!-- Paginación -->
-      <nav v-if="totalPages > 1 && !search.trim()" class="mt-14 flex items-center justify-center gap-4" :aria-label="t('blog.pager.label')">
+      <!-- Paginación (100% en cliente sobre la lista filtrada) -->
+      <nav v-if="totalPages > 1" class="mt-14 flex items-center justify-center gap-4" :aria-label="t('blog.pager.label')">
         <button
           type="button"
           class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-bold text-white transition-colors duration-300 ease-out-expo hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page <= 1 || pending"
+          :disabled="page <= 1"
           @click="goToPage(page - 1)"
         >
           {{ t('blog.pager.prev') }}
@@ -217,7 +235,7 @@ function featuredDate(iso?: string | null) {
         <button
           type="button"
           class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-bold text-white transition-colors duration-300 ease-out-expo hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page >= totalPages || pending"
+          :disabled="page >= totalPages"
           @click="goToPage(page + 1)"
         >
           {{ t('blog.pager.next') }}

@@ -4,8 +4,17 @@ const localePath = useLocalePath()
 const route = useRoute()
 
 // Enlaces y agenda salen de useSiteNav(), compartido con AppFooter. Cada
-// item es un enlace o un grupo con desplegable (`'children' in item`).
-const { navLinks, bookingUrl } = useSiteNav()
+// item es un enlace, un grupo con desplegable (`'children' in item`) o un
+// enlace marcado `openModal` que dispara el modal de contacto.
+const { navLinks } = useSiteNav()
+
+// CTA "Book a demo" + item "Contact" abren el modal global de captación.
+const { open: openContactModal } = useContactModal()
+
+function openContactFromMobile() {
+  closeMobileMenu()
+  openContactModal()
+}
 
 const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
@@ -213,6 +222,16 @@ onUnmounted(() => {
               </Transition>
             </div>
 
+            <!-- Enlace que abre el modal de contacto -->
+            <button
+              v-else-if="item.openModal"
+              type="button"
+              class="text-sm font-semibold tracking-tight text-white/80 transition-colors hover:text-neon-500"
+              @click="openContactModal()"
+            >
+              {{ item.label }}
+            </button>
+
             <!-- Enlace simple -->
             <NuxtLink
               v-else
@@ -234,14 +253,13 @@ onUnmounted(() => {
           >
             {{ locale === 'es' ? 'EN' : 'ES' }}
           </button>
-          <a
-            :href="bookingUrl"
-            target="_blank"
-            rel="noopener"
+          <button
+            type="button"
             class="inline-block rounded-lg bg-cobalt-500 px-2.5 py-1.5 text-xs font-semibold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900 sm:px-4 sm:py-2 sm:text-sm"
+            @click="openContactModal()"
           >
             {{ t('nav.cta') }}
-          </a>
+          </button>
         </div>
       </div>
 
@@ -291,6 +309,16 @@ onUnmounted(() => {
               </div>
             </div>
 
+            <!-- Enlace que abre el modal de contacto -->
+            <button
+              v-else-if="item.openModal"
+              type="button"
+              class="block w-full border-b border-white/5 py-3 text-left text-sm font-semibold tracking-tight text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
+              @click="openContactFromMobile"
+            >
+              {{ item.label }}
+            </button>
+
             <!-- Enlace simple -->
             <NuxtLink
               v-else
@@ -302,15 +330,13 @@ onUnmounted(() => {
             </NuxtLink>
           </template>
 
-          <a
-            :href="bookingUrl"
-            target="_blank"
-            rel="noopener"
-            class="block py-3 text-sm font-bold tracking-tight text-neon-500"
-            @click="closeMobileMenu"
+          <button
+            type="button"
+            class="block w-full py-3 text-left text-sm font-bold tracking-tight text-neon-500"
+            @click="openContactFromMobile"
           >
             {{ t('nav.cta') }}
-          </a>
+          </button>
         </nav>
       </Transition>
     </div>

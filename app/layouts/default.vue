@@ -45,5 +45,6 @@ useHead(() => ({
     <AppFooter />
 
     <FloatingCtaDrawer />
+    <ContactModal />
   </div>
 </template>
