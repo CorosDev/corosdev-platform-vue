@@ -1,6 +1,12 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import tailwindcss from '@tailwindcss/vite'
 
+// nuxt.config.ts is evaluated in Node (dev server / build). Reaching the env
+// off globalThis keeps this typed without pulling in @types/node, which this
+// project deliberately ships without (see .nuxt/tsconfig.node.json `types: []`).
+const nodeEnv
+  = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   // Nuxt 4 architecture: app code lives in /app, server code in /server.
@@ -153,8 +159,8 @@ export default defineNuxtConfig({
   // — queries then reject at request time, which the /blog data layer is
   // expected to catch and degrade to empty results rather than a 500.
   sanity: {
-    projectId: process.env.SANITY_PROJECT_ID || '',
-    dataset: process.env.SANITY_DATASET || 'production',
+    projectId: nodeEnv.SANITY_PROJECT_ID || '',
+    dataset: nodeEnv.SANITY_DATASET || 'production',
     // Pinned so query results are reproducible across deploys (Sanity's API is
     // date-versioned; omitting this floats to "latest" and can shift shapes).
     apiVersion: '2024-03-01',
@@ -318,7 +324,21 @@ export default defineNuxtConfig({
       },
       contentSecurityPolicy: {
         'frame-src': ["'self'", 'https://www.youtube.com', 'https://challenges.cloudflare.com'],
-        'connect-src': ["'self'", 'https://challenges.cloudflare.com'],
+        // 'self' for same-origin XHR, Cloudflare for Turnstile, and Sanity's
+        // query API for the /blog GROQ requests fired from the browser on
+        // client-side navigation. With `useCdn: true` (nuxt.config `sanity`
+        // block) the endpoint is https://<projectId>.apicdn.sanity.io; the
+        // non-CDN api.sanity.io host is kept for cache-busting fallbacks.
+        'connect-src': [
+          "'self'",
+          'https://challenges.cloudflare.com',
+          'https://*.apicdn.sanity.io',
+          'https://*.api.sanity.io',
+        ],
+        // nuxt-security's default is `'self' data:` — Sanity's asset CDN is
+        // added so <SanityImage> (body images) and the plain <img> cover /
+        // OG thumbnails served from cdn.sanity.io/images/... can load.
+        'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
       },
     },
     // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`
