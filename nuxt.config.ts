@@ -61,7 +61,7 @@ export default defineNuxtConfig({
   // `npm run build` + `node .output/server/index.mjs` runs), which is
   // exactly why server/utils/turnstile.ts's own bypass exists — see there.
   turnstile: {
-    siteKey: '',
+    siteKey: nodeEnv.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
   },
 
   // CLAUDE.md §4 mandates local serving of Plus Jakarta Sans via @nuxt/fonts
@@ -253,7 +253,22 @@ export default defineNuxtConfig({
     // treats "not configured" as a deliberate local-dev bypass rather than a
     // hard failure; see that file for the full reasoning.
     turnstile: {
-      secretKey: '',
+      secretKey: nodeEnv.NUXT_TURNSTILE_SECRET_KEY || '',
+    },
+    // Mapeo explícito del site key público bajo `public.turnstile.siteKey`
+    // (mismo valor que el bloque `turnstile` de arriba). El módulo
+    // @nuxtjs/turnstile ya lo mergea ahí por su cuenta vía `defu` en su
+    // propio `setup()`, pero declararlo aquí evita el WARN de arranque
+    // "No site key was provided" (el módulo lee
+    // `nuxt.options.runtimeConfig.public.turnstile.siteKey` ANTES de hacer
+    // ese merge, así que sin esta línea siempre lo encuentra `undefined` en
+    // ese instante, aunque el valor real termine llegando bien en runtime) y
+    // deja el mapeo de NUXT_PUBLIC_TURNSTILE_SITE_KEY explícito en un solo
+    // sitio en vez de depender del efecto colateral del módulo.
+    public: {
+      turnstile: {
+        siteKey: nodeEnv.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      },
     },
   },
 
