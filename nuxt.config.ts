@@ -144,9 +144,15 @@ export default defineNuxtConfig({
   // accidentally indexing a preview/staging deploy) — `allow: ['/']` is
   // added anyway so the directive is always literally present in the file,
   // not just implied by the absence of a Disallow rule.
+  // `/api` is blocked explicitly: every Nitro API route (contact/lead
+  // submission, health check, sitemap sources...) is a server endpoint with
+  // nothing worth indexing and no matching Nuxt page, so it wouldn't appear
+  // in the sitemap either way — this just keeps crawlers from wasting budget
+  // hitting it directly.
   robots: {
     sitemap: '/sitemap.xml',
     allow: ['/'],
+    disallow: ['/api'],
   },
 
   // "Enterprise Insights Engine" — headless blog/CMS on Sanity.io, scoped to

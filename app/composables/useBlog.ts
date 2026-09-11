@@ -54,6 +54,8 @@ export interface BlogPostCard {
   slug: string
   excerpt?: string | null
   publishedAt?: string | null
+  /** Última edición en Sanity — usado como `dateModified` en el JSON-LD de `BlogPosting`. */
+  updatedAt?: string | null
   cover?: BlogImage | null
   author?: BlogAuthor | null
   category?: BlogCategory | null
@@ -109,6 +111,7 @@ const CARD_PROJECTION = /* groq */ `
   "slug": slug.current,
   excerpt,
   publishedAt,
+  "updatedAt": _updatedAt,
   "cover": mainImage{ "url": asset->url, "lqip": asset->metadata.lqip, alt },
   "author": author->{ name, role, bio, "image": image.asset->url },
   "category": category->{ title, "slug": slug.current }

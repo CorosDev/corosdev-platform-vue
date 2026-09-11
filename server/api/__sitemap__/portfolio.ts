@@ -11,7 +11,14 @@
  * o si la consulta a Sanity falla, devuelve `[]` y el sitemap se genera con
  * el resto del sitio intacto — nunca rompe la build ni la respuesta de
  * `/sitemap.xml`.
+ *
+ * No reutiliza `sanityFetchOpts()` de `app/utils/sanityFetch.ts`: ese módulo
+ * importa el tipo `NuxtApp` de `#app`, que no existe en el tsconfig de
+ * `server/` — importarlo aquí rompería `npx nuxi typecheck` para todo el
+ * contexto de servidor. El mismo techo de 8 s se declara localmente.
  */
+const SANITY_TIMEOUT_MS = 8000
+
 interface CaseStudySlugRow {
   slug: string
   _updatedAt?: string
@@ -34,7 +41,9 @@ export default defineSitemapEventHandler(async (event) => {
   if (!projectId) return []
 
   try {
-    const rows = await useSanity(event).fetch<CaseStudySlugRow[]>(SLUGS_QUERY)
+    const rows = await useSanity(event).fetch<CaseStudySlugRow[]>(SLUGS_QUERY, {}, {
+      signal: AbortSignal.timeout(SANITY_TIMEOUT_MS),
+    })
     return (rows ?? [])
       .filter(row => Boolean(row.slug))
       .map((row) => {

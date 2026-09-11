@@ -86,6 +86,7 @@ useHead(() => ({
             description: metaDescription.value,
             image: ogImage.value,
             datePublished: post.value.publishedAt || undefined,
+            dateModified: post.value.updatedAt || post.value.publishedAt || undefined,
             author: post.value.author?.name
               ? { '@type': 'Person', name: post.value.author.name }
               : undefined,
