@@ -32,6 +32,7 @@ useHead(() => ({
 <template>
   <div>
     <HomeHeroSection />
+    <HomeLogoCloudSection />
     <HomePresentationVideoSection />
     <HomeMissionSection />
     <HomeEcosystemSection />

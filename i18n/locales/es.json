@@ -94,6 +94,10 @@
         }
       }
     },
+    "logoCloud": {
+      "row1Label": "Mencionado en & Ecosistema",
+      "row2Label": "Construido con tecnología de vanguardia"
+    },
     "presentation": {
       "title_1": "Mira nuestra",
       "title_span": "metodología en acción",

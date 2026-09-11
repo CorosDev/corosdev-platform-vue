@@ -94,6 +94,10 @@
         }
       }
     },
+    "logoCloud": {
+      "row1Label": "Featured In & Ecosystem",
+      "row2Label": "Built With Cutting-Edge Technology"
+    },
     "presentation": {
       "title_1": "See Our",
       "title_span": "Methodology in Action",

@@ -105,6 +105,20 @@ export default defineNuxtConfig({
         maxAge: 31536000,
       },
     },
+    // `<SanityImage>` (@nuxtjs/sanity, used by BlogPortableTextRenderer.vue
+    // for images embedded inline in an article's rich text body) always
+    // renders `<NuxtImg provider="sanity">` under the hood — but @nuxt/image
+    // only bundles a built-in provider's runtime when it's actually declared
+    // here. Without this block, ANY article whose body has an inline image
+    // throws "Unknown provider: sanity" — as a template-render error, not a
+    // caught data-fetch error, so it surfaces as a genuine SSR 500 on
+    // /blog/[slug] (not the graceful Modo Mantenimiento the data layer
+    // otherwise guarantees), plus the same error again client-side on an SPA
+    // navigation into the same article.
+    sanity: {
+      projectId: nodeEnv.SANITY_PROJECT_ID || '',
+      dataset: nodeEnv.SANITY_DATASET || 'production',
+    },
   },
 
   i18n: {
@@ -179,6 +193,21 @@ export default defineNuxtConfig({
     // Public read traffic goes through Sanity's CDN (cached, cheaper, faster);
     // fine for published blog content where a few minutes' staleness is OK.
     useCdn: true,
+    // MUST be explicit: @nuxtjs/sanity defaults `perspective` to `'raw'` when
+    // this key is omitted (see its module.mjs), and `raw` returns the
+    // unresolved draft/published overlay — Sanity's API requires an auth
+    // token for it and otherwise answers 401. This app ships with NO
+    // client-reachable token by design (Phase 1 is read-only, see above), so
+    // every browser-side read (client-side navigation into /blog/[slug]
+    // re-runs useAsyncData's handler in the browser same as SSR) hit that
+    // 401 — which the browser then reports as a blocked cross-origin
+    // request, surfacing as a misleading "CORS error" in devtools even
+    // though `connect-src` already allowlists both Sanity hosts below.
+    // `published` is the correct perspective for public content either way:
+    // it works fully unauthenticated and is what actually lets `useCdn: true`
+    // take effect (case in point: @sanity/client force-disables the CDN for
+    // `drafts`/`previewDrafts`).
+    perspective: 'published',
   },
 
   // Static brand/city assets in /public are served by Nitro with only

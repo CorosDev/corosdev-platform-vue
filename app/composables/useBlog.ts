@@ -144,22 +144,10 @@ const CATEGORIES_QUERY = groq`*[_type == "category" && defined(slug.current)] | 
   "count": count(*[_type == "post" && references(^._id) && defined(slug.current)])
 }`
 
-// Detalle: la MISMA proyección de tarjeta (que ya trae `author.bio`) más el
-// cuerpo y el bloque SEO. Sin re-declarar `"author"` — ver la nota en
-// `CARD_PROJECTION`. El filtro es por el slug tal cual llega de la ruta
-// (`slug.current == $slug`): el `post` no es un documento localizado, así
-// que `/blog/x` y `/en/blog/x` resuelven el mismo doc, sin fallback de idioma.
-const POST_QUERY = groq`*[_type == "post" && slug.current == $slug] [0] {
-  ${CARD_PROJECTION},
-  body,
-  seo{
-    metaTitle,
-    metaDescription,
-    keywords,
-    noIndex,
-    "ogImage": ogImage.asset->url
-  }
-}`
+// La query de detalle (misma CARD_PROJECTION + body + seo) vive ahora en
+// server/api/blog/[slug].get.ts, no aquí — ver el comentario de
+// `useBlogPost()` más abajo para el porqué (esa ruta es la ÚNICA que llama a
+// Sanity para un artículo individual; este archivo sólo consume su JSON).
 
 /**
  * Minutos de lectura estimados a 200 ppm sobre el texto plano del Portable
@@ -225,30 +213,38 @@ export async function useBlogIndex() {
  * Artículo individual por slug. `post: null` + `error: false` significa
  * "no existe" (la vista debe lanzar un 404); `error: true` significa "no se
  * pudo leer" (la vista pinta Modo Mantenimiento, sin 404 ni 500).
+ *
+ * A diferencia de `useBlogIndex()`, este handler NUNCA llama a
+ * `useSanity().fetch(...)` directo: pasa por `server/api/blog/[slug].get.ts`
+ * vía `$fetch`. La clave del caché de `useAsyncData` es dinámica
+ * (`blog:post:<slug>`, uno por artículo), así que cada slug nuevo visitado
+ * por NAVEGACIÓN CLIENTE (un click en el índice, sin recarga completa)
+ * dispara el handler otra vez — pero esta vez en el NAVEGADOR. Si ese
+ * handler llamara a Sanity directo, el navegador saldría cross-origin a
+ * `*.apicdn.sanity.io`, sujeto a la lista de orígenes CORS del proyecto de
+ * Sanity (fuera de este repo, en sanity.io/manage) — exactamente el "bloqueo
+ * por CORS" reportado. `$fetch` a nuestra propia ruta es siempre same-origin
+ * (y en SSR, Nitro la resuelve in-process, sin round-trip real), así que
+ * jamás depende de esa lista.
  */
 export async function useBlogPost(slug: MaybeRefOrGetter<string>) {
   const slugRef = toRef(slug)
   const { projectId } = useSanityConfig()
-  const sanity = projectId ? useSanity() : null
 
   return await useAsyncData<BlogPostData>(
     () => `blog:post:${slugRef.value}`,
     async () => {
-      if (!sanity) return { post: null, error: true }
+      if (!projectId) return { post: null, error: true }
       if (!slugRef.value) return { post: null, error: false }
 
       try {
-        const post = await sanity.fetch<BlogPost | null>(
-          POST_QUERY,
-          { slug: slugRef.value },
-          sanityFetchOpts(),
-        )
+        const result = await $fetch<BlogPostData>(`/api/blog/${encodeURIComponent(slugRef.value)}`)
         // Log defensivo, sólo en dev: distingue "no existe" de "falló la
         // query" sin tener que abrir la pestaña de red.
-        if (import.meta.dev && !post) {
+        if (import.meta.dev && !result.post && !result.error) {
           console.warn(`[useBlog] sin resultado para slug="${slugRef.value}" — el post no existe o el slug no coincide con slug.current`)
         }
-        return { post: post ?? null, error: false }
+        return result
       }
       catch (err) {
         console.error(`[useBlog] la query del artículo (slug="${slugRef.value}") lanzó — Modo Mantenimiento:`, err)
