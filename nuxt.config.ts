@@ -303,6 +303,17 @@ export default defineNuxtConfig({
   // producing .output/server/index.mjs, so `npm run preview` and the
   // build+curl loop this project relies on would have nothing to run.
   nitro: {
+    // Nitro's own SWR (via routeRules `{ swr: 3600 }` above, on /blog and
+    // /portfolio) used to only ship as a `stale-while-revalidate` response
+    // header — Vercel's build output flags that as a deprecated pattern and
+    // warns to use its native ISR/SWR primitive instead. `future.nativeSWR`
+    // opts into Nitro emitting the request through Vercel's actual SWR
+    // Functions config (`.vercel/output/functions/*.func/.vc-config.json`
+    // with `"passQuery"`/cache options) rather than a plain edge/CDN header,
+    // silencing that warning without changing the routeRules themselves.
+    future: {
+      nativeSWR: true,
+    },
     compressPublicAssets: {
       gzip: true,
       brotli: true,
