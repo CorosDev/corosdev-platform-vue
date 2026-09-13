@@ -30,7 +30,7 @@ const coverSrc = computed(() =>
 <template>
   <UiSpotlightCard as="article" class="group flex h-full flex-col overflow-hidden rounded-2xl">
     <NuxtLink :to="to" class="flex h-full flex-col focus-visible:outline-none">
-      <div class="relative aspect-[5/3] overflow-hidden bg-white/[0.03]">
+      <div class="relative aspect-[5/3] overflow-hidden bg-surface-strong/50">
         <img
           v-if="coverSrc"
           :src="coverSrc"
@@ -47,19 +47,19 @@ const coverSrc = computed(() =>
       <div class="flex flex-1 flex-col gap-3 p-6">
         <div class="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.14em]">
           <span v-if="post.category" class="text-neon-300">{{ post.category.title }}</span>
-          <span v-if="post.category && dateLabel" class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
-          <time v-if="dateLabel" :datetime="post.publishedAt || undefined" class="text-white/40">{{ dateLabel }}</time>
+          <span v-if="post.category && dateLabel" class="h-1 w-1 rounded-full bg-surface-strong/50" aria-hidden="true" />
+          <time v-if="dateLabel" :datetime="post.publishedAt || undefined" class="text-ink-muted">{{ dateLabel }}</time>
         </div>
 
-        <h3 class="text-lg font-black leading-snug tracking-tight text-white transition-colors duration-300 ease-out-expo group-hover:text-neon-100">
+        <h3 class="text-lg font-black leading-snug tracking-tight text-ink transition-colors duration-300 ease-out-expo group-hover:text-neon-100">
           {{ post.title }}
         </h3>
 
-        <p v-if="post.excerpt" class="line-clamp-3 text-sm leading-relaxed text-white/55">
+        <p v-if="post.excerpt" class="line-clamp-3 text-sm leading-relaxed text-ink-muted">
           {{ post.excerpt }}
         </p>
 
-        <div class="mt-auto flex items-center gap-2 pt-2 text-xs text-white/45">
+        <div class="mt-auto flex items-center gap-2 pt-2 text-xs text-ink-muted">
           <span v-if="post.author">{{ t('blog.card.by', { name: post.author.name }) }}</span>
           <span class="ml-auto inline-flex items-center gap-1 font-bold text-neon-300">
             {{ t('blog.card.readMore') }}

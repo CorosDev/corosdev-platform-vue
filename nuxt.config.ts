@@ -38,7 +38,25 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     '@nuxtjs/turnstile',
     '@nuxtjs/sanity',
+    '@nuxtjs/color-mode',
   ],
+
+  // Toggle de Light/Dark (sesión "dark-light-mode-toggle"). classSuffix: ''
+  // produce literalmente `.dark` / `.light` en <html> — el par que main.css
+  // espera vía `@custom-variant dark` y que los `dark:` de Tailwind v4
+  // necesitan, en vez del `.dark-mode` que es el default del módulo. El sitio
+  // nace 100% oscuro (ver dark-light-mode-toggle-scope en memoria), así que
+  // tanto la preferencia inicial como el fallback (cuando el visitante no
+  // tiene nada guardado y su SO no expone `prefers-color-scheme`) son 'dark'
+  // — nunca se auto-detecta un modo claro por sorpresa en la primera visita.
+  // El módulo inyecta su propio script bloqueante en <head> que fija la clase
+  // ANTES del primer paint, así que no hay flash de tema incorrecto al cargar.
+  colorMode: {
+    classSuffix: '',
+    preference: 'dark',
+    fallback: 'dark',
+    storageKey: 'corosdev-color-mode',
+  },
 
   // Shared by the whole Nuxt SEO module family (sitemap, robots) via
   // nuxt-site-config — this would already be auto-detected from i18n.baseUrl
@@ -47,6 +65,21 @@ export default defineNuxtConfig({
   // production-critical, load-bearing SEO setting.
   site: {
     url: 'https://corosdev.com',
+  },
+
+  // `scrollBehaviorType: 'smooth'` = "SoftScroll": el desplegable "Servicios"
+  // del navbar (useSiteNav.ts) navega a anclas de /services vía NuxtLink
+  // (p.ej. `/services#custom-software`), tanto desde otra página como estando
+  // ya en ella. Nuxt/Vue Router resuelve ambos casos con su propio
+  // scrollBehavior (node_modules/nuxt/dist/pages/runtime/router.options.js),
+  // que por defecto usa 'auto' (salto instantáneo) — este flag es la única
+  // perilla pública para pedirle una animación en su lugar. El salto nativo
+  // de <a href="#id"> (ServicesPillarNav.vue) no pasa por aquí; ese lo cubre
+  // `scroll-behavior: smooth` en main.css.
+  router: {
+    options: {
+      scrollBehaviorType: 'smooth',
+    },
   },
 
   // Public site key (NOT secret — it's meant to ship to the client, unlike

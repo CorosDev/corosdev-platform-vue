@@ -3,7 +3,7 @@
  * Spotlight Card — panel de cristal con un realce radial que sigue al cursor.
  *
  * Primitivo compartido del rediseño B2B: reemplaza el patrón repetido
- * `glass rounded-3xl border border-white/5 hover:...` que cada sección venía
+ * `glass rounded-3xl border border-hairline hover:...` que cada sección venía
  * redeclarando a mano (EcosystemSection, SolutionsSection, la vieja
  * SnapaySpotlightSection...) y que derivaba cada vez que se tocaba una.
  *
@@ -77,7 +77,7 @@ onBeforeUnmount(() => {
   <component
     :is="props.as"
     ref="root"
-    class="group/spot isolate relative overflow-hidden border border-white/10 bg-white/[0.02] backdrop-blur-[8px] transition-colors duration-500 ease-out-expo hover:border-neon-500/30"
+    class="group/spot isolate relative overflow-hidden border border-hairline bg-surface-strong/50 backdrop-blur-[8px] transition-colors duration-500 ease-out-expo hover:border-neon-500/30"
     :style="{ '--spot-size': `${props.size}px` }"
     @pointermove="onPointerMove"
   >
@@ -89,7 +89,7 @@ onBeforeUnmount(() => {
     <!-- Hairline superior: define el borde de la superficie sin recurrir a
          una sombra pesada (sistema de elevación por luz, no por sombra). -->
     <span
-      class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
+      class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-hairline to-transparent"
       aria-hidden="true"
     />
     <slot />

@@ -19,10 +19,10 @@ const { open: openCtaDrawer } = useCtaDrawer()
         class="flex flex-col items-start gap-8 rounded-2xl p-8 md:p-12 lg:flex-row lg:items-center lg:justify-between"
       >
         <div>
-          <h2 class="max-w-xl text-2xl font-black leading-[1.15] tracking-tight text-white md:text-4xl">
+          <h2 class="max-w-xl text-2xl font-black leading-[1.15] tracking-tight text-ink md:text-4xl">
             {{ t('about.cta.h2_1') }} <span class="gradient-text">{{ t('about.cta.h2_span') }}</span>
           </h2>
-          <p class="mt-4 max-w-md text-base leading-relaxed text-white/55">{{ t('about.cta.p') }}</p>
+          <p class="mt-4 max-w-md text-base leading-relaxed text-ink-muted">{{ t('about.cta.p') }}</p>
         </div>
 
         <button

@@ -2,7 +2,7 @@
 const { t } = useI18n()
 
 interface LocationChip {
-  code: string
+  code: 'HN' | 'US' | 'CZ'
   labelKey: 'honduras' | 'miami' | 'wyoming' | 'prague'
 }
 
@@ -23,14 +23,14 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
         <!-- Copy — tilt magnético aislado a esta columna: el globo WebGL de la
              derecha ya es un objeto 3D interactivo y no debe inclinarse. -->
         <div v-tilt="5">
-          <p class="text-sm font-medium uppercase tracking-wide text-white opacity-90">
+          <p class="text-sm font-medium uppercase tracking-wide text-ink opacity-90">
             {{ t('home.hero.tag') }}
           </p>
-          <h1 class="mt-4 text-5xl font-extrabold leading-[1.1] md:text-7xl">
+          <h1 class="mt-4 text-4xl font-extrabold leading-[1.1] tracking-tight lg:text-5xl xl:text-6xl">
             {{ t('home.hero.h1_1') }} <span class="gradient-text">{{ t('home.hero.h1_span') }}</span>
             {{ t('home.hero.h1_2') }}
           </h1>
-          <p class="mt-5 max-w-xl text-lg text-white/80">
+          <p class="mt-5 max-w-lg text-lg text-ink-muted">
             {{ t('home.hero.sub') }}
           </p>
           <div class="mt-8 flex items-center gap-3">
@@ -43,13 +43,13 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
               {{ t('home.hero.cta1') }}
             </a>
             <a
-              href="#ecosystem"
-              class="rounded-xl border border-white/18 px-6 py-3 transition-colors hover:border-neon-500 hover:text-neon-500"
+              href="#what-we-solve"
+              class="rounded-xl border border-hairline bg-surface/50 px-6 py-3 text-ink transition-colors hover:border-neon-500 hover:bg-surface-strong hover:text-accent-text"
             >
               {{ t('home.hero.cta2') }}
             </a>
           </div>
-          <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
+          <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-muted">
             <span>{{ t('home.hero.pill1') }}</span>
             <span class="opacity-60" aria-hidden="true">&bull;</span>
             <span>{{ t('home.hero.pill2') }}</span>
@@ -71,7 +71,7 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
                 aria-hidden="true"
               />
 
-              <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
+              <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-ink-muted sm:text-[12px]">
                 {{ t('home.hero.globeLabel') }}
               </p>
 
@@ -82,7 +82,7 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
                 >
                   CD
                 </div>
-                <p class="mt-6 max-w-xs text-sm text-white/60">
+                <p class="mt-6 max-w-xs text-sm text-ink-muted">
                   {{ t('home.hero.fallbackDesc') }}
                 </p>
 
@@ -90,10 +90,18 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
                   <span
                     v-for="loc in locationChips"
                     :key="loc.labelKey"
-                    class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/70"
+                    class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-hairline bg-surface/50 px-3 py-1.5 text-xs font-medium text-ink backdrop-blur-sm hover:bg-surface-strong"
                   >
-                    <span class="text-[10px] font-bold uppercase text-neon-300">{{ loc.code }}</span>
-                    {{ t(`home.hero.locations.${loc.labelKey}`) }}
+                    <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
+                      <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+                      <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    </span>
+                    <UiFlagIcon :code="loc.code" />
+                    <svg class="h-3 w-3 shrink-0 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.5-7.5 11.25-7.5 11.25S4.5 18 4.5 10.5a7.5 7.5 0 1115 0z" />
+                    </svg>
+                    <span>{{ t(`home.hero.locations.${loc.labelKey}`) }}</span>
                   </span>
                 </div>
               </div>

@@ -16,7 +16,7 @@ interface GpGeo {
   id: string
   lat: number
   lng: number
-  countryCode: string
+  countryCode: 'HN' | 'US' | 'CZ'
   banner: string
 }
 
@@ -493,7 +493,7 @@ onBeforeUnmount(() => {
     <div class="relative aspect-square w-full overflow-visible">
       <div class="gp-ambient-glow" aria-hidden="true" />
 
-      <p class="gp-hero-label text-[11px] font-bold uppercase tracking-[0.5em] text-white/70 sm:text-[12px]">
+      <p class="gp-hero-label text-[11px] font-bold uppercase tracking-[0.5em] text-ink-muted sm:text-[12px]">
         {{ t('home.hero.globeLabel') }}
       </p>
 
@@ -527,7 +527,7 @@ onBeforeUnmount(() => {
         :aria-pressed="loc.id === currentId"
         @click="selectLocation(loc.id)"
       >
-        <span class="gp-selector-flag" aria-hidden="true">{{ loc.countryCode }}</span>
+        <UiFlagIcon :code="loc.countryCode" />
         <span>{{ locationText[loc.id]?.short }}</span>
       </button>
     </div>
@@ -561,7 +561,9 @@ onBeforeUnmount(() => {
             @error="bannerError = true"
           />
           <div class="gp-card-banner-overlay" />
-          <div class="gp-card-flag-badge" aria-hidden="true">{{ currentLocation.countryCode }}</div>
+          <div class="gp-card-flag-badge">
+            <UiFlagIcon :code="currentLocation.countryCode" />
+          </div>
         </div>
 
         <div class="gp-card-body">
@@ -785,11 +787,6 @@ onBeforeUnmount(() => {
   color: #ffffff;
 }
 
-.gp-selector-flag {
-  font-size: 0.95rem;
-  line-height: 1;
-}
-
 @media (min-width: 768px) {
   .gp-selector {
     position: absolute;
@@ -881,8 +878,6 @@ onBeforeUnmount(() => {
   position: absolute;
   left: 0.9rem;
   bottom: -0.55rem;
-  font-size: 1.15rem;
-  line-height: 1;
   width: 34px;
   height: 34px;
   display: flex;

@@ -6,9 +6,9 @@ const localePath = useLocalePath()
 <template>
   <section class="relative z-10">
     <div class="mx-auto max-w-7xl px-6 pb-16 md:pb-32">
-      <div class="glass soft mx-auto max-w-4xl rounded-[2.5rem] border border-white/10 p-12 text-center">
-        <h3 class="text-2xl font-black text-white md:text-4xl">{{ t('partners.cta.h3') }}</h3>
-        <p class="mx-auto mt-4 max-w-2xl text-sm text-white/60 md:text-base">
+      <div class="glass soft mx-auto max-w-4xl rounded-[2.5rem] border border-hairline p-12 text-center">
+        <h3 class="text-2xl font-black text-ink md:text-4xl">{{ t('partners.cta.h3') }}</h3>
+        <p class="mx-auto mt-4 max-w-2xl text-sm text-ink-muted md:text-base">
           {{ t('partners.cta.p') }}
         </p>
         <div class="mt-8">

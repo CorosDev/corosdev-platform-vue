@@ -37,11 +37,11 @@ const partners = computed(() =>
           :href="partner.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="group glass flex flex-col rounded-[2rem] border border-white/5 bg-white/[0.02] p-8 transition-all duration-400 hover:-translate-y-1.5 hover:border-neon-500/30 hover:shadow-[0_30px_80px_rgba(31,127,255,0.16)]"
+          class="group glass flex flex-col rounded-[2rem] border border-hairline bg-surface-strong/50 p-8 transition-all duration-400 hover:-translate-y-1.5 hover:border-neon-500/30 hover:shadow-[0_30px_80px_rgba(31,127,255,0.16)]"
         >
           <div
             class="flex h-16 w-16 items-center justify-center rounded-2xl border p-2.5"
-            :class="partner.lightBg ? 'border-white/10 bg-white' : 'border-neon-500/20 bg-neon-500/10'"
+            :class="partner.lightBg ? 'border-hairline bg-white' : 'border-neon-500/20 bg-neon-500/10'"
           >
             <NuxtPicture
               :src="partner.logo"
@@ -54,14 +54,14 @@ const partners = computed(() =>
               :img-attrs="{ class: 'h-full w-full object-contain' }"
             />
           </div>
-          <h2 class="mt-6 text-2xl font-black text-white">{{ partner.name }}</h2>
+          <h2 class="mt-6 text-2xl font-black text-ink">{{ partner.name }}</h2>
           <span
             class="mt-2 inline-block w-fit rounded-lg border border-neon-500/20 bg-neon-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-neon-300"
           >
             {{ partner.sector }}
           </span>
-          <p class="mt-4 flex-1 text-sm leading-relaxed text-white/60">{{ partner.description }}</p>
-          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 transition-colors group-hover:text-neon-500">
+          <p class="mt-4 flex-1 text-sm leading-relaxed text-ink-muted">{{ partner.description }}</p>
+          <span class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-neon-300 transition-colors group-hover:text-accent-text">
             {{ t('partners.grid.visit') }}
           </span>
         </a>

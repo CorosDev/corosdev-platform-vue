@@ -31,8 +31,13 @@ useHead(() => ({
 </script>
 
 <template>
+  <!-- `text-ink` es la base heredada por TODO el árbol (h1/p sin color propio
+       en HeroSection.vue, por ejemplo) — sin este cambio, los tokens
+       `text-ink`/`text-ink-muted` añadidos en componentes puntuales no
+       bastan: cualquier elemento que dependiera del `text-ink` heredado de
+       aquí seguiría blanco puro en modo claro. -->
   <div
-    class="flex min-h-screen flex-col overflow-x-hidden bg-transparent text-white antialiased selection:bg-neon-500 selection:text-brand-900"
+    class="flex min-h-screen flex-col overflow-x-hidden bg-transparent text-ink antialiased selection:bg-neon-500 selection:text-brand-900"
   >
     <BackgroundStars />
 

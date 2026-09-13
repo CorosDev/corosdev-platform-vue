@@ -17,11 +17,23 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="mt-8 border-t border-white/10">
+  <footer class="mt-8 border-t border-hairline">
     <div class="mx-auto max-w-7xl px-6 py-12">
       <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div>
+          <!-- Misma pareja dark:/light: que AppNavbar.vue — ver el comentario
+               de ese archivo para por qué son dos PNG y no un filtro. -->
           <NuxtLink :to="localePath('/')" class="inline-flex items-center gap-3">
+            <NuxtPicture
+              src="/coros-light.png"
+              alt="CorosDev"
+              width="361"
+              height="220"
+              sizes="70px"
+              loading="lazy"
+              class="dark:hidden"
+              :img-attrs="{ class: 'h-10 w-auto dark:hidden' }"
+            />
             <NuxtPicture
               src="/coros.png"
               alt="CorosDev"
@@ -29,10 +41,11 @@ const year = new Date().getFullYear()
               height="220"
               sizes="70px"
               loading="lazy"
-              :img-attrs="{ class: 'h-10 w-auto' }"
+              class="hidden dark:block"
+              :img-attrs="{ class: 'hidden h-10 w-auto dark:block' }"
             />
           </NuxtLink>
-          <p class="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-ink-muted">
             {{ t('home.contact.location') }}
           </p>
         </div>
@@ -42,15 +55,15 @@ const year = new Date().getFullYear()
             v-for="link in footerLinks"
             :key="link.key"
             :to="link.to"
-            class="rounded text-sm font-semibold text-white/55 transition-colors duration-300 ease-out-expo hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            class="rounded text-sm font-semibold text-ink-muted transition-colors duration-300 ease-out-expo hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
           >
             {{ link.label }}
           </NuxtLink>
         </nav>
       </div>
 
-      <div class="mt-10 border-t border-white/10 pt-6">
-        <p class="text-xs text-white/50">&copy; {{ year }} {{ t('footer.rights') }}</p>
+      <div class="mt-10 border-t border-hairline pt-6">
+        <p class="text-xs text-ink-muted">&copy; {{ year }} {{ t('footer.rights') }}</p>
       </div>
     </div>
   </footer>

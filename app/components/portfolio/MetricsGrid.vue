@@ -24,10 +24,10 @@ const items = computed(() => (props.metrics ?? []).filter(m => m.label && m.valu
   >
     <li v-for="(metric, i) in items" :key="`${metric.label}-${i}`">
       <UiSpotlightCard :size="320" class="flex h-full flex-col gap-1.5 rounded-2xl p-5 md:p-6">
-        <p class="text-3xl font-black leading-none tracking-tight text-white md:text-4xl">
+        <p class="text-3xl font-black leading-none tracking-tight text-ink md:text-4xl">
           {{ metric.value }}
         </p>
-        <p class="text-xs font-bold uppercase tracking-[0.12em] text-white/55">
+        <p class="text-xs font-bold uppercase tracking-[0.12em] text-ink-muted">
           {{ metric.label }}
         </p>
         <p v-if="metric.impact" class="mt-1 text-xs font-semibold text-neon-300">

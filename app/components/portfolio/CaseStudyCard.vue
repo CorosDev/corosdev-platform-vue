@@ -26,7 +26,7 @@ const heroSrc = computed(() =>
 <template>
   <UiSpotlightCard as="article" class="group flex h-full flex-col overflow-hidden rounded-2xl">
     <NuxtLink :to="to" class="flex h-full flex-col focus-visible:outline-none">
-      <div class="relative aspect-[5/3] overflow-hidden bg-white/[0.03]">
+      <div class="relative aspect-[5/3] overflow-hidden bg-surface-strong/50">
         <img
           v-if="heroSrc"
           :src="heroSrc"
@@ -43,15 +43,15 @@ const heroSrc = computed(() =>
       <div class="flex flex-1 flex-col gap-3 p-6">
         <div class="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.14em]">
           <span class="text-neon-300">{{ caseStudy.client }}</span>
-          <span v-if="caseStudy.industry" class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
-          <span v-if="caseStudy.industry" class="text-white/40">{{ caseStudy.industry }}</span>
+          <span v-if="caseStudy.industry" class="h-1 w-1 rounded-full bg-surface-strong/50" aria-hidden="true" />
+          <span v-if="caseStudy.industry" class="text-ink-muted">{{ caseStudy.industry }}</span>
         </div>
 
-        <h3 class="text-lg font-black leading-snug tracking-tight text-white transition-colors duration-300 ease-out-expo group-hover:text-neon-100">
+        <h3 class="text-lg font-black leading-snug tracking-tight text-ink transition-colors duration-300 ease-out-expo group-hover:text-neon-100">
           {{ caseStudy.title }}
         </h3>
 
-        <p v-if="caseStudy.summary" class="line-clamp-3 text-sm leading-relaxed text-white/55">
+        <p v-if="caseStudy.summary" class="line-clamp-3 text-sm leading-relaxed text-ink-muted">
           {{ caseStudy.summary }}
         </p>
 

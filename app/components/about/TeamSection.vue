@@ -86,10 +86,10 @@ const team = computed(() =>
   <section class="relative py-12 md:py-20">
     <div class="mx-auto max-w-7xl px-6">
       <div v-reveal class="mb-10 md:mb-14">
-        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-neon-500">
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
           {{ t('about.team.label') }}
         </p>
-        <h2 class="max-w-3xl text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl">
+        <h2 class="max-w-3xl text-3xl font-black leading-[1.1] tracking-tight text-ink md:text-5xl">
           {{ t('about.team.h2_1') }} <span class="gradient-text">{{ t('about.team.h2_span') }}</span>
           {{ t('about.team.h2_2') }}
         </h2>
@@ -122,7 +122,7 @@ const team = computed(() =>
             </span>
             <svg
               v-if="member.hasProfile"
-              class="h-4 w-4 shrink-0 text-white/25 transition-colors duration-300 ease-out-expo group-hover/spot:text-neon-300"
+              class="h-4 w-4 shrink-0 text-ink-muted transition-colors duration-300 ease-out-expo group-hover/spot:text-neon-300"
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -134,14 +134,14 @@ const team = computed(() =>
           </div>
 
           <h3
-            class="mt-5 font-black tracking-tight text-white"
+            class="mt-5 font-black tracking-tight text-ink"
             :class="member.featured ? 'text-2xl' : 'text-lg'"
           >
             {{ member.name }}
           </h3>
-          <p class="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-neon-500">{{ member.role }}</p>
+          <p class="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-accent-text">{{ member.role }}</p>
           <p
-            class="mt-3 leading-relaxed text-white/50"
+            class="mt-3 leading-relaxed text-ink-muted"
             :class="member.featured ? 'text-sm md:max-w-md' : 'text-sm'"
           >
             {{ member.description }}
