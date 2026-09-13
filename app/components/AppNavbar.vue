@@ -107,9 +107,17 @@ onUnmounted(() => {
 
 <template>
   <header ref="header" class="fixed top-0 left-0 right-0 z-50">
+    <!-- `glass` (main.css) bakes in its own `border-hairline` — dropped here
+         rather than layered under `border-hairline`, since two utilities
+         touching the same property (border-color) would leave which one wins
+         to CSS layer-ordering, not something to depend on. `backdrop-blur-md`
+         (Tailwind core, 12px) reproduces the same effect `glass` used
+         `backdrop-filter: blur(8px)` for. `scrolled` still deepens the panel
+         slightly on scroll, now expressed as `--surface`'s own opacity
+         instead of the old fixed `brand-900`. -->
     <div
-      class="glass mx-auto max-w-7xl rounded-b-2xl px-6 py-3 shadow-2xl transition-colors duration-300"
-      :class="scrolled ? 'bg-brand-900/85' : 'bg-brand-900/60'"
+      class="mx-auto max-w-7xl rounded-b-2xl border border-hairline px-6 py-3 shadow-2xl backdrop-blur-md transition-colors duration-300"
+      :class="scrolled ? 'bg-surface/90' : 'bg-surface/80'"
     >
       <div class="flex items-center justify-between">
         <!-- Hamburger (mobile only) -->
@@ -122,21 +130,43 @@ onUnmounted(() => {
           @click="toggleMobileMenu"
         >
           <span
-            class="block h-0.5 w-full rounded-full bg-white/85 transition-transform duration-300"
+            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-transform duration-300"
             :class="mobileMenuOpen ? 'translate-y-2 rotate-45' : ''"
           />
           <span
-            class="block h-0.5 w-full rounded-full bg-white/85 transition-opacity duration-300"
+            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-opacity duration-300"
             :class="mobileMenuOpen ? 'opacity-0' : 'opacity-100'"
           />
           <span
-            class="block h-0.5 w-full rounded-full bg-white/85 transition-transform duration-300"
+            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-transform duration-300"
             :class="mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''"
           />
         </button>
 
-        <!-- Logo -->
+        <!-- Logo — dos variantes, no una sola con filtro condicional: el
+             isotipo (el circuito) ya es azul de marca en ambos temas, pero el
+             wordmark "COROS Dev" viene horneado en el PNG en blanco casi puro.
+             Un `dark:invert` sobre TODA la imagen invertiría también el
+             circuito azul a su complementario (naranja), así que en su lugar
+             `coros-light.png` es una segunda exportación con sólo el wordmark
+             recoloreado a `--ink` (navy) — el circuito es el mismo azul en
+             los dos archivos. `dark:hidden` / `hidden dark:block` conmutan
+             cuál se pinta; ambos son ~20-30KB así que precargar los dos no
+             pesa, y evita cualquier parpadeo o mismatch de hidratación que
+             tendría resolver esto por JS. -->
         <NuxtLink :to="localePath('/')" class="flex items-center gap-3" @click="closeMobileMenu">
+          <NuxtPicture
+            src="/coros-light.png"
+            alt="CorosDev"
+            width="361"
+            height="220"
+            sizes="80px md:110px"
+            loading="eager"
+            preload
+            fetchpriority="high"
+            class="h-12 w-auto dark:hidden md:h-16"
+            :img-attrs="{ class: 'h-12 w-auto dark:hidden md:h-16', fetchpriority: 'high' }"
+          />
           <NuxtPicture
             src="/coros.png"
             alt="CorosDev"
@@ -146,17 +176,17 @@ onUnmounted(() => {
             loading="eager"
             preload
             fetchpriority="high"
-            class="h-12 w-auto md:h-16"
-            :img-attrs="{ class: 'h-12 w-auto md:h-16', fetchpriority: 'high' }"
+            class="hidden h-12 w-auto dark:block md:h-16"
+            :img-attrs="{ class: 'hidden h-12 w-auto dark:block md:h-16', fetchpriority: 'high' }"
           />
-          <div class="mx-2 hidden h-6 w-px bg-white/10 sm:block" />
-          <span class="hidden text-[10px] font-bold uppercase tracking-widest text-white opacity-80 sm:block">
+          <div class="mx-2 hidden h-6 w-px bg-surface-strong/50 sm:block" />
+          <span class="hidden text-[10px] font-bold uppercase tracking-widest text-ink opacity-80 sm:block">
             {{ t('nav.aiDrivenCompany') }}
           </span>
         </NuxtLink>
 
         <!-- Desktop nav -->
-        <nav class="hidden items-center gap-8 text-sm font-semibold tracking-tight text-white/80 md:flex">
+        <nav class="hidden items-center gap-8 text-sm font-semibold tracking-tight text-ink-muted md:flex">
           <template v-for="item in navLinks" :key="item.key">
             <!-- Grupo con desplegable -->
             <div
@@ -169,8 +199,8 @@ onUnmounted(() => {
             >
               <button
                 type="button"
-                class="flex items-center gap-1 text-sm font-semibold tracking-tight transition-colors hover:text-neon-500"
-                :class="openDropdownKey === item.key ? 'text-neon-500' : 'text-white/80'"
+                class="flex items-center gap-1 text-sm font-semibold tracking-tight transition-colors hover:text-accent-text"
+                :class="openDropdownKey === item.key ? 'text-accent-text' : 'text-ink-muted'"
                 :aria-expanded="openDropdownKey === item.key"
                 aria-haspopup="true"
                 :aria-controls="`nav-dd-${item.key}`"
@@ -206,12 +236,12 @@ onUnmounted(() => {
                 <div v-show="openDropdownKey === item.key" class="absolute left-0 top-full z-50 pt-3">
                   <ul
                     :id="`nav-dd-${item.key}`"
-                    class="glass min-w-[12rem] rounded-xl bg-brand-900/95 p-2 shadow-2xl"
+                    class="min-w-[12rem] rounded-xl border border-hairline bg-surface p-2 text-ink shadow-xl backdrop-blur-md"
                   >
                     <li v-for="child in item.children" :key="child.key">
                       <NuxtLink
                         :to="child.to"
-                        class="block rounded-lg px-3 py-2 text-xs font-semibold tracking-tight text-white/75 transition-colors hover:bg-white/5 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+                        class="block rounded-lg px-3 py-2 text-xs font-semibold tracking-tight text-ink-muted transition-colors hover:bg-surface-strong hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
                         @click="closeDropdown"
                       >
                         {{ child.label }}
@@ -226,7 +256,7 @@ onUnmounted(() => {
             <button
               v-else-if="item.openModal"
               type="button"
-              class="text-sm font-semibold tracking-tight text-white/80 transition-colors hover:text-neon-500"
+              class="text-sm font-semibold tracking-tight text-ink-muted transition-colors hover:text-accent-text"
               @click="openContactModal()"
             >
               {{ item.label }}
@@ -236,18 +266,19 @@ onUnmounted(() => {
             <NuxtLink
               v-else
               :to="item.to"
-              class="transition-colors hover:text-neon-500"
+              class="transition-colors hover:text-accent-text"
             >
               {{ item.label }}
             </NuxtLink>
           </template>
         </nav>
 
-        <!-- Right side: lang toggle + CTA -->
+        <!-- Right side: theme toggle + lang toggle + CTA -->
         <div class="flex items-center gap-3">
+          <UiColorModeToggle />
           <button
             type="button"
-            class="rounded-lg border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors duration-300 ease-out-expo hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            class="rounded-lg border border-hairline bg-surface-strong/50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-ink-muted transition-colors duration-300 ease-out-expo hover:border-neon-500 hover:bg-neon-500/10 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
             :aria-label="t('nav.langToggleTo', { code: locale === 'es' ? 'EN' : 'ES' })"
             @click="toggleLocale"
           >
@@ -275,10 +306,10 @@ onUnmounted(() => {
         <nav v-if="mobileMenuOpen" id="mobile-nav" class="overflow-hidden px-2 pb-2 md:hidden">
           <template v-for="item in navLinks" :key="item.key">
             <!-- Grupo: acordeón -->
-            <div v-if="'children' in item" class="border-b border-white/5">
+            <div v-if="'children' in item" class="border-b border-hairline">
               <button
                 type="button"
-                class="flex w-full items-center justify-between py-3 text-sm font-semibold tracking-tight text-white/70 transition-colors hover:text-neon-500"
+                class="flex w-full items-center justify-between py-3 text-sm font-semibold tracking-tight text-ink-muted transition-colors hover:text-accent-text"
                 :aria-expanded="openMobileGroup === item.key"
                 :aria-controls="`m-dd-${item.key}`"
                 @click="toggleMobileGroup(item.key)"
@@ -301,7 +332,7 @@ onUnmounted(() => {
                   v-for="child in item.children"
                   :key="child.key"
                   :to="child.to"
-                  class="block py-2 pl-4 text-xs font-semibold tracking-tight text-white/60 transition-colors hover:text-neon-500"
+                  class="block py-2 pl-4 text-xs font-semibold tracking-tight text-ink-muted transition-colors hover:text-accent-text"
                   @click="closeMobileMenu"
                 >
                   {{ child.label }}
@@ -313,7 +344,7 @@ onUnmounted(() => {
             <button
               v-else-if="item.openModal"
               type="button"
-              class="block w-full border-b border-white/5 py-3 text-left text-sm font-semibold tracking-tight text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
+              class="block w-full border-b border-hairline py-3 text-left text-sm font-semibold tracking-tight text-ink-muted transition-colors last:border-b-0 hover:text-accent-text"
               @click="openContactFromMobile"
             >
               {{ item.label }}
@@ -323,7 +354,7 @@ onUnmounted(() => {
             <NuxtLink
               v-else
               :to="item.to"
-              class="block border-b border-white/5 py-3 text-sm font-semibold tracking-tight text-white/70 transition-colors last:border-b-0 hover:text-neon-500"
+              class="block border-b border-hairline py-3 text-sm font-semibold tracking-tight text-ink-muted transition-colors last:border-b-0 hover:text-accent-text"
               @click="closeMobileMenu"
             >
               {{ item.label }}
@@ -332,7 +363,7 @@ onUnmounted(() => {
 
           <button
             type="button"
-            class="block w-full py-3 text-left text-sm font-bold tracking-tight text-neon-500"
+            class="block w-full py-3 text-left text-sm font-bold tracking-tight text-accent-text"
             @click="openContactFromMobile"
           >
             {{ t('nav.cta') }}

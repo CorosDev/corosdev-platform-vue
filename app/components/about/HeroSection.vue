@@ -19,11 +19,11 @@ const { t } = useI18n()
     </p>
 
     <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
-      <h1 class="text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl lg:col-span-7 lg:text-7xl">
+      <h1 class="text-4xl font-black leading-[1.05] tracking-tight text-ink sm:text-6xl lg:col-span-7 lg:text-7xl">
         {{ t('about.hero.h1_1') }}
         <span class="gradient-text">{{ t('about.hero.h1_span') }}</span>
       </h1>
-      <p class="text-base leading-relaxed text-white/55 lg:col-span-5 lg:text-lg">
+      <p class="text-base leading-relaxed text-ink-muted lg:col-span-5 lg:text-lg">
         {{ t('about.hero.p') }}
       </p>
     </div>

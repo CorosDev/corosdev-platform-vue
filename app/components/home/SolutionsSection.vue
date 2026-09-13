@@ -27,10 +27,10 @@ const solutions = computed(() =>
   <section id="solutions" v-vanish class="relative overflow-hidden py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6">
       <div class="mb-8 md:mb-16">
-        <h2 class="text-4xl font-black text-white md:text-6xl">
+        <h2 class="text-4xl font-black text-ink md:text-6xl">
           {{ t('home.solutions.title_1') }} <span class="gradient-text">{{ t('home.solutions.title_span') }}</span>
         </h2>
-        <p class="mt-4 text-lg text-white/50">
+        <p class="mt-4 text-lg text-ink-muted">
           {{ t('home.solutions.subtitle') }}
         </p>
       </div>
@@ -40,24 +40,24 @@ const solutions = computed(() =>
           v-for="solution in solutions"
           :key="solution.id"
           v-tilt
-          class="group glass soft relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/5 p-8 transition-all duration-500 hover:border-neon-500/50"
+          class="group glass soft relative flex h-full flex-col overflow-hidden rounded-3xl border border-hairline p-8 transition-all duration-500 hover:border-neon-500/50"
         >
           <div class="pointer-events-none absolute bottom-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20">
             <svg class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5">
               <path :d="solution.icon" />
             </svg>
           </div>
-          <div class="mb-4 text-[10px] font-bold uppercase tracking-widest text-neon-500">
+          <div class="mb-4 text-[10px] font-bold uppercase tracking-widest text-accent-text">
             {{ solution.badge }}
           </div>
-          <h3 class="mb-4 flex min-h-[80px] items-center text-3xl font-black text-white transition-colors group-hover:gradient-text">
+          <h3 class="mb-4 flex min-h-[80px] items-center text-3xl font-black text-ink transition-colors group-hover:gradient-text">
             {{ solution.title }}
           </h3>
-          <p class="mb-8 min-h-[120px] leading-relaxed text-white/60">{{ solution.description }}</p>
+          <p class="mb-8 min-h-[120px] leading-relaxed text-ink-muted">{{ solution.description }}</p>
           <div class="mt-auto">
             <a
               href="#contact"
-              class="inline-flex items-center gap-2 font-bold text-cobalt-300 transition-colors group-hover:text-neon-500"
+              class="inline-flex items-center gap-2 font-bold text-cobalt-300 transition-colors group-hover:text-accent-text"
             >
               <span>{{ solution.cta }}</span>
               <span class="transition-transform group-hover:translate-x-1">&rarr;</span>

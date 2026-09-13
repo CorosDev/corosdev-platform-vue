@@ -38,7 +38,7 @@ const ventures = computed(() =>
         <div
           v-for="venture in ventures"
           :key="venture.id"
-          class="group glass relative rounded-[2.5rem] border border-white/5 bg-white/[0.02] p-8 transition-all duration-700 hover:border-neon-500/30 md:p-12"
+          class="group glass relative rounded-[2.5rem] border border-hairline bg-surface-strong/50 p-8 transition-all duration-700 hover:border-neon-500/30 md:p-12"
         >
           <div class="grid items-center gap-10 lg:grid-cols-12">
             <div
@@ -72,29 +72,29 @@ const ventures = computed(() =>
                 </span>
               </div>
 
-              <h2 class="text-4xl font-black text-white md:text-6xl">{{ venture.name }}</h2>
+              <h2 class="text-4xl font-black text-ink md:text-6xl">{{ venture.name }}</h2>
 
-              <p class="text-base font-semibold leading-relaxed text-white/80 md:text-lg">
+              <p class="text-base font-semibold leading-relaxed text-ink-muted md:text-lg">
                 {{ venture.description }}
               </p>
 
-              <div class="space-y-3 rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+              <div class="space-y-3 rounded-2xl border border-hairline bg-surface-strong/50 p-6">
                 <h4 class="text-xs font-bold uppercase tracking-widest text-neon-300">{{ t('ecosystem.ventures.whyHow') }}</h4>
-                <p class="text-sm leading-relaxed text-white/60">{{ venture.detail }}</p>
+                <p class="text-sm leading-relaxed text-ink-muted">{{ venture.detail }}</p>
               </div>
 
-              <div class="grid grid-cols-2 gap-6 border-t border-white/5 pt-4 sm:grid-cols-3">
+              <div class="grid grid-cols-2 gap-6 border-t border-hairline pt-4 sm:grid-cols-3">
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.statusLabel') }}</span>
-                  <span class="mt-1 block text-sm font-bold text-white">{{ t('ecosystem.ventures.statusValue') }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-ink-muted">{{ t('ecosystem.ventures.statusLabel') }}</span>
+                  <span class="mt-1 block text-sm font-bold text-ink">{{ t('ecosystem.ventures.statusValue') }}</span>
                 </div>
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.stageLabel') }}</span>
-                  <span class="mt-1 block text-sm font-bold text-white">{{ venture.stage }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-ink-muted">{{ t('ecosystem.ventures.stageLabel') }}</span>
+                  <span class="mt-1 block text-sm font-bold text-ink">{{ venture.stage }}</span>
                 </div>
                 <div>
-                  <span class="block text-xs uppercase tracking-widest text-white/50">{{ t('ecosystem.ventures.sectorLabel') }}</span>
-                  <span class="mt-1 block text-sm font-bold text-white">{{ venture.sectorValue }}</span>
+                  <span class="block text-xs uppercase tracking-widest text-ink-muted">{{ t('ecosystem.ventures.sectorLabel') }}</span>
+                  <span class="mt-1 block text-sm font-bold text-ink">{{ venture.sectorValue }}</span>
                 </div>
               </div>
             </div>

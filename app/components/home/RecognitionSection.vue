@@ -2,11 +2,27 @@
 /**
  * Reconocimientos — bloque de autoridad B2B (modelo BairesDev).
  *
- * Cada sello declara su archivo bajo /public/logos/, que es donde aterrizaron
- * los assets y donde ya aplica la cabecera de caché inmutable del routeRule
- * /logos/**. Los sellos van forzados a monocromo blanco (`brightness-0
- * invert`) independientemente de los colores del archivo de origen: es lo que
- * mantiene la fila homogénea sin depender de cómo venga cada uno.
+ * Cada sello declara su archivo bajo /public/logos/partners-by/ (carpeta de
+ * assets optimizados donde también vive HomeLogoCloudSection.vue; se llamó
+ * primero "patners by", con typo y espacio — el espacio obligaba a un %20
+ * que el propio helper de `@nuxt/image` re-escapaba a %2520 al construir la
+ * URL de IPX, un 404 real para los 5 sellos de aquí), que sigue bajo el
+ * routeRule /logos/** de caché inmutable.
+ *
+ * `dark:brightness-0 dark:invert dark:grayscale` (sesión del toggle
+ * Light/Dark) — gateado tras `dark:`, no incondicional: los 5 sellos de aquí
+ * comparten archivo exacto con `HomeLogoCloudSection.vue` (ver su docstring),
+ * cuyo `sharp().trim()` confirmó que de las 17 marcas del mismo lote sólo
+ * `CzechAssociationAI_logo.png` — que NO aparece en este componente — es
+ * 100% opaca; los 5 de aquí sí tienen margen transparente y el filtro es
+ * seguro. En oscuro se ven monocromos blancos, igual que en LogoCloud; en
+ * claro el filtro se cae y cada marca recupera su color real (invertir ahí
+ * los habría vuelto negro sólido sobre un fondo también claro). Antes de
+ * este toggle la sección vivía sólo en oscuro con los colores reales +
+ * opacidad simple — ese primer diagnóstico de "varios sin fondo
+ * transparente" quedó obsoleto en cuanto LogoCloud confirmó el archivo real
+ * de cada uno; la opacidad simple se conserva como base en ambos temas,
+ * el monocromo se añade encima sólo en oscuro.
  *
  * Transparencia por diseño, que es lo que separa esta sección de un muro de
  * logos decorativo:
@@ -45,7 +61,7 @@ interface Recognition {
 const recognitionMeta: Recognition[] = [
   {
     id: 'forbes',
-    logo: '/logos/ForbesCentroamerica_logo.svg',
+    logo: '/logos/partners-by/ForbesCentroamerica_logo.svg',
     width: 319,
     height: 80,
     // Fragmento de texto con RANGO (#:~:text=inicio,fin) para que el
@@ -57,7 +73,7 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'truesdays',
-    logo: '/logos/TRUESDAYS_logo.webp',
+    logo: '/logos/partners-by/TRUESDAYS_logo.webp',
     width: 577,
     height: 167,
     url: 'https://www.linkedin.com/posts/truesdays_truesdays-startupcommunity-openmic-activity-7394366760600117248-x98x',
@@ -65,7 +81,7 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'startupkitchen',
-    logo: '/logos/startupkitchen_logo.webp',
+    logo: '/logos/partners-by/startupkitchen_logo.webp',
     width: 1080,
     height: 1080,
     url: null,
@@ -73,7 +89,7 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'czechinvest',
-    logo: '/logos/CzechInvest_logo.svg',
+    logo: '/logos/partners-by/CzechInvest_logo.svg',
     width: 480,
     height: 58,
     url: null,
@@ -81,7 +97,7 @@ const recognitionMeta: Recognition[] = [
   },
   {
     id: 'businessshow',
-    logo: '/logos/MiamiBusinessShow_logo.svg',
+    logo: '/logos/partners-by/MiamiBusinessShow_logo.svg',
     width: 1095,
     height: 1095,
     url: null,
@@ -165,15 +181,15 @@ const recognitions = computed(() =>
     <div class="relative mx-auto max-w-7xl px-6">
       <div v-reveal class="mb-10 flex flex-col gap-6 md:mb-14 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-neon-500">
+          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
             {{ t('home.recognition.label') }}
           </p>
-          <h2 class="max-w-2xl text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl">
+          <h2 class="max-w-2xl text-3xl font-black leading-[1.1] tracking-tight text-ink md:text-5xl">
             {{ t('home.recognition.title_1') }}
             <span class="gradient-text">{{ t('home.recognition.title_span') }}</span>
           </h2>
         </div>
-        <p class="max-w-md text-base leading-relaxed text-white/55">
+        <p class="max-w-md text-base leading-relaxed text-ink-muted">
           {{ t('home.recognition.subtitle') }}
         </p>
       </div>
@@ -224,11 +240,11 @@ const recognitions = computed(() =>
               :height="recognition.displayHeight"
               loading="lazy"
               :style="{ width: `${recognition.displayWidth}px`, height: `${recognition.displayHeight}px` }"
-              class="max-w-full object-contain opacity-70 brightness-0 invert transition-opacity duration-500 ease-out-expo group-hover/spot:opacity-100"
+              class="max-w-full object-contain opacity-70 transition-all duration-500 ease-out-expo group-hover/spot:opacity-100 dark:brightness-0 dark:invert dark:grayscale"
             />
             <svg
               v-else-if="recognition.placeholder"
-              class="h-14 w-14 text-white/55 transition-colors duration-500 ease-out-expo group-hover/spot:text-white/80"
+              class="h-14 w-14 text-ink-muted transition-colors duration-500 ease-out-expo group-hover/spot:text-ink"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -239,11 +255,11 @@ const recognitions = computed(() =>
             </svg>
           </div>
 
-          <h3 class="mt-6 text-lg font-bold tracking-tight text-white">{{ recognition.name }}</h3>
-          <p class="mt-2 flex-1 text-sm leading-relaxed text-white/50">{{ recognition.description }}</p>
+          <h3 class="mt-6 text-lg font-bold tracking-tight text-ink">{{ recognition.name }}</h3>
+          <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">{{ recognition.description }}</p>
 
-          <div class="mt-6 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-            <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+          <div class="mt-6 flex items-center justify-between gap-3 border-t border-hairline pt-4">
+            <span class="text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">
               {{ recognition.kind }}
             </span>
             <span

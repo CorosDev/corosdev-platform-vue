@@ -133,15 +133,21 @@ onBeforeUnmount(() => {
         class="fixed inset-0 z-[100] flex items-end justify-center bg-brand-900/80 p-0 backdrop-blur-sm sm:items-center sm:p-6"
         @click.self="onOverlayClick"
       >
+        <!-- `bg-brand-900/95` fijo era el bug: los labels de abajo (vía
+             formStyles.ts) ya leían tokens de tema y se volvían invisibles
+             sobre este panel siempre oscuro en modo claro. `glass` se cae por
+             la misma razón que en AppNavbar.vue/su dropdown — su propio
+             `border-white/10` competiría con `border-hairline` por orden de
+             capas en vez de ganar de forma predecible. -->
         <div
-          class="glass relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-2xl bg-brand-900/95 shadow-2xl sm:rounded-2xl"
+          class="relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-2xl border border-hairline bg-surface text-ink shadow-2xl backdrop-blur-md sm:rounded-2xl"
           role="dialog"
           aria-modal="true"
           aria-labelledby="contact-modal-title"
         >
           <button
             type="button"
-            class="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-lg text-white/50 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            class="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-lg text-ink-muted transition-colors hover:bg-surface-strong/50 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
             :aria-label="t('contactModal.close')"
             @click="close"
           >
@@ -157,10 +163,10 @@ onBeforeUnmount(() => {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </span>
-            <h2 id="contact-modal-title" class="text-xl font-black tracking-tight text-white">
+            <h2 id="contact-modal-title" class="text-xl font-black tracking-tight text-ink">
               {{ t('contactModal.successTitle') }}
             </h2>
-            <p class="text-sm leading-relaxed text-white/60">{{ t('contactModal.successBody') }}</p>
+            <p class="text-sm leading-relaxed text-ink-muted">{{ t('contactModal.successBody') }}</p>
             <button
               type="button"
               class="mt-2 inline-flex items-center gap-2 rounded-lg bg-neon-500 px-5 py-3 text-sm font-bold text-brand-900 transition-colors hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
@@ -173,15 +179,15 @@ onBeforeUnmount(() => {
           <!-- Formulario -->
           <form v-else class="flex flex-col gap-5 p-8 md:p-10" novalidate @submit.prevent="onSubmit">
             <div>
-              <h2 id="contact-modal-title" class="text-xl font-black leading-tight tracking-tight text-white md:text-2xl">
+              <h2 id="contact-modal-title" class="text-xl font-black leading-tight tracking-tight text-ink md:text-2xl">
                 {{ t('contactModal.title') }}
               </h2>
-              <p class="mt-2 text-sm leading-relaxed text-white/55">{{ t('contactModal.subtitle') }}</p>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted">{{ t('contactModal.subtitle') }}</p>
             </div>
 
             <p
               v-if="status === 'error' && !Object.keys(fieldErrors).length"
-              class="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+              class="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300"
               role="alert"
             >
               {{ t('contactModal.errorBanner') }}

@@ -31,15 +31,15 @@ const steps = computed(() =>
     <div class="mx-auto max-w-7xl px-6">
       <div v-reveal class="mb-10 flex flex-col gap-6 md:mb-14 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-neon-500">
+          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
             {{ t('services.methodology.label') }}
           </p>
-          <h2 class="max-w-2xl text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl">
+          <h2 class="max-w-2xl text-3xl font-black leading-[1.1] tracking-tight text-ink md:text-5xl">
             {{ t('services.methodology.h2_1') }}
             <span class="gradient-text">{{ t('services.methodology.h2_span') }}</span>
           </h2>
         </div>
-        <p class="max-w-md text-base leading-relaxed text-white/55">
+        <p class="max-w-md text-base leading-relaxed text-ink-muted">
           {{ t('services.methodology.sub') }}
         </p>
       </div>
@@ -53,11 +53,11 @@ const steps = computed(() =>
           class="flex flex-col rounded-xl p-6"
         >
           <div class="flex items-center gap-3">
-            <span class="text-sm font-black tabular-nums text-neon-500">{{ step.number }}</span>
+            <span class="text-sm font-black tabular-nums text-accent-text">{{ step.number }}</span>
             <span class="h-px flex-1 bg-gradient-to-r from-neon-500/40 to-transparent" aria-hidden="true" />
           </div>
-          <h3 class="mt-5 text-lg font-bold leading-snug tracking-tight text-white">{{ step.title }}</h3>
-          <p class="mt-3 text-sm leading-relaxed text-white/50">{{ step.description }}</p>
+          <h3 class="mt-5 text-lg font-bold leading-snug tracking-tight text-ink">{{ step.title }}</h3>
+          <p class="mt-3 text-sm leading-relaxed text-ink-muted">{{ step.description }}</p>
         </UiSpotlightCard>
       </div>
     </div>

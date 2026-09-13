@@ -99,8 +99,8 @@ useHead(() => ({
     <!-- Modo Mantenimiento (Sanity caído / mal configurado) -->
     <div v-if="isMaintenance" class="mx-auto max-w-3xl px-6 pb-24 pt-36 md:pt-44">
       <UiSpotlightCard :size="560" class="flex flex-col items-start gap-4 rounded-2xl p-8 md:p-12">
-        <h1 class="text-xl font-black tracking-tight text-white md:text-2xl">{{ t('portfolio.states.maintenanceTitle') }}</h1>
-        <p class="max-w-md text-sm leading-relaxed text-white/55">{{ t('portfolio.states.maintenanceBody') }}</p>
+        <h1 class="text-xl font-black tracking-tight text-ink md:text-2xl">{{ t('portfolio.states.maintenanceTitle') }}</h1>
+        <p class="max-w-md text-sm leading-relaxed text-ink-muted">{{ t('portfolio.states.maintenanceBody') }}</p>
         <NuxtLink :to="localePath('/portfolio')" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-neon-300 hover:text-neon-100">
           {{ t('portfolio.detail.backToPortfolio') }}
         </NuxtLink>
@@ -111,7 +111,7 @@ useHead(() => ({
       <div class="mx-auto max-w-3xl px-6 pb-8 pt-36 md:pt-44">
         <!-- Cabecera -->
         <header>
-          <NuxtLink :to="localePath('/portfolio')" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-white/45 transition-colors duration-300 ease-out-expo hover:text-neon-300">
+          <NuxtLink :to="localePath('/portfolio')" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-ink-muted transition-colors duration-300 ease-out-expo hover:text-neon-300">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
             </svg>
@@ -120,14 +120,14 @@ useHead(() => ({
 
           <div class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-bold uppercase tracking-[0.16em]">
             <span class="text-neon-300">{{ caseStudy.client }}</span>
-            <span v-if="caseStudy.industry" class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
-            <span v-if="caseStudy.industry" class="text-white/45">{{ caseStudy.industry }}</span>
+            <span v-if="caseStudy.industry" class="h-1 w-1 rounded-full bg-surface-strong/50" aria-hidden="true" />
+            <span v-if="caseStudy.industry" class="text-ink-muted">{{ caseStudy.industry }}</span>
           </div>
 
-          <h1 class="mt-3 text-3xl font-black leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 class="mt-3 text-3xl font-black leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl">
             {{ caseStudy.title }}
           </h1>
-          <p v-if="caseStudy.summary" class="mt-5 text-lg leading-relaxed text-white/55">{{ caseStudy.summary }}</p>
+          <p v-if="caseStudy.summary" class="mt-5 text-lg leading-relaxed text-ink-muted">{{ caseStudy.summary }}</p>
         </header>
 
         <!-- Portada -->
@@ -138,12 +138,12 @@ useHead(() => ({
           width="1600"
           height="900"
           loading="eager"
-          class="mt-10 aspect-[16/9] w-full rounded-2xl border border-white/10 object-cover"
+          class="mt-10 aspect-[16/9] w-full rounded-2xl border border-hairline object-cover"
         >
 
         <!-- Métricas clave -->
         <section v-if="caseStudy.keyMetrics && caseStudy.keyMetrics.length" class="mt-12">
-          <h2 class="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white/45">
+          <h2 class="mb-5 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
             {{ t('portfolio.detail.metricsTitle') }}
           </h2>
           <PortfolioMetricsGrid :metrics="caseStudy.keyMetrics" />
@@ -153,15 +153,15 @@ useHead(() => ({
         <BlogPortableTextRenderer :value="caseStudy.body || []" class="mt-12" />
 
         <!-- Tecnologías -->
-        <section v-if="caseStudy.technologies && caseStudy.technologies.length" class="mt-12 border-t border-white/10 pt-8">
-          <h2 class="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-white/45">
+        <section v-if="caseStudy.technologies && caseStudy.technologies.length" class="mt-12 border-t border-hairline pt-8">
+          <h2 class="mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted">
             {{ t('portfolio.detail.technologiesTitle') }}
           </h2>
           <ul class="flex flex-wrap gap-2">
             <li
               v-for="(tech, i) in caseStudy.technologies"
               :key="`${tech}-${i}`"
-              class="rounded-full border border-white/15 bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-white/70"
+              class="rounded-full border border-hairline bg-surface-strong/50 px-3 py-1.5 text-xs font-semibold text-ink-muted"
             >
               {{ tech }}
             </li>
@@ -173,10 +173,10 @@ useHead(() => ({
       <section class="relative overflow-hidden py-12 md:py-20">
         <div class="mx-auto max-w-3xl px-6">
           <UiSpotlightCard v-reveal :size="560" class="flex flex-col items-start gap-6 rounded-2xl p-8 md:p-10">
-            <h2 class="text-2xl font-black leading-[1.15] tracking-tight text-white md:text-3xl">
+            <h2 class="text-2xl font-black leading-[1.15] tracking-tight text-ink md:text-3xl">
               {{ t('portfolio.cta.title_1') }} <span class="gradient-text">{{ t('portfolio.cta.title_span') }}</span>
             </h2>
-            <p class="max-w-lg text-base leading-relaxed text-white/55">{{ t('portfolio.cta.body') }}</p>
+            <p class="max-w-lg text-base leading-relaxed text-ink-muted">{{ t('portfolio.cta.body') }}</p>
             <button
               type="button"
               class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-neon-500 px-6 py-3.5 text-sm font-bold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"

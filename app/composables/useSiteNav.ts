@@ -57,7 +57,20 @@ export function useSiteNav() {
         { key: 'about', label: t('nav.about'), to: localePath('/about') },
       ],
     },
-    { key: 'services', label: t('nav.services'), to: localePath('/services') },
+    {
+      // Mismo patrón que "company": los 3 pilares de /services (ya eran las
+      // pestañas de scroll-spy de ServicesPillarNav, mismas claves i18n
+      // `services.pillars.*_nav`) cuelgan de un desplegable en vez de un
+      // enlace plano, para poder saltar a cada sección desde cualquier
+      // página con un solo clic.
+      key: 'services',
+      label: t('nav.services'),
+      children: [
+        { key: 'customSoftware', label: t('services.pillars.customSoftware_nav'), to: `${localePath('/services')}#custom-software` },
+        { key: 'scalingTalent', label: t('services.pillars.scalingTalent_nav'), to: `${localePath('/services')}#scaling-talent` },
+        { key: 'techPartnership', label: t('services.pillars.techPartnership_nav'), to: `${localePath('/services')}#tech-partnership` },
+      ],
+    },
     { key: 'portfolio', label: t('nav.portfolio'), to: localePath('/portfolio') },
     { key: 'insights', label: t('nav.insights'), to: localePath('/blog') },
     { key: 'contact', label: t('nav.contact'), to: `${localePath('/')}#contact`, openModal: true },

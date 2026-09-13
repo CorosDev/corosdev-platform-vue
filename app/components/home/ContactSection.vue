@@ -272,12 +272,12 @@ function resetForm() {
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-start gap-10 md:grid-cols-2 lg:gap-14">
         <div v-reveal>
-          <h2 class="text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl">
+          <h2 class="text-3xl font-black leading-[1.1] tracking-tight text-ink md:text-5xl">
             {{ t('home.contact.h2') }}
           </h2>
-          <p class="mt-4 max-w-md text-base leading-relaxed text-white/55">{{ t('home.contact.sub') }}</p>
+          <p class="mt-4 max-w-md text-base leading-relaxed text-ink-muted">{{ t('home.contact.sub') }}</p>
 
-          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">
             {{ t('home.contact.channels.label') }}
           </p>
           <div class="flex flex-col gap-3">
@@ -302,13 +302,13 @@ function resetForm() {
                 </svg>
               </span>
               <span class="min-w-0 flex-1">
-                <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+                <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">
                   {{ channel.title }}
                 </span>
-                <span class="mt-0.5 block truncate text-sm font-semibold text-white">{{ channel.value }}</span>
+                <span class="mt-0.5 block truncate text-sm font-semibold text-ink">{{ channel.value }}</span>
               </span>
               <svg
-                class="h-4 w-4 shrink-0 text-white/30 transition-transform duration-300 ease-out-expo group-hover/channel:translate-x-0.5"
+                class="h-4 w-4 shrink-0 text-ink-muted transition-transform duration-300 ease-out-expo group-hover/channel:translate-x-0.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -320,13 +320,13 @@ function resetForm() {
             </UiSpotlightCard>
           </div>
 
-          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
+          <p class="mb-3 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">
             {{ t('home.contact.commitments.label') }}
           </p>
           <ul class="flex flex-col gap-2.5">
             <li v-for="commitment in commitments" :key="commitment" class="flex items-start gap-2.5">
               <svg
-                class="mt-0.5 h-4 w-4 shrink-0 text-neon-500"
+                class="mt-0.5 h-4 w-4 shrink-0 text-accent-text"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -335,11 +335,11 @@ function resetForm() {
               >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              <span class="text-sm leading-relaxed text-white/60">{{ commitment }}</span>
+              <span class="text-sm leading-relaxed text-ink-muted">{{ commitment }}</span>
             </li>
           </ul>
 
-          <p class="mt-10 border-t border-white/10 pt-5 text-xs text-white/50">
+          <p class="mt-10 border-t border-hairline pt-5 text-xs text-ink-muted">
             {{ t('home.contact.location') }} &middot; {{ t('home.contact.remote') }}
           </p>
         </div>
@@ -517,7 +517,7 @@ function resetForm() {
               {{ status === 'submitting' ? t('home.contact.form.submitting') : t('home.contact.form.submit') }}
             </button>
 
-            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-400">
+            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-600 dark:text-red-400">
               {{ t('home.contact.form.error') }}
             </p>
           </form>
@@ -528,19 +528,19 @@ function resetForm() {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h4 class="mt-5 text-xl font-bold text-white">{{ t('home.contact.form.successTitle') }}</h4>
-            <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">{{ t('home.contact.form.successDesc') }}</p>
+            <h4 class="mt-5 text-xl font-bold text-ink">{{ t('home.contact.form.successTitle') }}</h4>
+            <p class="mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">{{ t('home.contact.form.successDesc') }}</p>
 
             <!-- Paso 2: cualificación opcional. El lead del paso 1 ya está
                  guardado, así que abandonar aquí no cuesta nada. -->
             <form
               v-if="qualifyStatus !== 'success' && !qualifyDismissed"
-              class="mt-8 w-full border-t border-white/10 pt-8 text-left"
+              class="mt-8 w-full border-t border-hairline pt-8 text-left"
               novalidate
               @submit.prevent="submitQualify"
             >
-              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.title') }}</p>
-              <p class="mt-1.5 text-xs leading-relaxed text-white/50">{{ t('home.contact.form.qualify.desc') }}</p>
+              <p class="text-sm font-bold text-ink">{{ t('home.contact.form.qualify.title') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-ink-muted">{{ t('home.contact.form.qualify.desc') }}</p>
 
               <fieldset class="mt-6">
                 <legend :class="FORM_LABEL_CLASS">{{ t('home.contact.form.qualify.budgetLabel') }}</legend>
@@ -554,7 +554,7 @@ function resetForm() {
                     :class="
                       qualifyForm.budget === range
                         ? 'border-neon-500/50 bg-neon-500/15 text-neon-100'
-                        : 'border-white/10 bg-white/[0.02] text-white/55 hover:border-white/25 hover:text-white'
+                        : 'border-hairline bg-surface-strong/50 text-ink-muted hover:border-neon-500/30 hover:text-ink'
                     "
                     @click="qualifyForm.budget = range"
                   >
@@ -632,21 +632,21 @@ function resetForm() {
                 </button>
                 <button
                   type="button"
-                  class="text-xs font-semibold text-white/55 transition-colors hover:text-white/70"
+                  class="text-xs font-semibold text-ink-muted transition-colors hover:text-ink"
                   @click="qualifyDismissed = true"
                 >
                   {{ t('home.contact.form.qualify.skip') }}
                 </button>
               </div>
 
-              <p v-if="qualifyStatus === 'error'" role="alert" class="mt-3 text-xs text-red-400">
+              <p v-if="qualifyStatus === 'error'" role="alert" class="mt-3 text-xs text-red-600 dark:text-red-400">
                 {{ t('home.contact.form.qualify.error') }}
               </p>
             </form>
 
-            <div v-else-if="qualifyStatus === 'success'" class="mt-8 w-full border-t border-white/10 pt-8">
-              <p class="text-sm font-bold text-white">{{ t('home.contact.form.qualify.successTitle') }}</p>
-              <p class="mt-1.5 text-xs leading-relaxed text-white/50">
+            <div v-else-if="qualifyStatus === 'success'" class="mt-8 w-full border-t border-hairline pt-8">
+              <p class="text-sm font-bold text-ink">{{ t('home.contact.form.qualify.successTitle') }}</p>
+              <p class="mt-1.5 text-xs leading-relaxed text-ink-muted">
                 {{ t('home.contact.form.qualify.successDesc') }}
               </p>
             </div>
@@ -667,15 +667,18 @@ function resetForm() {
    reads like the placeholder text in the other fields. Scoped (not a utility)
    on purpose — see the note in the template. */
 .is-placeholder {
-  color: rgb(255 255 255 / 0.5);
+  color: var(--ink-muted);
 }
 
+/* Tracks `--accent-ink` (the button's own text colour, dark in dark mode /
+   white in light mode) instead of a fixed near-black — see FloatingCtaDrawer.vue's
+   matching `.cta-spinner` for the full note. */
 .contact-spinner {
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  border: 2px solid rgb(7 11 26 / 0.25);
-  border-top-color: rgb(7 11 26 / 0.85);
+  border: 2px solid color-mix(in srgb, var(--accent-ink) 25%, transparent);
+  border-top-color: color-mix(in srgb, var(--accent-ink) 85%, transparent);
   animation: contact-spin 0.8s linear infinite;
 }
 

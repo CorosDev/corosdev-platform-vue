@@ -28,11 +28,11 @@ const { open: openCtaDrawer } = useCtaDrawer()
     </p>
 
     <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
-      <h1 class="text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-6xl lg:col-span-7 lg:text-7xl">
+      <h1 class="text-4xl font-black leading-[1.05] tracking-tight text-ink sm:text-6xl lg:col-span-7 lg:text-7xl">
         {{ t('services.hero.h1_1') }}
         <span class="gradient-text">{{ t('services.hero.h1_span') }}</span>
       </h1>
-      <p class="text-base leading-relaxed text-white/55 lg:col-span-5 lg:text-lg">
+      <p class="text-base leading-relaxed text-ink-muted lg:col-span-5 lg:text-lg">
         {{ t('services.hero.sub') }}
       </p>
     </div>
@@ -57,7 +57,7 @@ const { open: openCtaDrawer } = useCtaDrawer()
       </button>
       <a
         href="#methodology"
-        class="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/[0.03] px-6 py-3.5 text-sm font-bold text-white transition-colors duration-300 ease-out-expo hover:border-white/30 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+        class="inline-flex items-center justify-center rounded-lg border border-hairline bg-surface-strong/50 px-6 py-3.5 text-sm font-bold text-ink transition-colors duration-300 ease-out-expo hover:border-neon-500/30 hover:bg-surface-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
       >
         {{ t('services.hero.cta2') }}
       </a>

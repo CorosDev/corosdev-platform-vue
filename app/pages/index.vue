@@ -33,9 +33,9 @@ useHead(() => ({
   <div>
     <HomeHeroSection />
     <HomeLogoCloudSection />
+    <HomeServicesSection />
     <HomePresentationVideoSection />
     <HomeMissionSection />
-    <HomeEcosystemSection />
     <HomeSnapaySpotlightSection />
     <HomeSolutionsSection />
     <HomeTestimonialsSection />

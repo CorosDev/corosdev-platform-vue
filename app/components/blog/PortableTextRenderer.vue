@@ -66,7 +66,7 @@ const components: PortableTextComponents = {
 
 <style scoped>
 .pt {
-  color: rgb(255 255 255 / 0.72);
+  color: var(--ink-muted);
   font-size: 1.0625rem;
   line-height: 1.8;
 }
@@ -78,7 +78,7 @@ const components: PortableTextComponents = {
 .pt :deep(h2),
 .pt :deep(h3),
 .pt :deep(h4) {
-  color: #fff;
+  color: var(--ink);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -117,7 +117,7 @@ const components: PortableTextComponents = {
 }
 
 .pt :deep(strong) {
-  color: #fff;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -147,7 +147,7 @@ const components: PortableTextComponents = {
   margin: 2em 0;
   padding: 0.25em 0 0.25em 1.25em;
   border-left: 2px solid var(--color-neon-500);
-  color: rgb(255 255 255 / 0.85);
+  color: var(--ink-muted);
   font-size: 1.1875rem;
   font-style: italic;
 }
@@ -155,7 +155,7 @@ const components: PortableTextComponents = {
 .pt :deep(code) {
   padding: 0.15em 0.4em;
   border-radius: 0.35rem;
-  background: rgb(255 255 255 / 0.08);
+  background: color-mix(in srgb, var(--surface-strong) 50%, transparent);
   font-size: 0.9em;
   font-family: ui-monospace, "SFMono-Regular", "Menlo", monospace;
 }
@@ -168,13 +168,13 @@ const components: PortableTextComponents = {
   width: 100%;
   height: auto;
   border-radius: 0.75rem;
-  border: 1px solid rgb(255 255 255 / 0.1);
+  border: 1px solid var(--hairline);
 }
 
 .pt :deep(.pt-figure figcaption) {
   margin-top: 0.75em;
   font-size: 0.8125rem;
-  color: rgb(255 255 255 / 0.45);
+  color: var(--ink-muted);
   text-align: center;
 }
 

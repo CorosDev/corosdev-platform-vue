@@ -108,8 +108,8 @@ useHead(() => ({
     <!-- Modo Mantenimiento (Sanity caído / mal configurado) -->
     <div v-if="isMaintenance" class="mx-auto max-w-3xl px-6 pb-24 pt-36 md:pt-44">
       <UiSpotlightCard :size="560" class="flex flex-col items-start gap-4 rounded-2xl p-8 md:p-12">
-        <h1 class="text-xl font-black tracking-tight text-white md:text-2xl">{{ t('blog.states.maintenanceTitle') }}</h1>
-        <p class="max-w-md text-sm leading-relaxed text-white/55">{{ t('blog.states.maintenanceBody') }}</p>
+        <h1 class="text-xl font-black tracking-tight text-ink md:text-2xl">{{ t('blog.states.maintenanceTitle') }}</h1>
+        <p class="max-w-md text-sm leading-relaxed text-ink-muted">{{ t('blog.states.maintenanceBody') }}</p>
         <NuxtLink :to="localePath('/blog')" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-neon-300 hover:text-neon-100">
           {{ t('blog.article.backToBlog') }}
         </NuxtLink>
@@ -122,7 +122,7 @@ useHead(() => ({
       <div class="mx-auto max-w-3xl px-6 pb-8 pt-36 md:pt-44">
         <!-- Cabecera -->
         <header>
-          <NuxtLink :to="localePath('/blog')" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-white/45 transition-colors duration-300 ease-out-expo hover:text-neon-300">
+          <NuxtLink :to="localePath('/blog')" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-ink-muted transition-colors duration-300 ease-out-expo hover:text-neon-300">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
             </svg>
@@ -132,12 +132,12 @@ useHead(() => ({
           <p v-if="post.category" class="mt-8 text-[11px] font-bold uppercase tracking-[0.16em] text-neon-300">
             {{ post.category.title }}
           </p>
-          <h1 class="mt-3 text-3xl font-black leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h1 class="mt-3 text-3xl font-black leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl">
             {{ post.title }}
           </h1>
-          <p v-if="post.excerpt" class="mt-5 text-lg leading-relaxed text-white/55">{{ post.excerpt }}</p>
+          <p v-if="post.excerpt" class="mt-5 text-lg leading-relaxed text-ink-muted">{{ post.excerpt }}</p>
 
-          <div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-white/10 py-5 text-sm">
+          <div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-hairline py-5 text-sm">
             <div v-if="post.author" class="flex items-center gap-3">
               <img
                 v-if="authorAvatar"
@@ -151,12 +151,12 @@ useHead(() => ({
               <span v-else class="grid h-10 w-10 place-items-center rounded-full bg-neon-500/15 text-sm font-black text-neon-300" aria-hidden="true">
                 {{ post.author.name.charAt(0) }}
               </span>
-              <span class="font-bold text-white">{{ post.author.name }}</span>
-              <span v-if="post.author.role" class="text-white/45">· {{ post.author.role }}</span>
+              <span class="font-bold text-ink">{{ post.author.name }}</span>
+              <span v-if="post.author.role" class="text-ink-muted">· {{ post.author.role }}</span>
             </div>
-            <span class="ml-auto flex items-center gap-3 text-white/45">
+            <span class="ml-auto flex items-center gap-3 text-ink-muted">
               <time v-if="publishedLabel" :datetime="post.publishedAt || undefined">{{ publishedLabel }}</time>
-              <span class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
+              <span class="h-1 w-1 rounded-full bg-surface-strong/50" aria-hidden="true" />
               <span>{{ t('blog.article.readingTime', { minutes: readingMinutes }) }}</span>
             </span>
           </div>
@@ -170,7 +170,7 @@ useHead(() => ({
           width="1600"
           height="900"
           loading="eager"
-          class="mt-10 aspect-[16/9] w-full rounded-2xl border border-white/10 object-cover"
+          class="mt-10 aspect-[16/9] w-full rounded-2xl border border-hairline object-cover"
         >
 
         <!-- Cuerpo -->

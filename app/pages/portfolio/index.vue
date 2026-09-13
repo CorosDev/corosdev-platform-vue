@@ -83,21 +83,21 @@ function featuredHero(url?: string | null) {
         <span class="h-1.5 w-1.5 rounded-full bg-neon-500" aria-hidden="true" />
         {{ t('portfolio.hero.tag') }}
       </p>
-      <h1 class="mt-6 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+      <h1 class="mt-6 text-4xl font-black leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
         {{ t('portfolio.hero.title_1') }} <span class="gradient-text">{{ t('portfolio.hero.title_span') }}</span>
       </h1>
-      <p class="mt-5 text-base leading-relaxed text-white/55 lg:text-lg">
+      <p class="mt-5 text-base leading-relaxed text-ink-muted lg:text-lg">
         {{ t('portfolio.hero.subtitle') }}
       </p>
     </header>
 
     <!-- Controles: búsqueda + filtro por industria -->
-    <div v-if="!isMaintenance" class="mt-12 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-center lg:justify-between">
+    <div v-if="!isMaintenance" class="mt-12 flex flex-col gap-5 border-b border-hairline pb-6 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex flex-wrap items-center gap-2">
         <button
           type="button"
           class="rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
-          :class="activeIndustry === null ? 'bg-neon-500 text-brand-900' : 'border border-white/15 bg-white/[0.03] text-white/60 hover:border-white/30 hover:text-white'"
+          :class="activeIndustry === null ? 'bg-neon-500 text-brand-900' : 'border border-hairline bg-surface-strong/50 text-ink-muted hover:border-neon-500/30 hover:text-ink'"
           @click="selectIndustry(null)"
         >
           {{ t('portfolio.filters.all') }}
@@ -107,7 +107,7 @@ function featuredHero(url?: string | null) {
           :key="ind.value"
           type="button"
           class="rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] transition-colors duration-300 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
-          :class="activeIndustry === ind.value ? 'bg-neon-500 text-brand-900' : 'border border-white/15 bg-white/[0.03] text-white/60 hover:border-white/30 hover:text-white'"
+          :class="activeIndustry === ind.value ? 'bg-neon-500 text-brand-900' : 'border border-hairline bg-surface-strong/50 text-ink-muted hover:border-neon-500/30 hover:text-ink'"
           @click="selectIndustry(ind.value)"
         >
           {{ ind.value }}
@@ -116,28 +116,28 @@ function featuredHero(url?: string | null) {
 
       <label class="relative block w-full lg:w-72">
         <span class="sr-only">{{ t('portfolio.search.label') }}</span>
-        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
         </svg>
         <input
           v-model="search"
           type="search"
           :placeholder="t('portfolio.search.placeholder')"
-          class="w-full rounded-lg border border-white/15 bg-white/[0.03] py-2.5 pl-9 pr-3 text-sm text-white placeholder:text-white/35 focus-visible:border-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300/40"
+          class="w-full rounded-lg border border-hairline bg-surface-strong/50 py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-ink-muted focus-visible:border-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300/40"
         >
       </label>
     </div>
 
     <!-- Modo Mantenimiento -->
     <UiSpotlightCard v-if="isMaintenance" :size="620" class="mt-12 flex flex-col items-start gap-4 rounded-2xl p-8 md:p-12">
-      <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]" aria-hidden="true">
+      <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-hairline bg-surface-strong/50" aria-hidden="true">
         <svg class="h-5 w-5 text-neon-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </span>
-      <h2 class="text-xl font-black tracking-tight text-white md:text-2xl">{{ t('portfolio.states.maintenanceTitle') }}</h2>
-      <p class="max-w-md text-sm leading-relaxed text-white/55">{{ t('portfolio.states.maintenanceBody') }}</p>
+      <h2 class="text-xl font-black tracking-tight text-ink md:text-2xl">{{ t('portfolio.states.maintenanceTitle') }}</h2>
+      <p class="max-w-md text-sm leading-relaxed text-ink-muted">{{ t('portfolio.states.maintenanceBody') }}</p>
       <NuxtLink :to="localePath('/')" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-neon-300 hover:text-neon-100">
         {{ t('portfolio.states.backHome') }}
       </NuxtLink>
@@ -147,7 +147,7 @@ function featuredHero(url?: string | null) {
       <!-- Caso destacado -->
       <NuxtLink v-if="featured" :to="localePath(`/portfolio/${featured.slug}`)" class="mt-12 block focus-visible:outline-none">
         <UiSpotlightCard v-tilt="5" as="article" :size="720" class="group grid gap-0 overflow-hidden rounded-3xl md:grid-cols-2">
-          <div class="relative aspect-[16/10] overflow-hidden bg-white/[0.03] md:aspect-auto md:h-full">
+          <div class="relative aspect-[16/10] overflow-hidden bg-surface-strong/50 md:aspect-auto md:h-full">
             <img
               v-if="featuredHero(featured.hero?.url)"
               :src="featuredHero(featured.hero?.url)!"
@@ -162,12 +162,12 @@ function featuredHero(url?: string | null) {
           <div class="flex flex-col justify-center gap-4 p-8 md:p-10">
             <div class="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.14em]">
               <span class="rounded-full bg-neon-500/15 px-2.5 py-1 text-neon-300">{{ t('portfolio.featured.badge') }}</span>
-              <span class="text-white/45">{{ featured.client }}</span>
-              <span v-if="featured.industry" class="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
-              <span v-if="featured.industry" class="text-white/45">{{ featured.industry }}</span>
+              <span class="text-ink-muted">{{ featured.client }}</span>
+              <span v-if="featured.industry" class="h-1 w-1 rounded-full bg-surface-strong/50" aria-hidden="true" />
+              <span v-if="featured.industry" class="text-ink-muted">{{ featured.industry }}</span>
             </div>
-            <h2 class="text-2xl font-black leading-[1.15] tracking-tight text-white md:text-3xl">{{ featured.title }}</h2>
-            <p v-if="featured.summary" class="line-clamp-3 text-sm leading-relaxed text-white/55 md:text-base">{{ featured.summary }}</p>
+            <h2 class="text-2xl font-black leading-[1.15] tracking-tight text-ink md:text-3xl">{{ featured.title }}</h2>
+            <p v-if="featured.summary" class="line-clamp-3 text-sm leading-relaxed text-ink-muted md:text-base">{{ featured.summary }}</p>
           </div>
         </UiSpotlightCard>
       </NuxtLink>
@@ -184,8 +184,8 @@ function featuredHero(url?: string | null) {
 
       <!-- Empty State -->
       <UiSpotlightCard v-if="isEmpty" :size="520" class="mt-12 flex flex-col items-start gap-4 rounded-2xl p-8 md:p-12">
-        <h2 class="text-xl font-black tracking-tight text-white md:text-2xl">{{ t('portfolio.states.emptyTitle') }}</h2>
-        <p class="max-w-md text-sm leading-relaxed text-white/55">
+        <h2 class="text-xl font-black tracking-tight text-ink md:text-2xl">{{ t('portfolio.states.emptyTitle') }}</h2>
+        <p class="max-w-md text-sm leading-relaxed text-ink-muted">
           {{ search.trim() || activeIndustry ? t('portfolio.states.emptyFiltered') : t('portfolio.states.emptyBody') }}
         </p>
         <button
@@ -202,18 +202,18 @@ function featuredHero(url?: string | null) {
       <nav v-if="totalPages > 1 && !search.trim()" class="mt-14 flex items-center justify-center gap-4" :aria-label="t('portfolio.pager.label')">
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-bold text-white transition-colors duration-300 ease-out-expo hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-strong/50 px-4 py-2 text-sm font-bold text-ink transition-colors duration-300 ease-out-expo hover:border-neon-500/30 disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="page <= 1 || pending"
           @click="goToPage(page - 1)"
         >
           {{ t('portfolio.pager.prev') }}
         </button>
-        <span class="text-xs font-bold uppercase tracking-[0.14em] text-white/45">
+        <span class="text-xs font-bold uppercase tracking-[0.14em] text-ink-muted">
           {{ t('portfolio.pager.status', { current: page, total: totalPages }) }}
         </span>
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-2 text-sm font-bold text-white transition-colors duration-300 ease-out-expo hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-strong/50 px-4 py-2 text-sm font-bold text-ink transition-colors duration-300 ease-out-expo hover:border-neon-500/30 disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="page >= totalPages || pending"
           @click="goToPage(page + 1)"
         >

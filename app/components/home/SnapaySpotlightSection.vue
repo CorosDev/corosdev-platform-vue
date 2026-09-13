@@ -157,10 +157,10 @@ const capabilities = computed(() =>
     <div class="relative mx-auto max-w-7xl px-6">
       <h2
         v-reveal
-        class="max-w-3xl text-3xl font-black leading-[1.1] tracking-tight text-white md:text-5xl"
+        class="max-w-3xl text-3xl font-black leading-[1.1] tracking-tight text-ink md:text-5xl"
       >
         {{ t('home.snapay.title_1') }}
-        <span class="text-white/25" aria-hidden="true">—</span>
+        <span class="text-ink-muted" aria-hidden="true">—</span>
         <span class="gradient-text">{{ t('home.snapay.title_span') }}</span>
       </h2>
 
@@ -187,6 +187,9 @@ const capabilities = computed(() =>
                 <!-- Cabecera de la app -->
                 <div class="bg-[#4F46E5] px-5 pb-8 pt-11">
                   <div class="flex items-center justify-between gap-3">
+                    <!-- Paleta nativa de la app (ver docstring) — `text-white`/`bg-white`
+                         fijos a propósito, NO tokens de tema: esta cabecera indigo
+                         es una captura fiel del producto, no un panel del sitio. -->
                     <p class="truncate text-sm font-bold text-white">{{ t('home.snapay.mockup.venue') }}</p>
                     <span class="flex shrink-0 flex-col gap-[3px]" aria-hidden="true">
                       <span class="h-[3px] w-[3px] rounded-full bg-white/70" />
@@ -212,6 +215,7 @@ const capabilities = computed(() =>
                       </p>
 
                       <div class="mt-4 flex rounded-full bg-[#F3F4F6] p-1">
+                        <!-- Ídem: paleta nativa de la app, `text-white` fijo. -->
                         <span class="flex-1 rounded-full bg-[#111827] px-3 py-1.5 text-center text-[11px] font-bold text-white">
                           {{ t('home.snapay.mockup.tabPending') }}
                         </span>
@@ -357,7 +361,7 @@ const capabilities = computed(() =>
           </div>
 
           <div class="mt-5 flex flex-col items-center gap-2">
-            <p class="text-[11px] text-white/50">{{ t('home.snapay.mockup.demoNote') }}</p>
+            <p class="text-[11px] text-ink-muted">{{ t('home.snapay.mockup.demoNote') }}</p>
             <button
               v-if="step !== 'invoice'"
               type="button"
@@ -387,8 +391,8 @@ const capabilities = computed(() =>
               </svg>
             </span>
             <span class="min-w-0">
-              <span class="block text-base font-bold tracking-tight text-white">{{ capability.title }}</span>
-              <span class="mt-1.5 block text-sm leading-relaxed text-white/50">{{ capability.description }}</span>
+              <span class="block text-base font-bold tracking-tight text-ink">{{ capability.title }}</span>
+              <span class="mt-1.5 block text-sm leading-relaxed text-ink-muted">{{ capability.description }}</span>
             </span>
           </UiSpotlightCard>
         </div>

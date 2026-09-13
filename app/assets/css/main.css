@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Tailwind v4 defaults `dark:` to `@media (prefers-color-scheme: dark)`.
+   @nuxtjs/color-mode (nuxt.config.ts) drives an explicit `.dark`/`.light`
+   class on <html> instead — user choice + a saved preference must win over
+   whatever the OS reports — so `dark:` is repointed at that class. The `.dark *`
+   half matters because some brand-blue text/icon colours are set on ancestors
+   further up than the class itself. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Design tokens (Tailwind v4 CSS-first theming — no tailwind.config.js allowed). */
 @theme {
   --color-brand-900: #070b1a;
@@ -30,12 +38,134 @@
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
+/* Semantic dual-theme tokens (Light/Dark toggle infrastructure).
+   Paleta SIEMPRE dentro de la gama de azules de marca en ambos modos — nunca
+   blanco/negro puros. `:root` fija los valores de modo OSCURO (el sitio nace
+   100% oscuro, ver dark-light-mode-toggle-scope en memoria) y `.dark`
+   los repite explícitamente por claridad/robustez; `.light` (clase que
+   @nuxtjs/color-mode pone en <html>) los sobreescribe con la paleta Ice
+   Blue/Soft Slate. Traslucideces (hairline, ink-muted) se hornean DENTRO del
+   valor del token — no como modificador `/10` en cada utilidad — porque la
+   opacidad correcta es distinta por tema (white/10 en oscuro, blue-200/60 en
+   claro) y un único modificador de utilidad no puede alternar solo.
+
+   `@theme inline` (no `@theme`) es lo que permite que estas utilidades
+   (`bg-surface`, `text-ink`, `border-hairline`…) lean el valor de la variable
+   en TIEMPO DE EJECUCIÓN vía la cascada, en vez de congelarlo en build time
+   como hace un `@theme` normal. */
+:root,
+.dark {
+  color-scheme: dark;
+
+  --surface: #0a0f1d;
+  --surface-strong: #030712;
+  --surface-muted: #0e1730;
+  --ink: #ffffff;
+  --ink-muted: rgb(255 255 255 / 0.65);
+  --hairline: rgb(255 255 255 / 0.1);
+  --accent: #1f7fff;
+  --accent-ink: #070b1a;
+  /* Color de TEXTO/ícono de acento — separado de `--accent` (que además
+     sirve de fondo de botón, con su propia pareja de contraste vía
+     `--accent-ink`) porque un texto necesita 4.5:1 contra `--surface`
+     mientras que un botón sólo necesita 3:1 de borde/forma. En oscuro son
+     el mismo azul: `--surface` es casi negro, así que `neon-500` ya tiene
+     contraste de sobra como texto. Ver `.light` para por qué esto deja de
+     ser cierto ahí. */
+  --accent-text: var(--color-neon-500);
+  /* Hover/pressed de un botón `bg-accent`. En oscuro el hábito ya establecido
+     en todo el sitio es aclarar al pasar el cursor (`hover:bg-neon-300`), así
+     que `--accent-strong` reusa ese mismo tono. */
+  --accent-strong: var(--color-neon-300);
+
+  /* Consumidos por BackgroundStars.vue. `--stars-sky` reusa `--surface` en vez
+     de repetir el hex: el fondo de página y el del starfield fixed deben ser
+     el mismo azul profundo. `--stars-opacity` en 1 deja el campo de estrellas
+     tal cual se ve hoy — ver el override en `.light` para el modo claro. */
+  --stars-sky: var(--surface);
+  --stars-opacity: 1;
+  /* RGB triplet (no `#`, so it can feed `rgb(var(--stars-dot-rgb) / alpha)`
+     inside BackgroundStars.vue's radial-gradients) — white in dark, unchanged
+     from what those gradients always hardcoded. See `.light` below for why
+     this can't just stay white with a lower alpha. */
+  --stars-dot-rgb: 255 255 255;
+}
+
+.light {
+  color-scheme: light;
+
+  /* Tercera vuelta de la paleta clara — las dos anteriores (Ice Blue pálido,
+     luego Deep Sky Blue saturado) subían o bajaban la saturación del FONDO
+     ENTERO, que resultó ser la palanca equivocada: un fondo medio-saturado
+     no se lee "modo claro real" para quien prefiere huir de lo oscuro, Y
+     apaga cualquier punto/acento del mismo azul que se pinte encima (las
+     estrellas, y el texto en `--accent-text` más abajo) por falta de
+     contraste entre figura y fondo. La saturación se muda aquí a
+     `surface-strong` (tarjetas) y a las estrellas/acento — el lienzo de
+     página se queda casi blanco. `surface-muted` cae entre ambos para
+     paneles intermedios. */
+  --surface: #f3f8fd;
+  --surface-strong: #dbeafe;
+  --surface-muted: #e8f2fc;
+  --ink: #0f172a;
+  --ink-muted: rgb(15 23 42 / 0.65);
+  /* Hairline de marca (blue-600 translúcido) en vez de gris neutro — visible
+     tanto sobre `surface` (casi blanco) como sobre `surface-strong` (blue-100). */
+  --hairline: rgb(37 99 235 / 0.18);
+  --accent: #2563eb;
+  --accent-ink: #ffffff;
+  /* `neon-500` (#1f7fff) como texto sobre este `--surface` casi blanco da
+     ~3.55:1 — mejor que el ~1.77:1 de la vuelta Deep Sky Blue, pero corto
+     del 4.5:1 AA para las etiquetas de 11px que lo usan (eyebrows, enlaces
+     activos del navbar, badges). `blue-700` da ~6.27:1 sobre `#f3f8fd`,
+     confirmado con la fórmula de luminancia relativa de WCAG — de ahí el
+     piso de "≥ 6:1" pedido en vez del 4.5:1 mínimo, para dejar margen. */
+  --accent-text: #1d4ed8;
+  /* En claro un botón lleno se "hunde" al pasar el cursor en vez de
+     aclararse (al revés que en oscuro) — mismo blue-700 que `--accent-text`,
+     reutilizado porque ambos son "azul más profundo que el de reposo". */
+  --accent-strong: #1d4ed8;
+
+  /* Degradado casi-blanco → blue-100, mismo espíritu "cielo" que el de
+     `.dark` pero sin sacrificar brillo — la mayor parte del lienzo sigue
+     cerca del blanco donde vive el texto, y el azul se concentra hacia el
+     borde inferior. Los puntos dejan de ser navy (grisáceos y de bajo
+     contraste sobre un fondo YA azul-medio, el error de la vuelta anterior)
+     y pasan al mismo azul de `--accent`: contra un fondo casi blanco eso sí
+     resalta con nitidez, como chispa, no como mancha. */
+  --stars-sky: linear-gradient(180deg, #ffffff 0%, #eef6fd 45%, #dbeafe 100%);
+  --stars-opacity: 0.6;
+  --stars-dot-rgb: 37 99 235;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
+  --color-accent-strong: var(--accent-strong);
+}
+
 /* Tailwind's preflight resets font-family to the browser default and stops
    there — it never opts elements into `--font-sans` on its own, so the
    brand typeface above only takes effect once something actually applies it. */
 @layer base {
   html {
     font-family: var(--font-sans);
+    /* "SoftScroll": el nuevo desplegable "Servicios" del navbar (useSiteNav.ts)
+       enlaza a anclas de /services (#custom-software, etc.), y
+       ServicesPillarNav.vue ya usaba <a href="#id"> planas para las mismas
+       anclas dentro de la página. Vue Router anima sus propios saltos por
+       hash vía `scrollBehaviorType: 'smooth'` (nuxt.config.ts), pero un
+       <a href="#id"> nativo no pasa por Vue Router — lo resuelve el
+       navegador directamente según esta propiedad CSS. Puesta aquí cubre
+       ambos casos con una sola declaración. */
+    scroll-behavior: smooth;
     /* The brand background is painted here, not only by BackgroundStars.vue.
        That component is position:fixed with z-index:-1 and every ancestor of
        the page text is bg-transparent, so nothing in the text nodes ancestor
@@ -43,9 +173,70 @@
        and Lighthouse through it) walk that chain, find nothing, and fall back
        to assuming a WHITE page — which reported every brand-blue label as a
        contrast failure even though the real ratios on #070b1a are 5.2:1 to
-       9.7:1. Painting it here also removes the white flash before the stars
-       layer paints, and keeps the page readable if that layer ever fails. */
-    background-color: var(--color-brand-900);
+       9.7:1 (dark) / on #f0f4f8 are equally solid in light. Painting it here
+       also removes the flash before the stars layer paints, and keeps the
+       page readable if that layer ever fails.
+
+       `--color-surface` replaces the old hardcoded `--color-brand-900` so
+       this repaints with the active theme; its dark value IS brand-900's
+       hex, so nothing changes visually until Light mode is actually toggled. */
+    background-color: var(--color-surface);
+  }
+}
+
+/* View Transitions API — ColorModeToggle.vue wraps the .dark/.light class
+   swap in document.startViewTransition() when the browser supports it, which
+   asks the engine for a native crossfade between the old and new frame
+   instead of the "flash flash" of a bare class change. The browser default
+   lasts 0.25s; overridden here to the 0.4s ease this feature was scoped
+   with, so it feels identical to the fallback below. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: ease;
+}
+
+/* Fallback for browsers without the View Transitions API (Firefox, older
+   Safari): ColorModeToggle.vue adds this class to <html> right before
+   flipping the theme and removes it ~0.4s later, so a transition exists ONLY
+   during that explicit toggle — never on first paint (which would reintroduce
+   the flash this exists to prevent) and without colliding with other
+   components' own transitions (glass, buttons, [data-tilt]…), since those
+   never animate color/background-color/border-color themselves. */
+/* `opacity` queda deliberadamente fuera de esta lista (a diferencia de
+   `.stars__layer`, que sí la transiciona localmente más abajo): un `!important`
+   global sobre opacity pisaría, aunque sea por 0.4s, las transiciones propias
+   de los dropdowns del Navbar, `v-reveal`/`v-vanish` y el hover de los logos,
+   todas con sus propias duraciones/curvas ya afinadas. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background 0.4s ease,
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease,
+    fill 0.4s ease,
+    stroke 0.4s ease,
+    filter 0.4s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: none !important;
   }
 }
 
@@ -138,8 +329,18 @@
    VISIBLE (`in`), así que el LCP se pinta de inmediato; el observer sólo puede
    atenuar tras la hidratación. Sólo anima opacity/filter/transform: nada
    dispara layout. Sin `@layer`, por el mismo motivo que `[data-reveal]`: el
-   override de motion reducida no depende del orden de capas de Tailwind. */
+   override de motion reducida no depende del orden de capas de Tailwind.
+
+   `translateZ(0)` va horneado en AMBOS estados (nunca sólo en uno) para que
+   el elemento tenga su propia capa de compositor DESDE el primer paint, no
+   recién cuando arranca la transición — confirmado con un Lighthouse real
+   (informe "6 non-composited animated elements" sobre estas mismas 6
+   secciones) que crear la capa a mitad de transición no basta: Blink decide
+   si puede acelerar la animación de `filter` ANTES de que el `will-change`
+   dinámico de vanish.ts surta efecto. `backface-visibility: hidden` refuerza
+   la promoción a capa propia (mismo patrón que BackgroundStars.vue). */
 [data-vanish] {
+  backface-visibility: hidden;
   transition:
     opacity 0.6s var(--ease-out-expo),
     filter 0.6s var(--ease-out-expo),
@@ -149,13 +350,13 @@
 [data-vanish='in'] {
   opacity: 1;
   filter: blur(0);
-  transform: translateY(0);
+  transform: translateY(0) translateZ(0);
 }
 
 [data-vanish='out'] {
   opacity: 0.2;
   filter: blur(4px);
-  transform: translateY(var(--vanish-shift, 0px));
+  transform: translateY(var(--vanish-shift, 0px)) translateZ(0);
 }
 
 @media (prefers-reduced-motion: reduce) {

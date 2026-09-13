@@ -42,7 +42,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-white/5"
+    class="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-surface-strong/50"
     role="progressbar"
     :aria-label="label"
     aria-valuemin="0"

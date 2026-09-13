@@ -1,63 +1,85 @@
 <script setup lang="ts">
+/**
+ * Misión/Visión + CTA de conversión — Paso 4 del rediseño B2B.
+ *
+ * Reemplaza la versión anterior (3 bloques de párrafos largos "Build
+ * Technology That Scales" / "Create Intelligent Growth Systems" / "Deliver
+ * Measurable & Sustainable Impact") por dos bloques directos de una sola
+ * frase cada uno y un CTA integrado al cierre — el "texto genérico de IA"
+ * que señaló el usuario venía de esos tres párrafos largos, no del mensaje
+ * en sí.
+ *
+ * El CTA primario reutiliza el modal global de leads (Fase 4, el mismo que
+ * abren "Book a demo"/"Contact" del navbar) en vez de un link a Calendly o
+ * a una página `/contact` que no existe — cero rutas nuevas. El secundario
+ * es un ancla simple a `#what-we-solve` (ServicesSection.vue), donde viven
+ * las garantías reales (30-Day Risk-Free Trial, 6-Month Placement
+ * Protection) — no hay una sección de "garantías" separada que crear.
+ */
+const { open: openContactModal } = useContactModal()
 const { t } = useI18n()
-const localePath = useLocalePath()
-
-interface MissionBlock {
-  title: string
-  description: string
-  icon: string
-}
-
-const ICON_SCALES = 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
-const ICON_SYSTEMS = 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
-const ICON_IMPACT = 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-
-const blocks = computed<MissionBlock[]>(() => [
-  { title: t('home.mission.block1_title'), description: t('home.mission.block1_desc'), icon: ICON_SCALES },
-  { title: t('home.mission.block2_title'), description: t('home.mission.block2_desc'), icon: ICON_SYSTEMS },
-  { title: t('home.mission.block3_title'), description: t('home.mission.block3_desc'), icon: ICON_IMPACT },
-])
 </script>
 
 <template>
-  <section id="mission" class="relative overflow-hidden py-12 md:py-24">
-    <div class="mx-auto max-w-7xl px-6 text-center">
-      <h2 class="mb-6 text-4xl font-black text-white md:mb-8 md:text-6xl">
-        {{ t('home.mission.h2_1') }} <span class="gradient-text">{{ t('home.mission.h2_span') }}</span>
-      </h2>
-      <p class="mx-auto max-w-4xl text-xl font-medium leading-relaxed text-white/80 md:text-2xl">
-        {{ t('home.mission.p') }}
-      </p>
-
-      <p class="mt-8 text-sm font-bold uppercase tracking-[0.3em] text-cobalt-500 md:mt-16">
-        {{ t('home.mission.label') }}
-      </p>
-
-      <div class="mt-6 grid gap-5 md:mt-10 md:grid-cols-3 md:gap-8">
-        <div
-          v-for="block in blocks"
-          :key="block.title"
-          class="group glass soft flex h-full flex-col items-center rounded-3xl border border-white/5 p-10 transition-all duration-500 hover:border-neon-500/30"
-        >
-          <div
-            class="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-neon-500/10 text-neon-500 transition-transform duration-500 group-hover:scale-110"
-          >
-            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" :d="block.icon" />
-            </svg>
-          </div>
-          <h3 class="mb-4 text-xl font-bold text-white">{{ block.title }}</h3>
-          <p class="text-sm leading-relaxed text-white/50">{{ block.description }}</p>
-        </div>
+  <section id="mission" v-vanish class="relative overflow-hidden py-12 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div v-reveal class="mx-auto mb-10 max-w-3xl text-center md:mb-16">
+        <h2 class="text-4xl font-black text-ink md:text-6xl">
+          {{ t('home.mission.headline') }}
+        </h2>
       </div>
 
-      <div class="mt-10 md:mt-20">
-        <NuxtLink
-          :to="localePath('/about')"
-          class="rounded-xl border border-white/10 bg-white/5 px-10 py-4 font-bold uppercase text-white shadow-[0_0_30px_rgba(31,127,255,0.05)] transition-all duration-300 hover:border-neon-500 hover:bg-white/10"
-        >
-          {{ t('home.mission.btn') }}
-        </NuxtLink>
+      <div v-reveal="100" class="grid gap-5 md:grid-cols-2 md:gap-8">
+        <UiSpotlightCard v-tilt as="article" class="rounded-3xl p-10">
+          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
+            {{ t('home.mission.missionLabel') }}
+          </p>
+          <p class="text-xl font-medium leading-relaxed text-ink-muted md:text-2xl">
+            {{ t('home.mission.missionText') }}
+          </p>
+        </UiSpotlightCard>
+        <UiSpotlightCard v-tilt as="article" class="rounded-3xl p-10">
+          <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
+            {{ t('home.mission.visionLabel') }}
+          </p>
+          <p class="text-xl font-medium leading-relaxed text-ink-muted md:text-2xl">
+            {{ t('home.mission.visionText') }}
+          </p>
+        </UiSpotlightCard>
+      </div>
+
+      <div
+        v-reveal="150"
+        class="mt-10 rounded-3xl border border-hairline bg-surface-strong/50 px-8 py-12 text-center md:mt-16 md:px-16 md:py-16"
+      >
+        <p class="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-accent-text">
+          {{ t('home.mission.ctaEyebrow') }}
+        </p>
+        <h3 class="text-3xl font-black text-ink md:text-5xl">
+          {{ t('home.mission.ctaTitle') }}
+        </h3>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-ink-muted">
+          {{ t('home.mission.ctaSubtitle') }}
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-lg bg-neon-500 px-8 py-4 text-base font-bold uppercase tracking-wider text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
+            @click="openContactModal()"
+          >
+            {{ t('home.mission.ctaPrimary') }}
+            <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <a
+            href="#what-we-solve"
+            class="inline-flex items-center gap-2 rounded-lg border border-hairline px-8 py-4 text-base font-bold uppercase tracking-wider text-ink transition-all duration-300 hover:border-neon-500/40 hover:bg-surface-strong/50"
+          >
+            {{ t('home.mission.ctaSecondary') }}
+          </a>
+        </div>
       </div>
     </div>
   </section>

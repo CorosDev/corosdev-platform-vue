@@ -263,14 +263,14 @@ onBeforeUnmount(() => {
         tabindex="-1"
         :aria-label="title"
       >
-        <div class="flex items-start justify-between gap-4 border-b border-white/10 p-6">
+        <div class="flex items-start justify-between gap-4 border-b border-hairline p-6">
           <div>
-            <h3 class="text-xl font-bold tracking-tight text-white">{{ title }}</h3>
-            <p class="mt-1 text-xs text-white/50">{{ subtitle }}</p>
+            <h3 class="text-xl font-bold tracking-tight text-ink">{{ title }}</h3>
+            <p class="mt-1 text-xs text-ink-muted">{{ subtitle }}</p>
           </div>
           <button
             type="button"
-            class="rounded-lg border border-white/10 p-2 text-white/70 transition-colors hover:border-neon-500 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
+            class="rounded-lg border border-hairline p-2 text-ink-muted transition-colors hover:border-neon-500 hover:text-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300"
             :aria-label="t('ctaDrawer.close')"
             @click="close"
           >
@@ -391,7 +391,7 @@ onBeforeUnmount(() => {
               }}
             </button>
 
-            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-400">
+            <p v-if="status === 'error'" role="alert" class="mt-3 text-center text-xs text-red-600 dark:text-red-400">
               {{ t('ctaDrawer.form.error') }}
             </p>
           </form>
@@ -402,8 +402,8 @@ onBeforeUnmount(() => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h4 class="mt-5 text-xl font-bold text-white">{{ t('ctaDrawer.form.successTitle') }}</h4>
-            <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/60">
+            <h4 class="mt-5 text-xl font-bold text-ink">{{ t('ctaDrawer.form.successTitle') }}</h4>
+            <p class="mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
               {{ isServicesFunnel ? t('ctaDrawer.form.successDescServices') : t('ctaDrawer.form.successDesc') }}
             </p>
           </div>
@@ -414,13 +414,17 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* Loading indicator inside the submit button (matches ContactSection.vue). */
+/* Loading indicator inside the submit button (matches ContactSection.vue).
+   Tracks `--accent-ink` (the button's own text colour) instead of a fixed
+   near-black — that text is dark in dark mode but white in light mode
+   (`bg-accent`'s button is dark-on-blue vs. white-on-blue), so a hardcoded
+   dark ring read fine on dark and went muddy/mismatched on light. */
 .cta-spinner {
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  border: 2px solid rgb(7 11 26 / 0.25);
-  border-top-color: rgb(7 11 26 / 0.85);
+  border: 2px solid color-mix(in srgb, var(--accent-ink) 25%, transparent);
+  border-top-color: color-mix(in srgb, var(--accent-ink) 85%, transparent);
   animation: cta-spin 0.8s linear infinite;
 }
 
@@ -441,7 +445,7 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.625rem;
-  color: #ffffff;
+  color: var(--ink);
   cursor: pointer;
   opacity: 0;
   transform: translateY(12px);
@@ -495,10 +499,23 @@ onBeforeUnmount(() => {
   max-width: 480px;
   flex-direction: column;
   overflow: hidden;
-  background: linear-gradient(135deg, rgb(11 18 38 / 0.97) 0%, rgb(7 11 26 / 0.99) 100%);
+  /* Bug real reportado: esto era un gradiente fijo (brand-800/900 casi
+     opacos) que nunca leía el tema — los labels de arriba (`text-ink` vía
+     Tailwind) ya sí lo hacían, y los inputs (`bg-surface-strong/50`, también
+     Tailwind) quedaban mezclando su tinte claro CONTRA este fondo oscuro fijo
+     de por debajo, el mismo "gris sucio" que ya se vio en ContactModal.vue.
+     `color-mix` reproduce la misma alfa casi-opaca (97%/99%) que tenía el
+     original, ahora sobre `--surface`/`--surface-strong` — sigue leyendo el
+     tema, y el `backdrop-filter` de abajo conserva su efecto "cristal
+     esmerilado" en los dos modos en vez de sólo en oscuro. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--surface) 97%, transparent) 0%,
+    color-mix(in srgb, var(--surface-strong) 99%, transparent) 100%
+  );
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border-left: 1px solid rgb(31 127 255 / 0.15);
+  border-left: 1px solid var(--hairline);
   box-shadow: -15px 0 50px rgb(0 0 0 / 0.5);
 }
 
@@ -518,7 +535,7 @@ onBeforeUnmount(() => {
     height: 85vh;
     max-height: 720px;
     border-left: none;
-    border-top: 1px solid rgb(31 127 255 / 0.15);
+    border-top: 1px solid var(--hairline);
     border-radius: 1.5rem 1.5rem 0 0;
   }
 

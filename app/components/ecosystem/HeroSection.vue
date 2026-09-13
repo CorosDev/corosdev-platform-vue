@@ -9,10 +9,10 @@ const { t } = useI18n()
     >
       {{ t('ecosystem.hero.label') }}
     </span>
-    <h1 class="mx-auto mt-8 max-w-5xl text-5xl font-black leading-tight tracking-tight text-white md:text-8xl">
+    <h1 class="mx-auto mt-8 max-w-5xl text-5xl font-black leading-tight tracking-tight text-ink md:text-8xl">
       {{ t('ecosystem.hero.h1_1') }} <span class="gradient-text">{{ t('ecosystem.hero.h1_span') }}</span>
     </h1>
-    <p class="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-white/60 md:text-2xl">
+    <p class="mx-auto mt-8 max-w-3xl text-lg leading-relaxed text-ink-muted md:text-2xl">
       {{ t('ecosystem.hero.sub') }}
     </p>
   </section>
