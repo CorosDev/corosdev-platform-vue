@@ -1,5 +1,28 @@
 <script setup lang="ts">
-const { t } = useI18n()
+/**
+ * Dos grabaciones separadas del mismo video de presentación — una en
+ * español, otra en inglés (sin subtítulos/doblaje, son tomas distintas) —
+ * así que el embed tiene que seguir el idioma ACTIVO del sitio en vez de
+ * mostrar siempre el mismo id. Pedido explícito del usuario tras notar que
+ * el sitio en inglés seguía mostrando la versión en español.
+ *
+ * `:key="videoId"` en el `<iframe>` de abajo fuerza a Vue a remontarlo (no
+ * sólo mutar el atributo `src`) al cambiar de idioma — con un simple cambio
+ * de `src` el navegador SÍ navega el iframe al nuevo video, pero forzar el
+ * remount es más robusto ante cualquier estado interno que el reproductor
+ * de YouTube pudiera retener entre navegaciones.
+ */
+const { t, locale } = useI18n()
+
+// IDs literales de YouTube (el slug que sigue a youtu.be/ o al `v=` de la
+// URL larga), no la URL completa.
+const VIDEO_IDS: Record<string, string> = {
+  es: 'haRpSox-c1Q',
+  en: 'zK5vJHY2xec',
+}
+
+const videoId = computed(() => VIDEO_IDS[locale.value] ?? VIDEO_IDS.es)
+const embedSrc = computed(() => `https://www.youtube.com/embed/${videoId.value}`)
 </script>
 
 <template>
@@ -20,8 +43,9 @@ const { t } = useI18n()
       >
         <div class="relative aspect-video w-full overflow-hidden rounded-[1.5rem] border border-hairline bg-brand-900">
           <iframe
+            :key="videoId"
             class="absolute inset-0 h-full w-full"
-            src="https://www.youtube.com/embed/haRpSox-c1Q"
+            :src="embedSrc"
             title="CorosDev Presentation Video"
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
