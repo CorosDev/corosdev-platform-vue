@@ -214,9 +214,22 @@ const rowTwoMeta: LogoMeta[] = [
 
 // Fila 3: Space 2 Business + Czech Academy + Defence Hub (pedido explícito
 // de reagruparlos juntos).
+//
+// `width`/`height` de estos dos DEBEN ser 707×353 / 706×353 — confirmado con
+// `sharp().metadata()` contra el archivo real (aspect ~2:1 los dos). Alguien
+// los cambió a 1307×353 / 1406×353 en algún momento (aspect ~3.7-4:1, ~2x más
+// panorámico que el archivo real) y eso SÍ se notaba, aunque distinto según
+// el entorno: en local, IPX redimensiona al tamaño de caja exacto que pide
+// `withRenderSize()` sin preservar aspecto, así que el logo salía
+// "estirado" para llenar una caja ya de por sí mal calculada; en producción,
+// el optimizador de imágenes de Vercel SÍ preserva el aspecto real del
+// archivo, así que `object-fit: contain` termina encogiendo el contenido
+// dentro de esa misma caja mal calculada, dejándolo más chico y con aire a
+// los lados. Mismo bug, dos síntomas opuestos — la causa siempre fue la
+// metadata, no un problema de CSS ni de un entorno en particular.
 const rowThreeMeta: LogoMeta[] = [
-  { id: 'space2business', name: 'Space 2 Business', src: `${LOGO_DIR}/space_business_logo.webp`, width: 1307, height: 353, lightInvert: true },
-  { id: 'czechAcademy', name: 'The Czech Academy of Sciences', src: `${LOGO_DIR}/TheCzechAcademy_logo.webp`, width: 1406, height: 353 },
+  { id: 'space2business', name: 'Space 2 Business', src: `${LOGO_DIR}/space_business_logo.webp`, width: 707, height: 353, lightInvert: true },
+  { id: 'czechAcademy', name: 'The Czech Academy of Sciences', src: `${LOGO_DIR}/TheCzechAcademy_logo.webp`, width: 706, height: 353 },
   { id: 'defenceHub', name: 'Defence Hub', src: `${LOGO_DIR}/defence_hub_logo.webp`, width: 692, height: 245 },
 ]
 
