@@ -17,7 +17,16 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
 </script>
 
 <template>
-  <section v-vanish class="relative pb-12 pt-44 sm:pb-20 sm:pt-36">
+  <!-- `pt-28 md:pt-36` (antes `pt-44 sm:pt-36`, medido en vivo con
+       Playwright): el navbar fijo mide 74px de alto en mobile y salta a
+       102px recién en `md:` (768px, el mismo breakpoint donde AppNavbar.vue
+       agranda el logo) — pero la sección arrancaba en 176px en mobile de
+       todos modos, dejando 102px de aire puro entre el navbar y el
+       contenido, la queja explícita del usuario ("tanto margin top al
+       inicio"). `pt-28` (112px) deja ~38px de respiro bajo el navbar
+       mobile, proporcional a los ~42px que ya dejaba `pt-36` bajo el navbar
+       de escritorio. -->
+  <section v-vanish class="relative pb-12 pt-28 sm:pb-20 md:pt-36">
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-center gap-12 md:grid-cols-2">
         <!-- Copy — tilt magnético aislado a esta columna: el globo WebGL de la
@@ -33,18 +42,28 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
           <p class="mt-5 max-w-lg text-lg text-ink-muted">
             {{ t('home.hero.sub') }}
           </p>
-          <div class="mt-8 flex items-center gap-3">
+          <!-- Apilados a ancho completo en mobile, lado a lado desde `sm:` —
+               a `flex items-center gap-3` fijo (como estaba antes), en un
+               teléfono angosto cada botón sólo tenía ~190px reales (mitad
+               del ancho de contenido, menos el gap), insuficiente para
+               "Agenda una consultoría de 30 min" en una sola línea: el
+               texto envolvía a 2 líneas y el botón se veía como un bloque
+               grande y apretado contra su vecino, la queja explícita del
+               usuario. Apilados, cada uno tiene el ancho completo de la
+               columna — el texto entra en una línea sin necesitar padding
+               ni texto más chico para "caber". -->
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <a
               :href="bookingUrl"
               target="_blank"
               rel="noopener"
-              class="rounded-lg bg-neon-500 px-6 py-3 font-semibold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
+              class="rounded-lg bg-neon-500 px-6 py-3 text-center font-semibold text-brand-900 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:bg-neon-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-300 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-900"
             >
               {{ t('home.hero.cta1') }}
             </a>
             <a
               href="#what-we-solve"
-              class="rounded-xl border border-hairline bg-surface/50 px-6 py-3 text-ink transition-colors hover:border-neon-500 hover:bg-surface-strong hover:text-accent-text"
+              class="rounded-xl border border-hairline bg-surface/50 px-6 py-3 text-center text-ink transition-colors hover:border-neon-500 hover:bg-surface-strong hover:text-accent-text"
             >
               {{ t('home.hero.cta2') }}
             </a>

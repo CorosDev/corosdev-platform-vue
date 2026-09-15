@@ -48,6 +48,7 @@
       "globe": {
         "selectorAria": "Selecciona una ubicación de CorosDev",
         "globeAria": "Globo terráqueo 3D interactivo que muestra las ubicaciones de CorosDev en Honduras, Estados Unidos y República Checa",
+        "posterAria": "Mapa mundial con las cuatro oficinas de CorosDev: Honduras, Miami, Wyoming y Praga",
         "cardClose": "Cerrar",
         "fallbackNote": "El globo interactivo no está disponible — mostrando nuestras ubicaciones a continuación.",
         "posterCta": "Toca para explorar el globo 3D",
@@ -101,8 +102,7 @@
       "title_span": "ingeniería de alto rendimiento",
       "title_2": "para escalar sistemas críticos.",
       "subtitle": "Reconocidos por la prensa, agencias de innovación gubernamental y los socios tecnológicos con los que construimos cada día.",
-      "row1Label": "Mencionado en & Ecosistema",
-      "row2Label": "Construido con & Stack Tecnológico"
+      "row1Label": "Mencionado en & Ecosistema"
     },
     "services": {
       "label": "Lo que resolvemos",

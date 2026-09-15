@@ -120,70 +120,92 @@ onUnmounted(() => {
       :class="scrolled ? 'bg-surface/90' : 'bg-surface/80'"
     >
       <div class="flex items-center justify-between">
-        <!-- Hamburger (mobile only) -->
-        <button
-          type="button"
-          class="flex h-8 w-8 flex-col justify-center gap-1.5 md:hidden"
-          :aria-label="t('nav.menuToggle')"
-          :aria-expanded="mobileMenuOpen"
-          aria-controls="mobile-nav"
-          @click="toggleMobileMenu"
-        >
-          <span
-            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-transform duration-300"
-            :class="mobileMenuOpen ? 'translate-y-2 rotate-45' : ''"
-          />
-          <span
-            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-opacity duration-300"
-            :class="mobileMenuOpen ? 'opacity-0' : 'opacity-100'"
-          />
-          <span
-            class="block h-0.5 w-full rounded-full bg-surface-strong/50 transition-transform duration-300"
-            :class="mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''"
-          />
-        </button>
+        <!-- Hamburger + logo agrupados en un solo item flex (pedido
+             explícito: en mobile el logo se veía flotando a medio camino
+             entre el hamburger y el CTA, no pegado a la esquina izquierda).
+             Con `justify-between` en el contenedor padre y el `nav` de
+             escritorio oculto (`md:hidden`, fuera del flujo), en mobile sólo
+             quedaban DOS ítems reales — hamburger y logo — de un lado, y el
+             bloque de la derecha del otro, así que el hueco se repartía en
+             dos mitades iguales y el logo terminaba centrado en vez de junto
+             al hamburger. Agrupar ambos en un `<div>` los deja como un único
+             ítem flex: ahora sólo hay un hueco (entre este grupo y la
+             derecha), y el logo queda pegado al hamburger, a la izquierda.
+             En desktop (hamburger oculto) este `<div>` sólo envuelve el
+             logo — mismo comportamiento de siempre, sin cambio visual. -->
+        <div class="flex items-center gap-3">
+          <!-- Hamburger (mobile only). `bg-ink` en las 3 barras, no
+               `bg-surface-strong/50` (como estaba antes): `--surface-strong`
+               es casi negro en oscuro y azul pálido en claro — pensado para
+               FONDOS de tarjeta, no para el trazo de un ícono, así que las
+               barras casi desaparecían contra el propio fondo oscuro del
+               navbar. `--ink` es el token correcto para esto (blanco en
+               oscuro, casi negro en claro — el mismo que usa el texto del
+               nav), visible en ambos temas sin `dark:` condicional. -->
+          <button
+            type="button"
+            class="flex h-8 w-8 flex-col justify-center gap-1.5 md:hidden"
+            :aria-label="t('nav.menuToggle')"
+            :aria-expanded="mobileMenuOpen"
+            aria-controls="mobile-nav"
+            @click="toggleMobileMenu"
+          >
+            <span
+              class="block h-0.5 w-full rounded-full bg-ink transition-transform duration-300"
+              :class="mobileMenuOpen ? 'translate-y-2 rotate-45' : ''"
+            />
+            <span
+              class="block h-0.5 w-full rounded-full bg-ink transition-opacity duration-300"
+              :class="mobileMenuOpen ? 'opacity-0' : 'opacity-100'"
+            />
+            <span
+              class="block h-0.5 w-full rounded-full bg-ink transition-transform duration-300"
+              :class="mobileMenuOpen ? '-translate-y-2 -rotate-45' : ''"
+            />
+          </button>
 
-        <!-- Logo — dos variantes, no una sola con filtro condicional: el
-             isotipo (el circuito) ya es azul de marca en ambos temas, pero el
-             wordmark "COROS Dev" viene horneado en el PNG en blanco casi puro.
-             Un `dark:invert` sobre TODA la imagen invertiría también el
-             circuito azul a su complementario (naranja), así que en su lugar
-             `coros-light.png` es una segunda exportación con sólo el wordmark
-             recoloreado a `--ink` (navy) — el circuito es el mismo azul en
-             los dos archivos. `dark:hidden` / `hidden dark:block` conmutan
-             cuál se pinta; ambos son ~20-30KB así que precargar los dos no
-             pesa, y evita cualquier parpadeo o mismatch de hidratación que
-             tendría resolver esto por JS. -->
-        <NuxtLink :to="localePath('/')" class="flex items-center gap-3" @click="closeMobileMenu">
-          <NuxtPicture
-            src="/coros-light.png"
-            alt="CorosDev"
-            width="361"
-            height="220"
-            sizes="80px md:110px"
-            loading="eager"
-            preload
-            fetchpriority="high"
-            class="h-12 w-auto dark:hidden md:h-16"
-            :img-attrs="{ class: 'h-12 w-auto dark:hidden md:h-16', fetchpriority: 'high' }"
-          />
-          <NuxtPicture
-            src="/coros.png"
-            alt="CorosDev"
-            width="361"
-            height="220"
-            sizes="80px md:110px"
-            loading="eager"
-            preload
-            fetchpriority="high"
-            class="hidden h-12 w-auto dark:block md:h-16"
-            :img-attrs="{ class: 'hidden h-12 w-auto dark:block md:h-16', fetchpriority: 'high' }"
-          />
-          <div class="mx-2 hidden h-6 w-px bg-surface-strong/50 sm:block" />
-          <span class="hidden text-[10px] font-bold uppercase tracking-widest text-ink opacity-80 sm:block">
-            {{ t('nav.aiDrivenCompany') }}
-          </span>
-        </NuxtLink>
+          <!-- Logo — dos variantes, no una sola con filtro condicional: el
+               isotipo (el circuito) ya es azul de marca en ambos temas, pero el
+               wordmark "COROS Dev" viene horneado en el PNG en blanco casi puro.
+               Un `dark:invert` sobre TODA la imagen invertiría también el
+               circuito azul a su complementario (naranja), así que en su lugar
+               `coros-light.png` es una segunda exportación con sólo el wordmark
+               recoloreado a `--ink` (navy) — el circuito es el mismo azul en
+               los dos archivos. `dark:hidden` / `hidden dark:block` conmutan
+               cuál se pinta; ambos son ~20-30KB así que precargar los dos no
+               pesa, y evita cualquier parpadeo o mismatch de hidratación que
+               tendría resolver esto por JS. -->
+          <NuxtLink :to="localePath('/')" class="flex items-center gap-3" @click="closeMobileMenu">
+            <NuxtPicture
+              src="/coros-light.png"
+              alt="CorosDev"
+              width="361"
+              height="220"
+              sizes="80px md:110px"
+              loading="eager"
+              preload
+              fetchpriority="high"
+              class="h-12 w-auto dark:hidden md:h-16"
+              :img-attrs="{ class: 'h-12 w-auto dark:hidden md:h-16', fetchpriority: 'high' }"
+            />
+            <NuxtPicture
+              src="/coros.png"
+              alt="CorosDev"
+              width="361"
+              height="220"
+              sizes="80px md:110px"
+              loading="eager"
+              preload
+              fetchpriority="high"
+              class="hidden h-12 w-auto dark:block md:h-16"
+              :img-attrs="{ class: 'hidden h-12 w-auto dark:block md:h-16', fetchpriority: 'high' }"
+            />
+            <div class="mx-2 hidden h-6 w-px bg-surface-strong/50 sm:block" />
+            <span class="hidden text-[10px] font-bold uppercase tracking-widest text-ink opacity-80 sm:block">
+              {{ t('nav.aiDrivenCompany') }}
+            </span>
+          </NuxtLink>
+        </div>
 
         <!-- Desktop nav -->
         <nav class="hidden items-center gap-8 text-sm font-semibold tracking-tight text-ink-muted md:flex">

@@ -36,11 +36,11 @@ useHead(() => ({
     <HomeServicesSection />
     <HomePresentationVideoSection />
     <HomeMissionSection />
-    <HomeSnapaySpotlightSection />
     <HomeSolutionsSection />
     <HomeTestimonialsSection />
     <HomeRecognitionSection />
     <HomeProcessSection />
+    <HomeCtaSection />
     <HomeContactSection />
   </div>
 </template>

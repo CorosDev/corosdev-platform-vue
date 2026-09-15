@@ -16,8 +16,19 @@
  * data-driven map, so if CorosDev's office locations ever change, these
  * `<circle>` coordinates need a manual update too (see geoLocations in
  * GlobalGlobe.vue for the source lat/lng values).
+ *
+ * `interactive` (pedido explícito: en pantallas chicas el globo 3D
+ * desaparece del todo — "sólo un mapa mundi con los puntos de las 4
+ * oficinas", nunca tappable hacia la versión pesada): `false` en
+ * GlobalGlobe.vue cuando `isSmallScreen`, `true` (el comportamiento
+ * ORIGINAL, sin cambios) para el caso de escritorio con
+ * `prefers-reduced-motion` — ese visitante sí sigue pudiendo tocar para
+ * explorar el globo real, sólo sin animación de cámara. `false` renderiza
+ * un `<div>` en vez de un `<button>` (nada que tocar, sin cursor de mano, sin
+ * estados hover/focus) y esconde la etiqueta CTA "Tap to explore..." — no
+ * tiene sentido invitar a un tap que no hace nada.
  */
-defineProps<{ loading: boolean }>()
+withDefaults(defineProps<{ loading: boolean; interactive?: boolean }>(), { interactive: true })
 const emit = defineEmits<{ activate: [] }>()
 
 const { t } = useI18n()
@@ -34,11 +45,15 @@ const posterMarkers = [
 </script>
 
 <template>
-  <button
-    type="button"
+  <component
+    :is="interactive ? 'button' : 'div'"
+    :type="interactive ? 'button' : undefined"
     class="gp-poster"
-    :disabled="loading"
-    @click="emit('activate')"
+    :class="{ 'gp-poster--static': !interactive }"
+    :disabled="interactive ? loading : undefined"
+    :role="interactive ? undefined : 'img'"
+    :aria-label="interactive ? undefined : t('home.hero.globe.posterAria')"
+    @click="interactive ? emit('activate') : undefined"
   >
     <svg viewBox="0 0 200 200" class="gp-poster-svg" aria-hidden="true">
       <defs>
@@ -67,7 +82,7 @@ const posterMarkers = [
       </g>
     </svg>
 
-    <span class="gp-poster-label">
+    <span v-if="interactive" class="gp-poster-label">
       <span v-if="loading" class="gp-poster-spinner" aria-hidden="true" />
       <svg v-else class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="12" cy="12" r="9" stroke-linecap="round" />
@@ -79,7 +94,7 @@ const posterMarkers = [
       </svg>
       {{ loading ? t('home.hero.globe.posterLoading') : t('home.hero.globe.posterCta') }}
     </span>
-  </button>
+  </component>
 </template>
 
 
@@ -100,6 +115,11 @@ const posterMarkers = [
 }
 
 .gp-poster:disabled {
+  cursor: default;
+}
+
+/* No hay nada que tocar — ver el docstring de `interactive` arriba. */
+.gp-poster--static {
   cursor: default;
 }
 

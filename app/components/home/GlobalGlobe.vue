@@ -96,6 +96,15 @@ const bannerError = ref(false)
 // auto-init below is unaffected.
 const showPoster = ref(false)
 const isActivating = ref(false)
+// Small-screen visitors get a PERMANENT poster (pedido explícito: "en el
+// celular podemos quitar el mapa [el globo 3D] y solo poner un mapa mundi
+// con los puntos de las 4 oficinas") — no tap-to-load, ever, never pays for
+// globe.gl/three.js at all. Reduced-motion visitors on a normal-size screen
+// keep the EXISTING tap-to-activate poster: `prefers-reduced-motion` is an
+// accessibility preference about animation, not a proxy for "small screen
+// with limited CPU/data", so they still get the option to explore the real
+// globe (rendered with 0-duration camera moves — see `animateCameraTo()`).
+const isSmallScreen = ref(false)
 
 const currentLocation = computed(() => {
   const geo = findGeo(currentId.value ?? '')
@@ -162,8 +171,13 @@ function selectLocation(id: string) {
   // Location chips stay rendered (and functional-looking) even while the
   // poster is showing — tapping one is just as valid an "activate" gesture
   // as tapping the poster itself, it just also carries which office to
-  // focus once the real globe exists.
-  if (showPoster.value) {
+  // focus once the real globe exists. NOT on a small screen, though: there
+  // the poster is permanent (see `isSmallScreen`/`:interactive` above), so a
+  // chip tap falls through to the normal flow below instead — `world` is
+  // still `null` there, which `animateCameraTo()` already handles by
+  // skipping straight to `done()`, so the office info card (banner,
+  // address...) still opens immediately, just without ever loading globe.gl.
+  if (showPoster.value && !isSmallScreen.value) {
     activateGlobe(id)
     return
   }
@@ -411,11 +425,13 @@ onMounted(() => {
   // auto-loaded at all — that ~1.9MB chunk's parse+init cost (confirmed via a
   // real Lighthouse report at ~4s of mobile CPU time) is the single largest
   // contributor to mobile TBT/LCP-simulation, dwarfing every other fix from
-  // the perf sprint combined. GlobeStaticPoster.vue stands in until the
-  // visitor explicitly taps it (see activateGlobe()) — desktop is completely
-  // unaffected and keeps the existing idle+viewport auto-init below.
-  const isSmallOrReducedPower =
-    reducedMotion || (window.matchMedia?.('(max-width: 767px)').matches ?? window.innerWidth < 768)
+  // the perf sprint combined. GlobeStaticPoster.vue stands in for both; on a
+  // small screen it now stays up permanently (see `isSmallScreen` above and
+  // `:interactive` below) instead of being tappable into the real globe —
+  // desktop is completely unaffected and keeps the existing idle+viewport
+  // auto-init below.
+  isSmallScreen.value = window.matchMedia?.('(max-width: 767px)').matches ?? window.innerWidth < 768
+  const isSmallOrReducedPower = reducedMotion || isSmallScreen.value
 
   if (isSmallOrReducedPower) {
     showPoster.value = true
@@ -510,7 +526,7 @@ onBeforeUnmount(() => {
           :aria-label="t('home.hero.globe.globeAria')"
         />
         <div v-if="showPoster" class="gp-globe-canvas">
-          <HomeGlobeStaticPoster :loading="isActivating" @activate="activateGlobe()" />
+          <HomeGlobeStaticPoster :loading="isActivating" :interactive="!isSmallScreen" @activate="activateGlobe()" />
         </div>
         <p v-if="fallback" class="gp-fallback-note">
           {{ t('home.hero.globe.fallbackNote') }}

@@ -2,6 +2,13 @@
 /**
  * Snapay — vitrina del venture insignia.
  *
+ * Vivía en el home (HomeSnapaySpotlightSection) y se movió a /portfolio: es
+ * un caso de éxito propio, así que encaja mejor junto al resto de trabajo
+ * mostrado ahí que en el home. Las claves i18n se dejaron en el namespace
+ * `home.snapay.*` a propósito — moverlas habría significado tocar ambos
+ * locales (en/es) sin ganar nada, y una clave con prefijo `home` no le
+ * impide renderizarse en otra página.
+ *
  * Layout 50/50: a la izquierda el producto dentro de un marco de dispositivo,
  * a la derecha sus cuatro capacidades apiladas en una sola columna, y un
  * único CTA cerrando el bloque.

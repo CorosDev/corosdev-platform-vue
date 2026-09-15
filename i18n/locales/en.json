@@ -48,6 +48,7 @@
       "globe": {
         "selectorAria": "Select a CorosDev location",
         "globeAria": "Interactive 3D globe showing CorosDev locations in Honduras, the United States and the Czech Republic",
+        "posterAria": "World map showing CorosDev's four office locations: Honduras, Miami, Wyoming and Prague",
         "cardClose": "Close",
         "fallbackNote": "Interactive globe unavailable — showing our locations below.",
         "posterCta": "Tap to explore the 3D globe",
@@ -101,8 +102,7 @@
       "title_span": "high-performance engineering",
       "title_2": "to scale core systems.",
       "subtitle": "Recognized by press, government innovation agencies, and the technology partners we build with every day.",
-      "row1Label": "Featured In & Ecosystem",
-      "row2Label": "Built With & Tech Stack"
+      "row1Label": "Featured In & Ecosystem"
     },
     "services": {
       "label": "What We Solve",
