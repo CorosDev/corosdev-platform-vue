@@ -463,6 +463,22 @@ export default defineNuxtConfig({
         // OG thumbnails served from cdn.sanity.io/images/... can load.
         'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
       },
+      // nuxt-security's default COEP value (`credentialless`) blocks the
+      // YouTube <iframe> in PresentationVideoSection.vue outright — confirmed
+      // live via Chrome DevTools' Network panel: the request shows
+      // `(blocked:coep-frame-resource-needs-coep-header)`, because
+      // youtube.com's embed response sends no `Cross-Origin-Embedder-Policy`
+      // header of its own. `frame-src` in the CSP above is a SEPARATE
+      // allow-list (which origins may be framed at all) from COEP (whether
+      // the browser's own cross-origin-isolation mode permits framing a
+      // document that didn't opt in) — YouTube passing the first check
+      // doesn't save it from the second. Nothing on this site actually
+      // depends on cross-origin isolation (no SharedArrayBuffer/WASM
+      // threads), so there is no real security trade-off in turning it off;
+      // `'unsafe-none'` is the header's own defined value for "no COEP
+      // restriction" (what browsers do anyway with no header at all) rather
+      // than silently omitting the header.
+      crossOriginEmbedderPolicy: 'unsafe-none',
     },
     // Default `removeLoggers: true` makes nuxt-security set `vite.esbuild.drop`
     // to strip console/debugger in production — but Vite 8's default minifier
