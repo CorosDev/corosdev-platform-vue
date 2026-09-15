@@ -198,7 +198,6 @@ const rowOneMeta: LogoMeta[] = [
   { id: 'czechinvest', name: 'CzechInvest', src: `${LOGO_DIR}/CzechInvest_logo.svg`, width: 480, height: 58, sizeTier: 'medium' },
 ]
 
-// Fila 2: Czech Association of AI + Engaged Investments Conference + ESA.
 const rowTwoMeta: LogoMeta[] = [
   {
     id: 'czechAi',

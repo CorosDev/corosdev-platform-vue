@@ -177,16 +177,14 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
   },
 
-  // @nuxtjs/sitemap needs zero i18n-specific config: it auto-detects
-  // @nuxtjs/i18n's locales + defaultLocale + strategy (prefix_except_default,
-  // see the i18n block above) and emits the correct <xhtml:link
-  // rel="alternate" hreflang="..."> entries plus locale-prefixed <loc> URLs
-  // (/, /en/, /about, /en/about...) for every route on its own.
-  // `/blog` (ruta estática) ya entra por el escaneo del router; este source
-  // añade un <url> por cada artículo publicado en Sanity, con sus alternates
-  // hreflang (`_i18nTransform`). El endpoint devuelve [] si Sanity no
-  // responde — ver server/api/__sitemap__/blog.ts.
+  // `sitemaps: false` forces one flat /sitemap.xml instead of the default
+  // sitemap_index.xml + per-locale /__sitemap__/en.xml, /__sitemap__/es.xml
+  // chunks — GSC reported "Couldn't fetch" on those sub-sitemap URLs, so this
+  // collapses everything (including the i18n hreflang alternates, via
+  // autoI18n) into a single static XML that GSC can fetch directly.
   sitemap: {
+    sitemaps: false,
+    autoI18n: true,
     sources: ['/api/__sitemap__/blog', '/api/__sitemap__/portfolio'],
   },
 
@@ -403,6 +401,13 @@ export default defineNuxtConfig({
     compressPublicAssets: {
       gzip: true,
       brotli: true,
+    },
+    // Force /sitemap.xml and /robots.txt into the prerendered output rather
+    // than leaving them as pure runtime routes — GSC's crawler occasionally
+    // hit a cold-start/timeout fetching them on-demand, which is what showed
+    // up there as "Couldn't fetch".
+    prerender: {
+      routes: ['/sitemap.xml', '/robots.txt'],
     },
   },
 
