@@ -159,14 +159,21 @@ export default defineNuxtConfig({
       { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
     ],
-    defaultLocale: 'es',
-    strategy: 'prefix_except_default', // es lives at '/', en at '/en/...'
+    // 'en' at '/', 'es' at '/es/...' — pedido explícito: inglés es ahora el
+    // idioma por defecto (antes era español en la raíz, inglés en '/en').
+    // server/middleware/geo-locale.ts es el que decide, por geolocalización,
+    // a qué visitante SÍ mandar a /es en vez de dejarlo en el default — ver
+    // su docstring para el porqué de que ese redirect viva ahí y no aquí.
+    defaultLocale: 'en',
+    strategy: 'prefix_except_default',
     // Production domain, from _legacy_html/CNAME — needed for useLocaleHead()'s
     // hreflang alternate <link> tags in app/layouts/default.vue to be fully-qualified.
     baseUrl: 'https://corosdev.com',
     // Locale is decided by the URL prefix + the Navbar's explicit toggle
     // (see AppNavbar.vue's setLocale() call) — no surprise auto-redirects
-    // based on the visitor's browser/Accept-Language.
+    // based on the visitor's browser/Accept-Language. (Geolocation-based
+    // redirect is separate — server/middleware/geo-locale.ts, keyed off IP
+    // country via Vercel's edge header, not the browser's Accept-Language.)
     detectBrowserLanguage: false,
   },
 
@@ -278,15 +285,17 @@ export default defineNuxtConfig({
     // useCaseStudies.ts): si Sanity no responde a tiempo degrada a Modo
     // Mantenimiento y la siguiente petición ya lo revalida solo.
     // Se enumeran los prefijos de idioma porque i18n usa `prefix_except_default`
-    // (es en `/`, en en `/en/...`) y las routeRules casan por path literal.
+    // (en en `/`, es en `/es/...` — inglés es el idioma por defecto desde
+    // el cambio a geolocalización, ver el bloque `i18n` de arriba) y las
+    // routeRules casan por path literal.
     '/blog': { swr: 3600 },
     '/blog/**': { swr: 3600 },
-    '/en/blog': { swr: 3600 },
-    '/en/blog/**': { swr: 3600 },
+    '/es/blog': { swr: 3600 },
+    '/es/blog/**': { swr: 3600 },
     '/portfolio': { swr: 3600 },
     '/portfolio/**': { swr: 3600 },
-    '/en/portfolio': { swr: 3600 },
-    '/en/portfolio/**': { swr: 3600 },
+    '/es/portfolio': { swr: 3600 },
+    '/es/portfolio/**': { swr: 3600 },
   },
 
   // Server-only (no `public.` prefix, so none of these reach the client
