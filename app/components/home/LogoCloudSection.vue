@@ -228,8 +228,16 @@ const rowTwoMeta: LogoMeta[] = [
 // los lados. Mismo bug, dos síntomas opuestos — la causa siempre fue la
 // metadata, no un problema de CSS ni de un entorno en particular.
 const rowThreeMeta: LogoMeta[] = [
-  { id: 'space2business', name: 'Space 2 Business', src: `${LOGO_DIR}/space_business_logo.webp`, width: 707, height: 353, lightInvert: true },
-  { id: 'czechAcademy', name: 'The Czech Academy of Sciences', src: `${LOGO_DIR}/TheCzechAcademy_logo.webp`, width: 706, height: 353 },
+  // Pedido explícito: agrandar estos dos más que el resto de la fila —
+  // Czech Academy más que Space Business. Con el aspecto real ya corregido
+  // (~2:1 ambos, ver arriba), subir el tier es lo que los agranda
+  // proporcionalmente sin distorsionar nada: `large` lleva Space Business de
+  // 96px a 128px de ancho (+32), `xlarge` lleva Czech Academy de 96px a
+  // 160px (+64) — el salto más grande que pidió. Los tres siguen cabiendo
+  // juntos en la fila (128 + 160 + 136 de Defence Hub ≈ 424px + huecos,
+  // contra los ~601px de contenido de la tarjeta).
+  { id: 'space2business', name: 'Space 2 Business', src: `${LOGO_DIR}/space_business_logo.webp`, width: 707, height: 353, lightInvert: true, sizeTier: 'large' },
+  { id: 'czechAcademy', name: 'The Czech Academy of Sciences', src: `${LOGO_DIR}/TheCzechAcademy_logo.webp`, width: 706, height: 353, sizeTier: 'xlarge' },
   { id: 'defenceHub', name: 'Defence Hub', src: `${LOGO_DIR}/defence_hub_logo.webp`, width: 692, height: 245 },
 ]
 
