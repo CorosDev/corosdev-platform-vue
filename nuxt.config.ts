@@ -204,7 +204,21 @@ export default defineNuxtConfig({
   robots: {
     sitemap: '/sitemap.xml',
     allow: ['/'],
-    disallow: ['/api'],
+    // Escrito como glob (`/api/*`) y no como `/api` a propósito. El módulo
+    // compara la lista de disallow ya normalizada (después del split i18n)
+    // contra los literales `/api` y `/api/` — ver el bucle `pathsToCheck` en
+    // node_modules/@nuxtjs/robots/dist/module.mjs — y si encuentra cualquiera
+    // de los dos emite en CADA build el WARN "You have disallowed robots
+    // accessing /api/**, this may prevent your site from being indexed
+    // correctly". Ese aviso es genérico: existe para quien sirve bajo /api
+    // contenido que el crawler necesita para renderizar la página. Aquí no
+    // aplica — todo lo indexable se entrega por SSR y ningún endpoint de /api
+    // hace falta para pintar nada. `/api/*` es un comodín estándar de
+    // robots.txt (soportado por Google y Bing), cubre exactamente los mismos
+    // endpoints que cubría `/api` (todos cuelgan de `/api/<algo>`; no existe
+    // ninguna ruta en `/api` a secas), y al no ser ninguno de los dos
+    // literales vigilados deja el log de deploy limpio.
+    disallow: ['/api/*'],
   },
 
   // "Enterprise Insights Engine" — headless blog/CMS on Sanity.io, scoped to
