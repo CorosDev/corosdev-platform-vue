@@ -352,6 +352,10 @@ export default defineNuxtConfig({
       turnstile: {
         siteKey: nodeEnv.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
       },
+      // GA4 Measurement ID: ver docs/GA4_CSP_FIX.md
+      gaMeasurementId:
+        nodeEnv.NUXT_PUBLIC_GA_MEASUREMENT_ID
+        ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-0BBYWL11BW' : ''),
     },
   },
 
@@ -480,16 +484,28 @@ export default defineNuxtConfig({
         // client-side navigation. With `useCdn: true` (nuxt.config `sanity`
         // block) the endpoint is https://<projectId>.apicdn.sanity.io; the
         // non-CDN api.sanity.io host is kept for cache-busting fallbacks.
+        // Hosts de Google: ver docs/GA4_CSP_FIX.md
         'connect-src': [
           "'self'",
           'https://challenges.cloudflare.com',
           'https://*.apicdn.sanity.io',
           'https://*.api.sanity.io',
+          'https://*.google-analytics.com',
+          'https://analytics.google.com',
+          'https://*.analytics.google.com',
+          'https://www.googletagmanager.com',
         ],
         // nuxt-security's default is `'self' data:` — Sanity's asset CDN is
         // added so <SanityImage> (body images) and the plain <img> cover /
         // OG thumbnails served from cdn.sanity.io/images/... can load.
-        'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
+        // Hosts de Google: ver docs/GA4_CSP_FIX.md
+        'img-src': [
+          "'self'",
+          'data:',
+          'https://cdn.sanity.io',
+          'https://*.google-analytics.com',
+          'https://www.googletagmanager.com',
+        ],
       },
       // nuxt-security's default COEP value (`credentialless`) blocks the
       // YouTube <iframe> in PresentationVideoSection.vue outright — confirmed
