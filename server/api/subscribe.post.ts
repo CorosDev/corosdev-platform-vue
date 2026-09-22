@@ -14,45 +14,65 @@
  * contact.post.ts too — see server/utils/turnstile.ts.
  */
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const parsed = subscribeSchema.safeParse(body)
-
-  if (!parsed.success) {
-    throw createError({
-      statusCode: 422,
-      message: 'Datos de formulario inválidos.',
-    })
-  }
-
-  const { name, email, role, message, context, honeypot } = parsed.data
-
-  if (honeypot) {
-    return { success: true }
-  }
-
-  // Same Turnstile gate as contact.post.ts — see server/utils/turnstile.ts.
-  await assertTurnstileToken(body?.turnstileToken)
-
+  // try/catch global: cualquier fallo no previsto (body ilegible, un throw
+  // inesperado de una dependencia) sale como 500 con cuerpo JSON en vez de
+  // escaparse y que la plataforma responda algo opaco.
   try {
-    const { brevoCtaListId } = useRuntimeConfig()
+    const body = await readBody(event)
+    const parsed = subscribeSchema.safeParse(body)
 
-    await upsertBrevoContact({
-      email,
-      listId: brevoCtaListId,
-      attributes: {
-        NOMBRE: name,
-        INTEREST: role,
-        MESSAGE: message,
-        SOURCE: `cta_drawer_${context}`,
-      },
-    })
+    if (!parsed.success) {
+      throw createError({
+        statusCode: 422,
+        statusMessage: 'Datos de formulario inválidos.',
+        data: { success: false, message: 'Datos de formulario inválidos.' },
+      })
+    }
+
+    const { name, email, role, message, context, honeypot } = parsed.data
+
+    if (honeypot) {
+      return { success: true }
+    }
+
+    // Same Turnstile gate as contact.post.ts — see server/utils/turnstile.ts.
+    await assertTurnstileToken(body?.turnstileToken)
+
+    const { brevoCtaListId } = useRuntimeConfig()
+    assertBrevoConfigured(brevoCtaListId, 'NUXT_BREVO_CTA_LIST_ID')
+
+    try {
+      await upsertBrevoContact({
+        email,
+        listId: brevoCtaListId,
+        attributes: {
+          NOMBRE: name,
+          INTEREST: role,
+          MESSAGE: message,
+          SOURCE: `cta_drawer_${context}`,
+        },
+      })
+    }
+    catch {
+      // El detalle ya se registró en server/utils/brevo.ts con el cuerpo de
+      // la respuesta; aquí sólo se traduce a una respuesta para el visitante.
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'No se pudo procesar la solicitud.',
+        data: { success: false, message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.' },
+      })
+    }
 
     return { success: true }
-  } catch (error) {
-    console.error('[subscribe.post] Brevo upsert failed:', error)
+  }
+  catch (error) {
+    if (isError(error)) throw error
+
+    console.error('[subscribe.post] fallo no controlado:', error)
     throw createError({
-      statusCode: 502,
-      message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.',
+      statusCode: 500,
+      statusMessage: 'Error inesperado al procesar la solicitud.',
+      data: { success: false, message: 'Error inesperado al procesar la solicitud. Intenta de nuevo más tarde.' },
     })
   }
 })

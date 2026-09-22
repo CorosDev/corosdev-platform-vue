@@ -17,7 +17,28 @@
  * - `secretKey` set (staging/production with real keys provisioned) → a
  *   missing or Cloudflare-rejected token throws a 422, before the caller
  *   ever reaches Brevo.
+ *
+ * Toda la verificación va acotada en tiempo y envuelta, de modo que
+ * Cloudflare caído o lento no pueda tumbar el endpoint que la llama.
  */
+
+/**
+ * Tope de tiempo para /siteverify. Cloudflare responde en cientos de ms; sin
+ * tope, un cuelgue suyo mantiene abierta la función serverless hasta que la
+ * plataforma la corta, y eso sí es un 502/504 real de pasarela.
+ */
+const VERIFY_TIMEOUT_MS = 5000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>
+
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Turnstile no respondió en ${ms}ms`)), ms)
+  })
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
 export async function assertTurnstileToken(token: string | undefined) {
   const { turnstile } = useRuntimeConfig()
   if (!turnstile.secretKey) return
@@ -25,15 +46,31 @@ export async function assertTurnstileToken(token: string | undefined) {
   if (!token) {
     throw createError({
       statusCode: 422,
-      message: 'Verificación de seguridad requerida.',
+      statusMessage: 'Verificación de seguridad requerida.',
+      data: { success: false, message: 'Verificación de seguridad requerida.' },
     })
   }
 
-  const result = await verifyTurnstileToken(token)
+  let result: { success: boolean }
+  try {
+    result = await withTimeout(verifyTurnstileToken(token), VERIFY_TIMEOUT_MS)
+  }
+  catch (error) {
+    // Cloudflare caído o lento: se falla CERRADO (503, reintentable) en vez
+    // de dejar pasar el envío sin verificar.
+    console.error('[turnstile] /siteverify no disponible:', error)
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Verificación de seguridad no disponible.',
+      data: { success: false, message: 'La verificación de seguridad no está disponible. Inténtalo de nuevo en unos segundos.' },
+    })
+  }
+
   if (!result.success) {
     throw createError({
       statusCode: 422,
-      message: 'La verificación de seguridad falló. Intenta de nuevo.',
+      statusMessage: 'La verificación de seguridad falló. Intenta de nuevo.',
+      data: { success: false, message: 'La verificación de seguridad falló. Intenta de nuevo.' },
     })
   }
 }

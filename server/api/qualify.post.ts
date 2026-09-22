@@ -22,45 +22,61 @@
  *   - PROFILE (text)
  */
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const parsed = qualifySchema.safeParse(body)
-
-  if (!parsed.success) {
-    throw createError({
-      statusCode: 422,
-      message: 'Datos de formulario inválidos.',
-    })
-  }
-
-  const { email, budget, profile, honeypot } = parsed.data
-
-  if (honeypot) {
-    return { success: true }
-  }
-
-  await assertTurnstileToken(body?.turnstileToken)
-
+  // try/catch global — mismo blindaje que subscribe.post.ts.
   try {
-    const { brevoContactListId } = useRuntimeConfig()
+    const body = await readBody(event)
+    const parsed = qualifySchema.safeParse(body)
 
-    await upsertBrevoContact({
-      // La misma lista del paso 1: el contacto ya es miembro, así que
-      // reenviarla es inocuo y evita tener que exponer una variante del
-      // cliente de Brevo que no toque listas.
-      email,
-      listId: brevoContactListId,
-      attributes: {
-        BUDGET: budget,
-        PROFILE: profile,
-      },
-    })
+    if (!parsed.success) {
+      throw createError({
+        statusCode: 422,
+        statusMessage: 'Datos de formulario inválidos.',
+        data: { success: false, message: 'Datos de formulario inválidos.' },
+      })
+    }
+
+    const { email, budget, profile, honeypot } = parsed.data
+
+    if (honeypot) {
+      return { success: true }
+    }
+
+    await assertTurnstileToken(body?.turnstileToken)
+
+    const { brevoContactListId } = useRuntimeConfig()
+    assertBrevoConfigured(brevoContactListId, 'NUXT_BREVO_CONTACT_LIST_ID')
+
+    try {
+      await upsertBrevoContact({
+        // La misma lista del paso 1: el contacto ya es miembro, así que
+        // reenviarla es inocuo y evita tener que exponer una variante del
+        // cliente de Brevo que no toque listas.
+        email,
+        listId: brevoContactListId,
+        attributes: {
+          BUDGET: budget,
+          PROFILE: profile,
+        },
+      })
+    }
+    catch {
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'No se pudo procesar la solicitud.',
+        data: { success: false, message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.' },
+      })
+    }
 
     return { success: true }
-  } catch (error) {
-    console.error('[qualify.post] Brevo upsert failed:', error)
+  }
+  catch (error) {
+    if (isError(error)) throw error
+
+    console.error('[qualify.post] fallo no controlado:', error)
     throw createError({
-      statusCode: 502,
-      message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.',
+      statusCode: 500,
+      statusMessage: 'Error inesperado al procesar la solicitud.',
+      data: { success: false, message: 'Error inesperado al procesar la solicitud. Intenta de nuevo más tarde.' },
     })
   }
 })
