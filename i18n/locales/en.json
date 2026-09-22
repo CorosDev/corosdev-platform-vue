@@ -764,5 +764,12 @@
       "error": "Something went wrong. Please try again."
     },
     "close": "Close"
+  },
+  "cookieBanner": {
+    "aria": "Cookie consent",
+    "title": "Cookies and analytics",
+    "message": "We use first-party cookies to keep the site running and analytics cookies to understand how it is used. You can accept them all or keep only the essential ones.",
+    "accept": "Accept all",
+    "reject": "Essential only"
   }
 }

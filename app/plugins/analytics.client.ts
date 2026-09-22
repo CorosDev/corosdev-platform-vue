@@ -1,6 +1,8 @@
 // GA4 (gtag.js): Consent Mode v2, carga diferida y pageviews de navegación SPA.
 // Contexto, decisiones y operativa: docs/GA4_CSP_FIX.md
 
+import type { ConsentState } from '~/utils/consent'
+
 declare global {
   interface Window {
     dataLayer: unknown[][]
@@ -8,70 +10,32 @@ declare global {
   }
 }
 
-type ConsentValue = 'granted' | 'denied'
-
-export interface ConsentState {
-  ad_storage: ConsentValue
-  ad_user_data: ConsentValue
-  ad_personalization: ConsentValue
-  analytics_storage: ConsentValue
-}
-
 export interface Gtag {
   (...args: unknown[]): void
-  /** `$gtag.event('generate_lead', { service_requested: 'ai' })` */
+  /** `$gtag.event('generate_lead', { service_requested: 'web' })` */
   event: (name: string, params?: Record<string, unknown>) => void
-  /** Banner de cookies: actualiza (y persiste) el consentimiento del visitante. */
+  /** Actualiza y persiste el consentimiento. Lo usa CookieBanner.vue. */
   consent: (state: Partial<ConsentState>) => void
   grantAll: () => void
   denyAll: () => void
 }
 
-const CONSENT_STORAGE_KEY = 'corosdev-consent'
 const SCRIPT_IDLE_TIMEOUT = 1800
 
-const DENIED_ALL: ConsentState = {
-  ad_storage: 'denied',
-  ad_user_data: 'denied',
-  ad_personalization: 'denied',
-  analytics_storage: 'denied',
+function baseConsent(): ConsentState {
+  return readConsentDecision() === 'granted' ? GRANTED_ALL : DENIED_ALL
 }
 
-const GRANTED_ALL: ConsentState = {
-  ad_storage: 'granted',
-  ad_user_data: 'granted',
-  ad_personalization: 'granted',
-  analytics_storage: 'granted',
-}
-
-function readStoredConsent(): Partial<ConsentState> | null {
-  try {
-    const raw = localStorage.getItem(CONSENT_STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : null
-    return parsed && typeof parsed === 'object' ? (parsed as Partial<ConsentState>) : null
-  }
-  catch {
-    return null
-  }
-}
-
-function persistConsent(state: ConsentState) {
-  try {
-    localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(state))
-  }
-  catch {
-    // Safari en modo privado / storage bloqueado: el consentimiento sigue
-    // aplicándose en esta sesión, sólo no sobrevive a la recarga.
-  }
-}
-
-/** Sin Measurement ID no hay red ni cola: los componentes llaman al vacío. */
+/**
+ * Sin Measurement ID no hay red ni cola, pero la decisión del visitante SÍ se
+ * persiste: si no, el banner reaparecería en cada recarga en Preview y local.
+ */
 function createNoopGtag(): Gtag {
   const noop = (() => {}) as Gtag
   noop.event = () => {}
-  noop.consent = () => {}
-  noop.grantAll = () => {}
-  noop.denyAll = () => {}
+  noop.consent = state => writeConsentDecision(summariseConsent({ ...baseConsent(), ...state }))
+  noop.grantAll = () => noop.consent(GRANTED_ALL)
+  noop.denyAll = () => noop.consent(DENIED_ALL)
   return noop
 }
 
@@ -91,8 +55,9 @@ export default defineNuxtPlugin(() => {
 
   gtag('consent', 'default', { ...DENIED_ALL, wait_for_update: 500 })
 
-  const stored = readStoredConsent()
-  if (stored) gtag('consent', 'update', stored)
+  if (readConsentDecision() === 'granted') {
+    gtag('consent', 'update', GRANTED_ALL)
+  }
 
   gtag('js', new Date())
   gtag('config', measurementId, { send_page_view: false })
@@ -100,9 +65,9 @@ export default defineNuxtPlugin(() => {
   gtag.event = (name, params = {}) => gtag('event', name, params)
 
   gtag.consent = (state) => {
-    const next: ConsentState = { ...DENIED_ALL, ...readStoredConsent(), ...state }
+    const next: ConsentState = { ...baseConsent(), ...state }
     gtag('consent', 'update', next)
-    persistConsent(next)
+    writeConsentDecision(summariseConsent(next))
   }
 
   gtag.grantAll = () => gtag.consent(GRANTED_ALL)

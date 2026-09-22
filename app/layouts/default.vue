@@ -51,5 +51,6 @@ useHead(() => ({
 
     <FloatingCtaDrawer />
     <ContactModal />
+    <CommonCookieBanner />
   </div>
 </template>

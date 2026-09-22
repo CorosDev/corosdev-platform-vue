@@ -477,3 +477,216 @@ Pendiente de validar en el navegador tras el deploy, con el procedimiento del
 §5.2, más: `_ga` **no** debe aparecer en cookies antes de aceptar, y los hits
 a `/g/collect` deben llevar el parámetro `gcs` (`G100` denegado / `G111`
 concedido).
+
+---
+
+## 8. Apéndice — estabilización: banner de consentimiento y arquitectura final
+
+Rama `fix/analytics-stabilization`, sobre el commit `00b2590` del §7.
+
+El §7 dejó el lado técnico del consentimiento resuelto pero sin UI: el estado
+efectivo era `denied` permanente y GA4 medía en modo degradado (7.4). Este
+apéndice cierra el ciclo con el banner, y de paso **cambia el formato de
+almacenamiento** que introdujo el 7.4.1 — ver 8.3, es el detalle con más
+consecuencias de esta pasada.
+
+### 8.1 Archivos
+
+| Archivo | Estado | Rol |
+| --- | --- | --- |
+| `app/utils/consent.ts` | **nuevo** | Contrato de almacenamiento: clave, tipos, `DENIED_ALL`/`GRANTED_ALL`, lectura/escritura y `summariseConsent()`. Única fuente de verdad. |
+| `app/components/common/CookieBanner.vue` | **nuevo** | El banner. Lee la decisión al montar, la delega en `$gtag`. |
+| `app/plugins/analytics.client.ts` | modificado | Deja de tener su propia lógica de `localStorage`; la importa de `consent.ts`. |
+| `app/layouts/default.vue` | modificado | Monta `<CommonCookieBanner />`. |
+| `i18n/locales/es.json`, `en.json` | modificados | Bloque `cookieBanner` (5 claves). |
+
+### 8.2 Por qué el componente se invoca `<CommonCookieBanner />`
+
+El archivo vive en `app/components/common/CookieBanner.vue`, pero **la
+etiqueta no es `<CookieBanner />`**. Nuxt auto-importa con `pathPrefix`
+activado (el valor por defecto, que este proyecto no cambia), así que el
+nombre del componente es la ruta de carpetas en PascalCase: exactamente la
+misma regla por la que `home/HeroSection.vue` se usa como
+`<HomeHeroSection />` en `pages/index.vue`, y `ui/ColorModeToggle.vue` como
+`<UiColorModeToggle />` en `AppNavbar.vue`.
+
+Verificado contra `.nuxt/components.d.ts`, que declara
+`CommonCookieBanner`. Usar `<CookieBanner />` habría renderizado un elemento
+desconocido, en silencio: Vue no rompe el render por una etiqueta que no
+resuelve, simplemente la ignora y el banner no aparecería nunca.
+
+### 8.3 Cambio de formato de `corosdev-consent`: objeto JSON → cadena
+
+El §7.4.1 guardaba el estado completo serializado
+(`{"ad_storage":"denied",…}`). Ahora se guarda **literalmente `'granted'` o
+`'denied'`**.
+
+El motivo es que el banner es una decisión de todo-o-nada: dos botones, sin UI
+granular por señal. Guardar cuatro claves cuando sólo existen dos respuestas
+posibles invitaba a que el formato y la interfaz divergieran. La cadena dice
+exactamente lo que el visitante contestó.
+
+**Consecuencia en visitantes existentes:** una entrada con el formato JSON
+anterior ya no se reconoce, `readConsentDecision()` devuelve `null` y el
+banner se muestra de nuevo. Es el comportamiento correcto (ante la duda, se
+vuelve a preguntar y el estado de partida es `denied`), y el alcance real es
+nulo o casi: el formato antiguo sólo existió entre el §7 y este apéndice.
+
+**Limitación aceptada:** `$gtag.consent({ analytics_storage: 'granted' })`
+sigue funcionando y emite el `update` granular correcto a GA4, pero lo que se
+persiste es el resumen que calcula `summariseConsent()` — `'granted'` sólo si
+las cuatro señales lo están. Un estado mixto sobrevive a la navegación SPA
+pero **no a una recarga**: al volver, se rehidrata como `denied`. Si algún día
+se añade un panel de preferencias por categoría, el formato tiene que volver a
+ser un objeto.
+
+### 8.4 Quién escribe en `localStorage`: un solo camino
+
+El requisito pedía que el banner persistiera la preferencia. Lo hace, con esa
+clave y ese valor, pero **no escribiendo él mismo**: llama a
+`$gtag.grantAll()` / `$gtag.denyAll()`, y son esos helpers los que actualizan
+el consentimiento *y* lo persisten.
+
+La razón es que el plugin ya escribía en la misma clave desde el §7. Dos
+escritores sobre una sola clave es como se producen las divergencias de
+formato — justo la clase de bug que 8.3 tuvo que limpiar. Con un único camino,
+actualizar el consentimiento y recordarlo son la misma operación y no pueden
+desincronizarse.
+
+#### 8.4.1 El `$gtag` inerte también persiste
+
+Detalle que parece menor y no lo es. Cuando no hay Measurement ID (Preview y
+local, §3.3), `$gtag` es la implementación inerte del §7.1. Si esa versión no
+hiciera nada en absoluto, pulsar un botón del banner no dejaría rastro y **el
+banner reaparecería en cada recarga en todos los entornos de desarrollo**, que
+es precisamente donde más veces se recarga.
+
+Por eso el `$gtag` inerte no emite nada a GA4 pero **sí persiste la decisión**:
+la elección del visitante es un hecho sobre el visitante, no sobre si hay
+analítica configurada.
+
+### 8.5 Rehidratación: el orden exacto al arrancar
+
+Dentro de `defineNuxtPlugin`, en este orden y todo síncrono:
+
+1. `gtag('consent', 'default', { …DENIED_ALL, wait_for_update: 500 })` — el
+   estado legal de partida.
+2. `if (readConsentDecision() === 'granted') gtag('consent', 'update', GRANTED_ALL)`
+   — la rehidratación.
+3. `gtag('js', …)` y `gtag('config', …, { send_page_view: false })`.
+4. `trackPageView(...)` — el **primer `page_view`**.
+
+El paso 2 va antes del 4 a propósito: así el primer hit de un visitante que ya
+aceptó sale con el consentimiento correcto desde el principio, en vez de salir
+como ping sin cookies y corregirse después. `wait_for_update: 500` cubre el
+caso simétrico —el visitante que acepta en esta misma carga— dándole medio
+segundo al `update` antes de emitir.
+
+Que todo esto funcione depende de que `dataLayer` sea una cola síncrona creada
+antes que nada (§3.5): el orden del archivo es el orden real de proceso,
+aunque `gtag.js` todavía no se haya descargado.
+
+### 8.6 El banner: SSR, accesibilidad y contraste
+
+**Sin desajuste de hidratación.** `isVisible` arranca en `false` y sólo pasa a
+`true` en `onMounted`. `localStorage` no existe en el servidor, así que
+cualquier intento de decidir la visibilidad durante el SSR produciría un HTML
+que no coincide con el que la hidratación espera. El coste es que el banner
+aparece un instante después del primer paint, lo cual es correcto: no debe
+bloquear el LCP.
+
+**Contraste, verificado sobre los tokens reales** (`app/assets/css/main.css`),
+con el panel **opaco** (`bg-surface`, no translúcido) precisamente para que el
+ratio sea determinista y no dependa del contenido que quede detrás:
+
+| Elemento | Modo oscuro | Modo claro | AA (4.5:1) |
+| --- | --- | --- | --- |
+| Título `text-ink` sobre `bg-surface` | 19.11:1 | 16.71:1 | ✅ |
+| Texto `text-ink-muted` sobre `bg-surface` | 8.32:1 | 5.40:1 | ✅ |
+| "Aceptar todas": `text-brand-900` sobre `bg-neon-500` | 5.17:1 | 5.17:1 | ✅ |
+| "Solo necesarias": `text-ink` sobre `bg-surface` | 19.11:1 | 16.71:1 | ✅ |
+
+El botón primario **no** lleva texto blanco. Blanco sobre `neon-500`
+(`#1f7fff`) da 3.79:1: pasa para texto grande y para componentes de interfaz,
+pero **no** llega al 4.5:1 que exige AA en texto normal, y el texto de un
+botón es texto normal. `text-brand-900` sobre `neon-500` llega a 5.17:1 y es
+además una pareja que el proyecto ya usa (`selection:bg-neon-500
+selection:text-brand-900` en el layout). Ambos son hex fijos, así que el ratio
+es el mismo en los dos temas.
+
+**Resto de accesibilidad:** `role="region"` con `aria-label` traducido — un
+banner de cookies no invasivo no debe ser `role="dialog"` con foco atrapado,
+porque no bloquea el resto de la página; los dos botones son `<button>`
+nativos, alcanzables por teclado en orden natural; anillo de foco visible
+(`focus-visible:ring-neon-300`), el mismo patrón del drawer; y la transición se
+anula bajo `prefers-reduced-motion: reduce`.
+
+**Equidad de las dos opciones.** "Solo necesarias" y "Aceptar todas" tienen el
+mismo tamaño, la misma tipografía y están una al lado de la otra. Rechazar
+cuesta exactamente un clic, igual que aceptar. No hay patrón oscuro, que
+además de ser lo correcto es lo que exigen las autoridades de protección de
+datos europeas.
+
+**No hay botón de cerrar.** Descartar el banner sin contestar dejaría al
+visitante en un limbo: bajo el RGPD, la ausencia de respuesta equivale a
+rechazo, así que una "X" sería un "Solo necesarias" disfrazado. Se pide una
+respuesta explícita, y hasta que llegue el estado es `denied`, que es seguro.
+
+### 8.7 Capas y solapamiento
+
+`z-index: 95`, elegido contra las capas que ya existen: por encima del botón
+flotante de captación (90, `FloatingCtaDrawer.vue`) y por debajo del drawer y
+del `ContactModal` (100/101), que tienen que poder abrirse **sobre** el
+banner.
+
+En móvil el banner ocupa el ancho y tapa el botón flotante mientras está
+visible. Es deliberado: el botón sólo aparece tras cierto scroll, el banner se
+va con un clic, y mientras haya una decisión pendiente es razonable que sea lo
+primero. El banner se monta con `<Teleport to="body">`, igual que el drawer,
+para no depender del contexto de apilamiento del layout.
+
+### 8.8 Verificación realizada
+
+| Comprobación | Resultado |
+| --- | --- |
+| `npx nuxi typecheck` | exit 0, 0 errores |
+| `npm run build` | exit 0, sin warnings nuevos |
+| `.nuxt/components.d.ts` declara `CommonCookieBanner` | ✅ (8.2) |
+| `es.json` / `en.json` siguen siendo JSON válido, 12 claves de primer nivel | ✅ |
+| El banner **no** aparece en el HTML servido por SSR | ✅ — es lo que evita el desajuste de hidratación (8.6) |
+| Contraste sobre los tokens de `main.css`, ambos temas | ✅ (8.6) |
+
+**Pendiente de validar a mano en el navegador**, que es lo que ninguna de las
+comprobaciones anteriores puede sustituir:
+
+1. Primera visita: el banner aparece; **no** existe la cookie `_ga`; los hits
+   a `/g/collect` llevan `gcs=G100`.
+2. "Aceptar todas": el banner se va, `localStorage.corosdev-consent` vale
+   `granted`, aparece `_ga` y los hits pasan a `gcs=G111`.
+3. Recarga: el banner **no** vuelve y los hits salen ya con `gcs=G111` desde
+   el primero (8.5).
+4. "Solo necesarias" en un perfil limpio: `corosdev-consent` vale `denied`,
+   sin `_ga`, y el banner tampoco vuelve.
+5. Navegación SPA entre páginas: un `page_view` por ruta, con el `page_title`
+   de la página de destino (§3.7).
+6. Los dos temas y el foco por teclado (Tab llega a ambos botones con anillo
+   visible).
+
+### 8.9 Lo que sigue pendiente
+
+1. **No hay página de política de privacidad.** El proyecto no tiene ninguna
+   ruta `/privacy` ni equivalente (`app/pages/` sólo contiene about,
+   ecosystem, index, partners, services, blog y portfolio), así que el texto
+   del banner no enlaza a ningún sitio. Un banner de consentimiento sin
+   política enlazada es incompleto de cara al RGPD: **falta la página, no el
+   enlace**. En cuanto exista, hay que añadir el `<NuxtLink>` en
+   `CookieBanner.vue` y su clave de traducción.
+2. **No se puede cambiar de opinión.** Una vez decidido, el banner no vuelve.
+   El RGPD exige que retirar el consentimiento sea tan fácil como darlo, así
+   que hace falta un punto de reentrada — lo natural es un enlace "Cookies" en
+   `AppFooter.vue` que borre la clave y vuelva a mostrar el banner.
+3. **Sigue vigente el §5.1**: desactivar en GA4 "Cambios de página basados en
+   eventos del historial del navegador", o cada navegación interna se cuenta
+   el doble.
+4. **Instrumentar `generate_lead` y `drawer_interaction`** (§7.6): el plugin
+   expone la vía, ningún componente la llama todavía.

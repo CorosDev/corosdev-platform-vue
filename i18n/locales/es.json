@@ -764,5 +764,12 @@
       "error": "Hubo un problema. Por favor intenta de nuevo."
     },
     "close": "Cerrar"
+  },
+  "cookieBanner": {
+    "aria": "Consentimiento de cookies",
+    "title": "Cookies y analítica",
+    "message": "Usamos cookies propias para que el sitio funcione y cookies de analítica para entender cómo se navega. Puedes aceptarlas todas o quedarte solo con las necesarias.",
+    "accept": "Aceptar todas",
+    "reject": "Solo necesarias"
   }
 }
