@@ -355,7 +355,7 @@ export default defineNuxtConfig({
       // GA4 Measurement ID: ver docs/GA4_CSP_FIX.md
       gaMeasurementId:
         nodeEnv.NUXT_PUBLIC_GA_MEASUREMENT_ID
-        ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-0BBYWL11BW' : ''),
+        ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-V5BRG0MELC' : ''),
     },
   },
 

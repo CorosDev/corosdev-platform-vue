@@ -54,6 +54,12 @@ todo el recorrido interno del visitante era invisible. No existía ningún
 práctica: **cada deploy de Preview de cada rama mandaba su tráfico de pruebas
 a la propiedad de producción.**
 
+Además, ese ID **no era el de la propiedad de producción real**. Al verificarlo
+contra la interfaz de GA4 el 2026-09-22 resultó ser `G-V5BRG0MELC`, que es el
+que quedó como fallback. O sea que el bloqueo de CSP tapaba un segundo
+problema: aunque los hits hubieran salido, habrían ido a la propiedad
+equivocada.
+
 ---
 
 ## 2. Tabla de cambios
@@ -112,7 +118,7 @@ build` tampoco ensucian las métricas.
 ```ts
 gaMeasurementId:
   nodeEnv.NUXT_PUBLIC_GA_MEASUREMENT_ID
-  ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-0BBYWL11BW' : ''),
+  ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-V5BRG0MELC' : ''),
 ```
 
 Con `||`, una variable puesta deliberadamente a cadena vacía caería al
@@ -160,7 +166,7 @@ título es el único dato que necesita esperar.
 
 | Comprobación | Resultado |
 | --- | --- |
-| Build con `VERCEL_ENV=production` | hornea `G-0BBYWL11BW` |
+| Build con `VERCEL_ENV=production` | hornea `G-V5BRG0MELC` |
 | Build con `VERCEL_ENV=preview` | hornea `""`; el ID de producción **no aparece** en el output |
 | Build local sin variable | `""` → el plugin no arranca |
 | Servir con `NUXT_PUBLIC_GA_MEASUREMENT_ID=G-STAGING999` | la variable gana en runtime, sin rebuild |
@@ -205,7 +211,7 @@ código.
 
 | Entorno | Valor recomendado | Efecto |
 | --- | --- | --- |
-| Production | *(sin definir)* | Cae al ID vivo `G-0BBYWL11BW` |
+| Production | *(sin definir)* | Cae al ID vivo `G-V5BRG0MELC` |
 | Preview | *(sin definir)* | Rastreo apagado — recomendado |
 | Preview (alternativa) | ID de una propiedad de staging | Mide sin tocar producción |
 | Development | *(sin definir)* | Rastreo apagado |
