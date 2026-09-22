@@ -352,6 +352,34 @@ export default defineNuxtConfig({
       turnstile: {
         siteKey: nodeEnv.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
       },
+      // Measurement ID de GA4. Va bajo `public.` y no en la mitad server-only
+      // porque NO es un secreto: viaja en la URL de cada petición que el
+      // navegador hace a Google, misma categoría que el site key de Turnstile
+      // de arriba o los identificadores de Sanity. Antes estaba incrustado a
+      // pelo en app/plugins/analytics.client.ts.
+      //
+      // Orden de resolución:
+      //   1. NUXT_PUBLIC_GA_MEASUREMENT_ID, sea cual sea su valor — incluida
+      //      la cadena vacía, que es la forma deliberada de APAGAR el rastreo
+      //      en un entorno concreto.
+      //   2. Si la variable no está definida en absoluto, la propiedad de
+      //      producción, pero SÓLO en un deploy de Producción real.
+      //   3. Vacío en todo lo demás (builds locales, ramas de Preview), así
+      //      que el plugin no arranca y no se recoge nada por accidente.
+      //
+      // El discriminante es VERCEL_ENV ('production' | 'preview' |
+      // 'development'), NO NODE_ENV: Vercel construye los Preview también con
+      // NODE_ENV=production, así que colgar el fallback de NODE_ENV mandaría
+      // el tráfico de CADA rama de preview a la propiedad viva — justo la
+      // contaminación que esto existe para evitar. En local no hay VERCEL_ENV,
+      // de modo que `npm run dev`/`build` tampoco ensucian las métricas.
+      //
+      // `??` y no `||` a propósito: con `||` una variable puesta a "" caería
+      // al fallback y volvería a encender el rastreo, que es lo contrario de
+      // lo que pide quien la deja vacía.
+      gaMeasurementId:
+        nodeEnv.NUXT_PUBLIC_GA_MEASUREMENT_ID
+        ?? (nodeEnv.VERCEL_ENV === 'production' ? 'G-0BBYWL11BW' : ''),
     },
   },
 
@@ -480,16 +508,54 @@ export default defineNuxtConfig({
         // client-side navigation. With `useCdn: true` (nuxt.config `sanity`
         // block) the endpoint is https://<projectId>.apicdn.sanity.io; the
         // non-CDN api.sanity.io host is kept for cache-busting fallbacks.
+        //
+        // Los hosts de Google son los que hacen que GA4 (app/plugins/
+        // analytics.client.ts) REALMENTE recoja datos. El <script> de gtag.js
+        // ya cargaba bien —'strict-dynamic' confía en cualquier script
+        // inyectado por un bundle nonce-ado, ver el comentario de arriba—,
+        // pero cada hit que intentaba emitir moría aquí: gtag manda a
+        // https://www.google-analytics.com/g/collect (o al endpoint regional
+        // region1..region14) por sendBeacon/fetch/XHR, y esos tres los
+        // gobierna `connect-src`. Cuando este plugin se escribió (1a6dd79,
+        // 2026-08-22) no existía ninguna directiva `connect-src` y todo salía;
+        // al día siguiente Turnstile la introdujo (0d9fa22) y, sin que nadie
+        // volviera al plugin, GA4 quedó mudo en producción desde entonces.
+        //
+        // Se enumeran los tres patrones porque NO se solapan: `*.` exige al
+        // menos una etiqueta de subdominio, así que `*.analytics.google.com`
+        // NO cubre `analytics.google.com` a secas (otro endpoint real de
+        // recolección) y hace falta listarlo aparte. `*.google-analytics.com`
+        // sí cubre tanto `www.` como los `region1..14.`.
+        //
+        // googletagmanager.com va aquí además de en script-src porque gtag.js
+        // no solo se descarga: también hace fetch de su configuración remota
+        // (/gtag/destination) contra ese mismo host una vez arranca.
         'connect-src': [
           "'self'",
           'https://challenges.cloudflare.com',
           'https://*.apicdn.sanity.io',
           'https://*.api.sanity.io',
+          'https://*.google-analytics.com',
+          'https://analytics.google.com',
+          'https://*.analytics.google.com',
+          'https://www.googletagmanager.com',
         ],
         // nuxt-security's default is `'self' data:` — Sanity's asset CDN is
         // added so <SanityImage> (body images) and the plain <img> cover /
         // OG thumbnails served from cdn.sanity.io/images/... can load.
-        'img-src': ["'self'", 'data:', 'https://cdn.sanity.io'],
+        //
+        // Los hosts de Google cubren el ÚLTIMO recurso de transporte de gtag:
+        // cuando sendBeacon y fetch no están disponibles (o los bloquea una
+        // extensión), gtag degrada a un píxel <img>, y ese camino lo gobierna
+        // `img-src`, no `connect-src`. Sin estos dos, ese fallback quedaría
+        // bloqueado igual que estaba el principal.
+        'img-src': [
+          "'self'",
+          'data:',
+          'https://cdn.sanity.io',
+          'https://*.google-analytics.com',
+          'https://www.googletagmanager.com',
+        ],
       },
       // nuxt-security's default COEP value (`credentialless`) blocks the
       // YouTube <iframe> in PresentationVideoSection.vue outright — confirmed
