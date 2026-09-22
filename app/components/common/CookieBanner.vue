@@ -4,8 +4,8 @@
  * app/layouts/default.vue, se auto-importa como `<CommonCookieBanner />`.
  *
  * No escribe `localStorage` por su cuenta: delega en `$gtag.grantAll()` /
- * `$gtag.denyAll()`, que actualizan el consentimiento Y lo persisten bajo la
- * misma clave que el plugin relee al arrancar. Arquitectura y porqués:
+ * `$gtag.essentialOnly()`, que actualizan el consentimiento Y lo persisten bajo
+ * la misma clave que el plugin relee al arrancar. Arquitectura y porqués:
  * docs/GA4_CSP_FIX.md §8
  */
 import type { ConsentDecision } from '~/utils/consent'
@@ -23,7 +23,7 @@ onMounted(() => {
 
 function decide(decision: ConsentDecision) {
   if (decision === 'granted') $gtag.grantAll()
-  else $gtag.denyAll()
+  else $gtag.essentialOnly()
 
   isVisible.value = false
 }

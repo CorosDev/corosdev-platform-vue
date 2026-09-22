@@ -323,6 +323,10 @@ punto de fallo.
 
 ### 7.4 Consent Mode v2: qué implica de verdad
 
+> **Actualizado por el §9.** Lo que sigue describe el estado de partida
+> original (las cuatro señales denegadas). Desde el §9, `analytics_storage`
+> arranca en `granted`; el resto del apartado sigue siendo válido.
+
 El plugin declara las cuatro señales de la v2 en `denied` **antes** de
 `config`:
 
@@ -567,6 +571,10 @@ analítica configurada.
 
 ### 8.5 Rehidratación: el orden exacto al arrancar
 
+> **Actualizado por el §9.** El estado de partida ya no es `denied` en las
+> cuatro señales: `analytics_storage` arranca concedido. El orden de la cola
+> que describe este apartado no cambia.
+
 Dentro de `defineNuxtPlugin`, en este orden y todo síncrono:
 
 1. `gtag('consent', 'default', { …DENIED_ALL, wait_for_update: 500 })` — el
@@ -690,3 +698,233 @@ comprobaciones anteriores puede sustituir:
    el doble.
 4. **Instrumentar `generate_lead` y `drawer_interaction`** (§7.6): el plugin
    expone la vía, ningún componente la llama todavía.
+
+### 8.10 Diagnóstico: "Tiempo real no registra usuarios" (2026-09-22)
+
+Tras desplegar `fcbc66b`, el panel de GA4 seguía sin mostrar usuarios en
+Tiempo real. Se plantearon dos hipótesis; **sólo una resultó cierta**, y
+conviene dejar registrado cómo se descartó la otra, porque la corrección que
+sugería habría hecho daño.
+
+#### Hipótesis descartada: "el Measurement ID llega vacío en Producción"
+
+Comprobado **contra el sitio en vivo**, no contra el código. `curl` a
+`https://corosdev.com/` (302 → `/es`, por el middleware de geolocalización)
+devuelve en el payload del documento:
+
+```
+window.__NUXT__.config={public:{turnstile:{…},gaMeasurementId:"G-V5BRG0MELC",…
+```
+
+El ID está horneado y es el correcto. La cadena de resolución del §3.4
+funciona: `VERCEL_ENV` sí está expuesto durante el build en Vercel y el
+fallback se aplica. De paso se verificaron las cabeceras reales:
+
+| Directiva en vivo | Contiene |
+| --- | --- |
+| `connect-src` | los cuatro hosts de Google del §2 ✅ |
+| `img-src` | `*.google-analytics.com`, `www.googletagmanager.com` ✅ |
+| `script-src` | `'strict-dynamic'` + nonce ✅ |
+
+Y el CSS del banner (`.cookie-banner`) viaja en el HTML servido, así que el
+§8 está efectivamente desplegado.
+
+**Por eso NO se cambió el fallback a incondicional.** Convertir
+`?? (VERCEL_ENV === 'production' ? 'G-V5BRG0MELC' : '')` en `?? 'G-V5BRG0MELC'`
+no habría arreglado nada —el valor ya llega— y habría reintroducido el
+problema que el §3.3 existe para evitar, ampliado: cada deploy de Preview
+*y además* cada `npm run dev` en local mandarían su tráfico de pruebas a la
+propiedad viva, ensuciando justo las métricas que se intentaba leer.
+
+#### Causa real: consentimiento denegado y ningún `page_view` tras aceptar
+
+El sitio se comporta como está diseñado; lo que faltaba era el último eslabón.
+
+1. El estado de partida es `denied` (8.5), correcto y obligatorio.
+2. Con `analytics_storage: 'denied'`, gtag sí emite a `/g/collect`, pero como
+   **ping sin cookies**. Google los usa para modelar; **no alimentan el
+   informe de Tiempo real**, que necesita un `client_id`. Un visitante que no
+   ha contestado al banner es, para Tiempo real, invisible — por diseño.
+3. Al pulsar "Aceptar todas", el consentimiento pasaba a `granted`… pero el
+   único `page_view` de esa carga **ya se había enviado**, sin cookies, antes
+   de aceptar. GA4 no reenvía nada por su cuenta. Así que la sesión no
+   aparecía hasta que el visitante navegara a otra ruta, y si aceptaba y se
+   quedaba en la página —o se iba—, no aparecía nunca.
+
+En otras palabras: Tiempo real vacío no era un fallo de configuración, era
+que **nadie llegaba a contar como usuario consentido**.
+
+#### El ajuste
+
+`gtag.consent()` detecta ahora la transición de denegado a concedido y
+reemite el `page_view` de la ruta actual, ya con el consentimiento aplicado:
+
+```ts
+if (next.analytics_storage === 'granted' && previous !== 'granted') {
+  trackPageView(router.currentRoute.value.fullPath, true)
+}
+```
+
+Tres detalles deliberados:
+
+- **`previous` se lee antes de persistir.** Si se leyera después, la
+  comparación siempre daría "ya estaba concedido" y no se reemitiría nunca.
+- **La guarda es la transición, no el valor.** Llamar a `grantAll()` dos
+  veces (o recargar con el consentimiento ya dado) no duplica la vista: sólo
+  dispara el cruce `denied → granted`.
+- **`trackPageView` acepta `force`.** La guarda por `fullPath` del §3.6 sigue
+  protegiendo la navegación SPA; este es el único caso que puede saltársela,
+  porque aquí reemitir la misma ruta es exactamente la intención.
+
+Vive en `gtag.consent()` y no en `CookieBanner.vue` para que valga igual desde
+cualquier futuro punto de reentrada (8.9.2) sin repetir la lógica.
+
+#### Cómo confirmarlo
+
+Perfil limpio, con Tiempo real abierto en otra pestaña:
+
+1. Entrar al sitio, **no** tocar el banner → Tiempo real sigue en 0, y los
+   hits a `/g/collect` llevan `gcs=G100`. Es lo correcto.
+2. Pulsar "Aceptar todas" → sale **un** `/g/collect` nuevo con `gcs=G111` y
+   `en=page_view`, sin navegar a ninguna parte. Tiempo real pasa a 1 usuario
+   en unos segundos.
+3. Recargar → el banner no vuelve y el primer hit ya sale con `gcs=G111`
+   (8.5). Tiempo real **no** debe sumar un segundo usuario: es la misma
+   cookie `_ga`.
+
+Si el paso 2 no produce el hit, mirar un bloqueador de anuncios antes que el
+código: casi todos filtran `googletagmanager.com` por nombre de host, y eso es
+indistinguible de un fallo de CSP salvo por el mensaje de la consola.
+
+---
+
+## 9. Cambio de estrategia: `analytics_storage` concedido por defecto
+
+**Este apartado sustituye al estado de partida descrito en 7.4 y 8.5.** Lo
+demás de esos apartados (orden de la cola, `wait_for_update`, rehidratación)
+sigue vigente; lo que cambia es el valor inicial de una de las cuatro señales.
+
+### 9.1 Qué cambia
+
+| Señal | Antes (7.4) | Ahora |
+| --- | --- | --- |
+| `analytics_storage` | `denied` | **`granted`** |
+| `ad_storage` | `denied` | `denied` |
+| `ad_user_data` | `denied` | `denied` |
+| `ad_personalization` | `denied` | `denied` |
+
+Motivo: con analítica denegada de partida, un visitante que no contesta al
+banner es invisible para el informe de Tiempo real (8.10), y en la práctica
+eso dejaba el panel vacío. Concediendo `analytics_storage` desde el primer
+hit, cada visita cuenta desde que entra.
+
+Los tres flags de publicidad siguen denegados hasta que alguien pulse
+"Aceptar todas", que es lo que Consent Mode v2 exige declarar y lo que el
+§7.5 describe respecto a la CSP: mientras `ad_storage` siga denegado no hay
+tráfico a hosts de Google Ads y las directivas actuales bastan.
+
+### 9.2 El coste, dicho con claridad
+
+`analytics_storage: 'granted'` **escribe la cookie `_ga` antes de que el
+visitante haya contestado nada**. En la UE/EEE, el artículo 5(3) de la
+ePrivacy exige consentimiento *previo* para almacenar cookies que no sean
+estrictamente necesarias, y las de analítica no lo son según el criterio de
+las autoridades europeas. El §6 ya dejaba registrado que hay presencia y
+partners en la UE.
+
+Es una decisión de negocio, tomada a sabiendas, no un descuido de
+implementación: el banner sigue ahí, sigue preguntando, y "Solo necesarias"
+sigue significando cero publicidad. Lo que deja de existir es el bloqueo
+previo de la analítica. Si en algún momento se quiere revertir, es un solo
+valor en `app/utils/consent.ts` (`ESSENTIAL_ONLY.analytics_storage`).
+
+### 9.3 Dos estados, no tres
+
+Con este cambio, el estado por defecto y el resultado de "Solo necesarias"
+son **idénticos**: analítica sí, publicidad no. Por eso ambos comparten la
+misma constante, `ESSENTIAL_ONLY`, que reemplaza a `DENIED_ALL` (que ya no
+existe: no quedaba ningún camino que denegara las cuatro señales).
+
+Lo que se persiste bajo `corosdev-consent` sigue siendo la cadena del 8.3,
+pero **`'denied'` ya no significa "nada concedido"**, sino "sólo lo
+necesario". La rehidratación al arrancar queda así:
+
+| Valor guardado | Estado aplicado |
+| --- | --- |
+| `'granted'` | `GRANTED_ALL` — las cuatro señales |
+| `'denied'` | `ESSENTIAL_ONLY` — analítica sí, publicidad no |
+| ausente (aún no ha contestado) | `ESSENTIAL_ONLY` — y se muestra el banner |
+
+Esto es lo que hace que "Solo necesarias" **sobreviva a la recarga** con la
+analítica todavía concedida. Con el modelo anterior, `'denied'` rehidrataba
+a `DENIED_ALL` y habría apagado la analítica en la segunda visita, en
+contradicción directa con la estrategia que este apartado implanta.
+
+### 9.4 `denyAll()` pasa a llamarse `essentialOnly()`
+
+Renombrado a propósito, y no es cosmética. El método concede ahora
+`analytics_storage`; seguir llamándolo `denyAll()` habría dejado en la API un
+nombre que miente sobre lo que hace, y el primero que lo llamara esperando un
+opt-out completo habría enviado datos sin saberlo. `CookieBanner.vue` y el
+`$gtag` inerte se actualizaron en el mismo cambio; no quedan referencias al
+nombre anterior.
+
+`$gtag.grantAll()` no cambia.
+
+### 9.5 El doble conteo que este cambio habría introducido
+
+Es la parte no evidente. El reemisor de `page_view` del 8.10 se guardaba
+contra **el valor persistido**:
+
+```ts
+if (next.analytics_storage === 'granted' && previous !== 'granted') { … }
+```
+
+Con la analítica denegada de partida eso era correcto. Con la analítica
+**concedida** de partida, deja de serlo: en una primera visita no hay nada
+guardado, así que `previous` es `null`, la condición se cumple… pero el
+`page_view` inicial **ya se envió con el consentimiento puesto**. Pulsar
+"Aceptar todas" habría emitido una segunda vista idéntica de la misma página,
+inflando las métricas justo en la acción que más interesa medir.
+
+La guarda pasa por tanto a seguir el estado **efectivo en memoria**, no el
+resumen guardado:
+
+```ts
+let analyticsGranted = baseConsent().analytics_storage === 'granted'
+…
+if (next.analytics_storage === 'granted' && !analyticsGranted) {
+  trackPageView(router.currentRoute.value.fullPath, true)
+}
+analyticsGranted = next.analytics_storage === 'granted'
+```
+
+Con la estrategia actual `analyticsGranted` arranca en `true`, así que el
+reemisor **no dispara nunca** por el camino del banner: ya no hace falta,
+porque el primer hit sale consentido. Se conserva porque sigue siendo la
+red de seguridad correcta si alguien llama a
+`$gtag.consent({ analytics_storage: 'denied' })` y más tarde vuelve a
+conceder — y, sobre todo, porque es la línea que impide el doble conteo.
+
+### 9.6 Verificación
+
+| Comprobación | Resultado |
+| --- | --- |
+| `npx nuxi typecheck` | exit 0, 0 errores |
+| `npm run build` | exit 0, sin warnings nuevos |
+| Referencias huérfanas a `DENIED_ALL` / `denyAll` | ninguna en `app/` |
+
+En el navegador, con perfil limpio y sin bloqueador:
+
+1. Entrar y **no** tocar el banner → la cookie `_ga` **sí** aparece, los hits
+   llevan `gcs=G111`, y Tiempo real suma el usuario de inmediato. Éste es
+   todo el objetivo del cambio.
+2. "Solo necesarias" → `corosdev-consent` vale `denied`, `_ga` sigue ahí, y
+   el parámetro `gcd` refleja publicidad denegada. **No** debe aparecer un
+   segundo `page_view` de la misma ruta (9.5).
+3. Recargar → el banner no vuelve y la analítica sigue concedida (9.3).
+4. "Aceptar todas" en otro perfil limpio → `corosdev-consent` vale `granted`
+   y, de nuevo, **una sola** vista por ruta.
+
+El paso 2 es el que hay que mirar con más cuidado: un `page_view` duplicado
+ahí sería la regresión del 9.5.

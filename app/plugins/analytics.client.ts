@@ -17,13 +17,13 @@ export interface Gtag {
   /** Actualiza y persiste el consentimiento. Lo usa CookieBanner.vue. */
   consent: (state: Partial<ConsentState>) => void
   grantAll: () => void
-  denyAll: () => void
+  essentialOnly: () => void
 }
 
 const SCRIPT_IDLE_TIMEOUT = 1800
 
 function baseConsent(): ConsentState {
-  return readConsentDecision() === 'granted' ? GRANTED_ALL : DENIED_ALL
+  return readConsentDecision() === 'granted' ? GRANTED_ALL : ESSENTIAL_ONLY
 }
 
 /**
@@ -35,7 +35,7 @@ function createNoopGtag(): Gtag {
   noop.event = () => {}
   noop.consent = state => writeConsentDecision(summariseConsent({ ...baseConsent(), ...state }))
   noop.grantAll = () => noop.consent(GRANTED_ALL)
-  noop.denyAll = () => noop.consent(DENIED_ALL)
+  noop.essentialOnly = () => noop.consent(ESSENTIAL_ONLY)
   return noop
 }
 
@@ -53,7 +53,7 @@ export default defineNuxtPlugin(() => {
   }) as Gtag
   window.gtag = gtag
 
-  gtag('consent', 'default', { ...DENIED_ALL, wait_for_update: 500 })
+  gtag('consent', 'default', { ...ESSENTIAL_ONLY, wait_for_update: 500 })
 
   if (readConsentDecision() === 'granted') {
     gtag('consent', 'update', GRANTED_ALL)
@@ -64,20 +64,12 @@ export default defineNuxtPlugin(() => {
 
   gtag.event = (name, params = {}) => gtag('event', name, params)
 
-  gtag.consent = (state) => {
-    const next: ConsentState = { ...baseConsent(), ...state }
-    gtag('consent', 'update', next)
-    writeConsentDecision(summariseConsent(next))
-  }
-
-  gtag.grantAll = () => gtag.consent(GRANTED_ALL)
-  gtag.denyAll = () => gtag.consent(DENIED_ALL)
-
   const router = useRouter()
   let lastTrackedPath = ''
+  let analyticsGranted = baseConsent().analytics_storage === 'granted'
 
-  function trackPageView(fullPath: string) {
-    if (fullPath === lastTrackedPath) return
+  function trackPageView(fullPath: string, force = false) {
+    if (!force && fullPath === lastTrackedPath) return
     lastTrackedPath = fullPath
 
     gtag('event', 'page_view', {
@@ -86,6 +78,24 @@ export default defineNuxtPlugin(() => {
       page_title: document.title,
     })
   }
+
+  gtag.consent = (state) => {
+    const next: ConsentState = { ...baseConsent(), ...state }
+
+    gtag('consent', 'update', next)
+    writeConsentDecision(summariseConsent(next))
+
+    // Sólo si analytics cruza de denegado a concedido: el page_view inicial
+    // salió sin cookies y hay que reemitirlo (docs/GA4_CSP_FIX.md §9).
+    if (next.analytics_storage === 'granted' && !analyticsGranted) {
+      trackPageView(router.currentRoute.value.fullPath, true)
+    }
+
+    analyticsGranted = next.analytics_storage === 'granted'
+  }
+
+  gtag.grantAll = () => gtag.consent(GRANTED_ALL)
+  gtag.essentialOnly = () => gtag.consent(ESSENTIAL_ONLY)
 
   trackPageView(router.currentRoute.value.fullPath)
 

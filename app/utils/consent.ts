@@ -13,11 +13,15 @@ export interface ConsentState {
 
 export const CONSENT_STORAGE_KEY = 'corosdev-consent'
 
-export const DENIED_ALL: ConsentState = {
+/**
+ * Estado de partida Y resultado de "Solo necesarias": se mide el tráfico,
+ * no se concede nada de publicidad. Ver docs/GA4_CSP_FIX.md §9.
+ */
+export const ESSENTIAL_ONLY: ConsentState = {
   ad_storage: 'denied',
   ad_user_data: 'denied',
   ad_personalization: 'denied',
-  analytics_storage: 'denied',
+  analytics_storage: 'granted',
 }
 
 export const GRANTED_ALL: ConsentState = {
@@ -48,7 +52,7 @@ export function writeConsentDecision(decision: ConsentDecision) {
   }
 }
 
-/** El formato persistido es todo-o-nada; sólo `granted` si lo están las cuatro. */
+/** `granted` sólo si lo están las cuatro señales; si no, `denied` (= sólo necesarias). */
 export function summariseConsent(state: ConsentState): ConsentDecision {
   return Object.values(state).every(value => value === 'granted') ? 'granted' : 'denied'
 }
