@@ -20,6 +20,13 @@
  *
  * Toda la verificación va acotada en tiempo y envuelta, de modo que
  * Cloudflare caído o lento no pueda tumbar el endpoint que la llama.
+ *
+ * ESTADO ACTUAL: la exigencia del token está APAGADA vía
+ * `NUXT_TURNSTILE_ENFORCE` (ver nuxt.config.ts) mientras se investiga el 401
+ * del widget cliente contra challenges.cloudflare.com. Además, un fallo de
+ * la propia verificación ahora falla ABIERTO en vez de cerrado. Ambas cosas
+ * son decisiones explícitas de negocio: priorizan no perder leads sobre el
+ * filtrado antibot, y dejan el honeypot como única defensa real.
  */
 
 /**
@@ -40,8 +47,17 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export async function assertTurnstileToken(token: string | undefined) {
-  const { turnstile } = useRuntimeConfig()
+  const { turnstile, turnstileEnforce } = useRuntimeConfig()
   if (!turnstile.secretKey) return
+
+  // Interruptor NUXT_TURNSTILE_ENFORCE (ver nuxt.config.ts). Apagado = ningún
+  // envío se bloquea por Turnstile; queda el honeypot como única defensa.
+  // Se registra en CADA petición a propósito: un bypass silencioso se olvida,
+  // y éste tiene que doler un poco en el log hasta que se revierta.
+  if (!turnstileEnforce) {
+    console.warn('[turnstile] BYPASS ACTIVO (NUXT_TURNSTILE_ENFORCE distinto de "true") — envío aceptado sin verificar; sólo protege el honeypot')
+    return
+  }
 
   if (!token) {
     throw createError({
@@ -56,14 +72,11 @@ export async function assertTurnstileToken(token: string | undefined) {
     result = await withTimeout(verifyTurnstileToken(token), VERIFY_TIMEOUT_MS)
   }
   catch (error) {
-    // Cloudflare caído o lento: se falla CERRADO (503, reintentable) en vez
-    // de dejar pasar el envío sin verificar.
-    console.error('[turnstile] /siteverify no disponible:', error)
-    throw createError({
-      statusCode: 503,
-      statusMessage: 'Verificación de seguridad no disponible.',
-      data: { success: false, message: 'La verificación de seguridad no está disponible. Inténtalo de nuevo en unos segundos.' },
-    })
+    // Antes fallaba CERRADO (503). Ahora falla ABIERTO: si Cloudflare no
+    // responde, perder el lead cuesta más que aceptar un envío sin verificar.
+    // La decisión es deliberada; el honeypot sigue filtrando los bots tontos.
+    console.error('[turnstile] /siteverify no disponible — se acepta el envío sin verificar:', error)
+    return
   }
 
   if (!result.success) {

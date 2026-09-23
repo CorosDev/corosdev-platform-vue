@@ -338,6 +338,18 @@ export default defineNuxtConfig({
     turnstile: {
       secretKey: nodeEnv.NUXT_TURNSTILE_SECRET_KEY || '',
     },
+
+    // INTERRUPTOR TEMPORAL — NUXT_TURNSTILE_ENFORCE.
+    // `false` = los endpoints de captación NO exigen el token de Turnstile;
+    // la única defensa antibot que queda es el honeypot. Se puso a false a
+    // petición explícita mientras se resuelve el 401 del widget cliente
+    // contra challenges.cloudflare.com (los leads pesan más que el captcha).
+    //
+    // Para volver a exigirlo NO hace falta tocar código: basta con definir
+    // NUXT_TURNSTILE_ENFORCE=true en Vercel y redesplegar. Cada petición que
+    // pasa sin verificar deja un WARN en el log, así que el estado actual es
+    // visible en todo momento.
+    turnstileEnforce: nodeEnv.NUXT_TURNSTILE_ENFORCE === 'true',
     // Mapeo explícito del site key público bajo `public.turnstile.siteKey`
     // (mismo valor que el bloque `turnstile` de arriba). El módulo
     // @nuxtjs/turnstile ya lo mergea ahí por su cuenta vía `defu` en su

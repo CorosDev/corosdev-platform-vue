@@ -36,9 +36,14 @@ export default defineEventHandler(async (event) => {
 
       // Sin esto, un 400 en producción no dejaba ni una línea en el log: sólo
       // se veía desde el navegador de quien lo sufría. Se registran los
-      // NOMBRES de los campos que fallan, nunca sus valores (son datos
-      // personales del visitante).
-      console.warn(`[lead.post] payload rechazado — campos inválidos: ${Object.keys(errors).join(', ') || 'ninguno identificado'}`)
+      // NOMBRES de los campos (los que fallan y los que llegaron), nunca sus
+      // valores: son datos personales del visitante. Comparar ambas listas
+      // delata al instante un desajuste de forma entre cliente y servidor.
+      const received = body && typeof body === 'object' ? Object.keys(body) : []
+      console.warn(
+        `[lead.post] payload rechazado — inválidos: ${Object.keys(errors).join(', ') || 'ninguno identificado'}`
+        + ` | claves recibidas: ${received.join(', ') || 'ninguna'}`,
+      )
 
       throw createError({
         statusCode: 400,

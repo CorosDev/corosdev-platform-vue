@@ -44,6 +44,22 @@ const turnstileEnabled = computed(() => !!useRuntimeConfig().public.turnstile?.s
 // pedir uno nuevo o el reintento se rechaza siempre.
 const turnstileWidget = ref<{ reset: () => void } | null>(null)
 
+const TURNSTILE_WAIT_MS = 4000
+
+/** Espera acotada a que el widget emita token; nunca bloquea el envío. */
+function waitForTurnstileToken(): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(finish, TURNSTILE_WAIT_MS)
+    const stop = watch(() => form.turnstileToken, token => token && finish())
+
+    function finish() {
+      clearTimeout(timer)
+      stop()
+      resolve()
+    }
+  })
+}
+
 const form = reactive<ModalForm>(blankForm())
 
 /** Errores de la validación en cliente (se fusionan con los del servidor). */
@@ -87,13 +103,22 @@ function resetAndClose() {
 async function onSubmit() {
   clientErrors.value = {}
 
+  // `leadSchema` acepta vacío en projectType/budget (la API es tolerante a
+  // propósito), así que la exigencia de elegirlos vive aquí: es una regla de
+  // producto, no de transporte.
+  if (!form.projectType) clientErrors.value.projectType = t('contactModal.errors.projectType')
+  if (!form.budget) clientErrors.value.budget = t('contactModal.errors.budget')
+
+  // Saneado del payload: recorta y convierte '' en `undefined` para que lo
+  // que viaja sea exactamente el valor del enum o nada en absoluto — nunca
+  // una cadena vacía colándose como si fuera una elección.
   const parsed = leadSchema.safeParse({
-    name: form.name,
-    email: form.email,
-    company: form.company,
-    projectType: form.projectType,
-    budget: form.budget,
-    message: form.message,
+    name: form.name.trim(),
+    email: form.email.trim(),
+    company: form.company.trim() || undefined,
+    projectType: form.projectType || undefined,
+    budget: form.budget || undefined,
+    message: form.message.trim(),
   })
 
   if (!parsed.success) {
@@ -105,6 +130,16 @@ async function onSubmit() {
       }
     }
     return
+  }
+
+  if (Object.keys(clientErrors.value).length > 0) return
+
+  // El widget renderiza de forma asíncrona (`await render()` dentro de
+  // NuxtTurnstile). Quien rellena rápido puede pulsar Enviar antes de que
+  // exista token y llevarse un 422 con todo bien configurado. Se le da un
+  // margen acotado y, si no llega, se envía igual: el servidor decide.
+  if (turnstileEnabled.value && !form.turnstileToken) {
+    await waitForTurnstileToken()
   }
 
   const res = await submit({
