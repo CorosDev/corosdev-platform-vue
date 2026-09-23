@@ -28,11 +28,21 @@ interface ModalForm {
   budget: Budget | ''
   message: string
   honeypot: string
+  /** Lo rellena el widget <NuxtTurnstile>; lo verifica /api/lead. */
+  turnstileToken: string
 }
 
 function blankForm(): ModalForm {
-  return { name: '', email: '', company: '', projectType: '', budget: '', message: '', honeypot: '' }
+  return { name: '', email: '', company: '', projectType: '', budget: '', message: '', honeypot: '', turnstileToken: '' }
 }
+
+// Mismo patrón que FloatingCtaDrawer.vue y ContactSection.vue: sin site key
+// configurada el widget no se renderiza y no se pide nada a Cloudflare.
+const turnstileEnabled = computed(() => !!useRuntimeConfig().public.turnstile?.siteKey)
+
+// Un token de Turnstile es de un solo uso: tras un envío fallido hay que
+// pedir uno nuevo o el reintento se rechaza siempre.
+const turnstileWidget = ref<{ reset: () => void } | null>(null)
 
 const form = reactive<ModalForm>(blankForm())
 
@@ -97,7 +107,13 @@ async function onSubmit() {
     return
   }
 
-  await submit({ ...parsed.data, honeypot: form.honeypot })
+  const res = await submit({
+    ...parsed.data,
+    honeypot: form.honeypot,
+    turnstileToken: form.turnstileToken,
+  })
+
+  if (!res) turnstileWidget.value?.reset()
 }
 
 // Escape para cerrar + bloqueo de scroll del body mientras está abierto.
@@ -299,6 +315,13 @@ onBeforeUnmount(() => {
                 :aria-invalid="Boolean(errorFor('message'))"
               />
               <p v-if="errorFor('message')" :class="FORM_ERROR_TEXT_CLASS">{{ errorFor('message') }}</p>
+            </div>
+
+            <!-- Turnstile: el token viaja en el body y lo exige /api/lead vía
+                 assertTurnstileToken(). Sin este widget el endpoint rechazaba
+                 con 422 todo envío que superase la validación. -->
+            <div v-if="turnstileEnabled" class="mb-5 flex justify-center">
+              <NuxtTurnstile ref="turnstileWidget" v-model="form.turnstileToken" />
             </div>
 
             <button type="submit" :class="FORM_SUBMIT_CLASS" :disabled="isLoading">

@@ -18,40 +18,62 @@ import { z } from 'zod'
 import { leadSchema } from '~/utils/leadSchema'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
+  // try/catch global — mismo blindaje que subscribe/contact/qualify: nada
+  // escapa sin convertirse en una respuesta JSON con forma conocida.
+  try {
+    const body = await readBody(event)
 
-  // Los bots que rellenan la trampa "tienen éxito" sin ser procesados — antes
-  // incluso de Turnstile, no gastamos una verificación en algo que ya se
-  // descarta.
-  if (typeof body?.honeypot === 'string' && body.honeypot.trim() !== '') {
+    // Los bots que rellenan la trampa "tienen éxito" sin ser procesados —
+    // antes incluso de Turnstile, no gastamos una verificación en algo que ya
+    // se descarta.
+    if (typeof body?.honeypot === 'string' && body.honeypot.trim() !== '') {
+      return { success: true, message: 'Lead captured successfully' }
+    }
+
+    const parsed = leadSchema.safeParse(body)
+    if (!parsed.success) {
+      const errors = z.flattenError(parsed.error).fieldErrors
+
+      // Sin esto, un 400 en producción no dejaba ni una línea en el log: sólo
+      // se veía desde el navegador de quien lo sufría. Se registran los
+      // NOMBRES de los campos que fallan, nunca sus valores (son datos
+      // personales del visitante).
+      console.warn(`[lead.post] payload rechazado — campos inválidos: ${Object.keys(errors).join(', ') || 'ninguno identificado'}`)
+
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid lead payload',
+        data: {
+          success: false,
+          message: 'Validation failed',
+          errors,
+        },
+      })
+    }
+
+    // Puerta de seguridad, no dato del lead: se lee del body crudo (safeParse
+    // no lo tocó). No-op si Turnstile no está configurado.
+    await assertTurnstileToken(body?.turnstileToken)
+
+    // Gancho CRM/Webhook — best-effort: un fallo downstream NO invalida un
+    // envío correcto. El lead queda al menos logueado en `dispatchLead`.
+    try {
+      await dispatchLead(parsed.data)
+    }
+    catch (err) {
+      console.error('[lead.post] fallo al entregar el lead al CRM/webhook (se acepta igual):', err)
+    }
+
     return { success: true, message: 'Lead captured successfully' }
   }
+  catch (error) {
+    if (isError(error)) throw error
 
-  const parsed = leadSchema.safeParse(body)
-  if (!parsed.success) {
+    console.error('[lead.post] fallo no controlado:', error)
     throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid lead payload',
-      data: {
-        success: false,
-        message: 'Validation failed',
-        errors: z.flattenError(parsed.error).fieldErrors,
-      },
+      statusCode: 500,
+      statusMessage: 'Error inesperado al procesar la solicitud.',
+      data: { success: false, message: 'Error inesperado al procesar la solicitud. Intenta de nuevo más tarde.' },
     })
   }
-
-  // Puerta de seguridad, no dato del lead: se lee del body crudo (safeParse
-  // no lo tocó). No-op si Turnstile no está configurado.
-  await assertTurnstileToken(body?.turnstileToken)
-
-  // Gancho CRM/Webhook — best-effort: un fallo downstream NO invalida un
-  // envío correcto. El lead queda al menos logueado en `dispatchLead`.
-  try {
-    await dispatchLead(parsed.data)
-  }
-  catch (err) {
-    console.error('[lead.post] fallo al entregar el lead al CRM/webhook (se acepta igual):', err)
-  }
-
-  return { success: true, message: 'Lead captured successfully' }
 })
