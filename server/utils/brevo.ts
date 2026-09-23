@@ -28,31 +28,64 @@ interface UpsertBrevoContactInput {
   attributes?: Record<string, string>
 }
 
+export type BrevoDeliveryReason = 'not_configured' | 'provider_error'
+
+export interface BrevoDeliveryResult {
+  delivered: boolean
+  reason?: BrevoDeliveryReason
+}
+
 /**
- * Comprueba la configuración ANTES de tocar la red, para que un deploy sin
- * variables devuelva un 500 honesto ("esto no está configurado") en vez del
- * 502 genérico, que significa "el proveedor falló" y manda a diagnosticar al
- * sitio equivocado. El nombre exacto de la variable que falta va al log del
- * servidor, nunca al cliente.
+ * Deja el contacto en el log en formato recuperable a mano.
+ *
+ * Es la contrapartida imprescindible de aceptar el envío cuando Brevo falla:
+ * sin esta línea, "no bloquear al visitante" significaría sencillamente
+ * perder el lead en silencio, que es peor que devolverle un error. Mismo
+ * patrón que `[lead] captured` en server/utils/lead.ts.
+ *
+ * Contiene datos personales del visitante (nombre, email, mensaje): vive en
+ * el log de Vercel y le aplica su política de retención.
  */
-export function assertBrevoConfigured(listId: number, listEnvVar: string) {
+function logRecoverableContact(reason: BrevoDeliveryReason, input: UpsertBrevoContactInput) {
+  console.error(
+    `[brevo] CONTACTO NO ENTREGADO (${reason}) — recuperar a mano: ${JSON.stringify(input)}`,
+  )
+}
+
+/**
+ * Entrega best-effort a Brevo: **nunca lanza**.
+ *
+ * Un fallo del proveedor (401 por IP no autorizada, caída, timeout) o una
+ * variable sin configurar ya no tumban el endpoint con un 502. El visitante
+ * ve éxito —su solicitud sí llegó, está en el log— y el fallo queda ruidoso
+ * en el servidor para quien opera.
+ */
+export async function deliverBrevoContact(
+  input: UpsertBrevoContactInput,
+  listEnvVar: string,
+): Promise<BrevoDeliveryResult> {
   const { brevoApiKey } = useRuntimeConfig()
 
   const missing = [
     !brevoApiKey && 'NUXT_BREVO_API_KEY',
-    !listId && listEnvVar,
+    !input.listId && listEnvVar,
   ].filter(Boolean)
 
   if (missing.length > 0) {
     console.error(`[brevo] configuración incompleta — faltan variables: ${missing.join(', ')}`)
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Servicio de contacto no configurado.',
-      data: {
-        success: false,
-        message: 'El servicio de contacto no está disponible ahora mismo. Escríbenos por email mientras lo resolvemos.',
-      },
-    })
+    logRecoverableContact('not_configured', input)
+    return { delivered: false, reason: 'not_configured' }
+  }
+
+  try {
+    await upsertBrevoContact(input)
+    return { delivered: true }
+  }
+  catch {
+    // El status y el cuerpo de la respuesta de Brevo ya se registraron dentro
+    // de `upsertBrevoContact`; aquí sólo se añade el contacto recuperable.
+    logRecoverableContact('provider_error', input)
+    return { delivered: false, reason: 'provider_error' }
   }
 }
 

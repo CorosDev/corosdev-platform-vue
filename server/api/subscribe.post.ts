@@ -39,10 +39,10 @@ export default defineEventHandler(async (event) => {
     await assertTurnstileToken(body?.turnstileToken)
 
     const { brevoCtaListId } = useRuntimeConfig()
-    assertBrevoConfigured(brevoCtaListId, 'NUXT_BREVO_CTA_LIST_ID')
 
-    try {
-      await upsertBrevoContact({
+    // Best-effort, igual que contact.post.ts — ver server/utils/brevo.ts.
+    await deliverBrevoContact(
+      {
         email,
         listId: brevoCtaListId,
         attributes: {
@@ -51,17 +51,9 @@ export default defineEventHandler(async (event) => {
           MESSAGE: message,
           SOURCE: `cta_drawer_${context}`,
         },
-      })
-    }
-    catch {
-      // El detalle ya se registró en server/utils/brevo.ts con el cuerpo de
-      // la respuesta; aquí sólo se traduce a una respuesta para el visitante.
-      throw createError({
-        statusCode: 502,
-        statusMessage: 'No se pudo procesar la solicitud.',
-        data: { success: false, message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.' },
-      })
-    }
+      },
+      'NUXT_BREVO_CTA_LIST_ID',
+    )
 
     return { success: true }
   }

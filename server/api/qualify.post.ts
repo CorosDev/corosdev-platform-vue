@@ -44,10 +44,10 @@ export default defineEventHandler(async (event) => {
     await assertTurnstileToken(body?.turnstileToken)
 
     const { brevoContactListId } = useRuntimeConfig()
-    assertBrevoConfigured(brevoContactListId, 'NUXT_BREVO_CONTACT_LIST_ID')
 
-    try {
-      await upsertBrevoContact({
+    // Best-effort, igual que contact.post.ts — ver server/utils/brevo.ts.
+    await deliverBrevoContact(
+      {
         // La misma lista del paso 1: el contacto ya es miembro, así que
         // reenviarla es inocuo y evita tener que exponer una variante del
         // cliente de Brevo que no toque listas.
@@ -57,15 +57,9 @@ export default defineEventHandler(async (event) => {
           BUDGET: budget,
           PROFILE: profile,
         },
-      })
-    }
-    catch {
-      throw createError({
-        statusCode: 502,
-        statusMessage: 'No se pudo procesar la solicitud.',
-        data: { success: false, message: 'No se pudo procesar la solicitud. Intenta de nuevo más tarde.' },
-      })
-    }
+      },
+      'NUXT_BREVO_CONTACT_LIST_ID',
+    )
 
     return { success: true }
   }
