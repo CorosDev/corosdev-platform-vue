@@ -928,3 +928,51 @@ En el navegador, con perfil limpio y sin bloqueador:
 
 El paso 2 es el que hay que mirar con más cuidado: un `page_view` duplicado
 ahí sería la regresión del 9.5.
+
+---
+
+## 10. Apéndice — 2026-10-15: cero hits por `push(array)`, Consent Mode v2 avanzado e ID real
+
+### 10.1 La causa raíz: gtag.js ignora los arrays
+
+Desde `1a6dd79` (2026-08-22) el plugin definía `gtag` como
+`(...args) => dataLayer.push(args)`. Eso empuja un **Array**, y gtag.js sólo
+procesa objetos **Arguments**, como hace el snippet oficial
+`function gtag(){dataLayer.push(arguments)}`. Los arrays se descartan sin
+error: `gtag.js` se descargaba con un 200, pero `consent`, `config` y todos los
+`page_view` se perdían. Resultado: ni cookie `_ga` ni una sola petición
+`/g/collect`. Los arreglos de CSP de §1 eran necesarios, pero no bastaban.
+
+Comprobado con un A/B en Chrome real, con el mismo ID y la misma página:
+
+| Variante | `/g/collect` |
+| --- | --- |
+| `function(){dataLayer.push(arguments)}` | sí (`POST analytics.google.com/g/collect`) |
+| `(...a) => dataLayer.push(a)` | ninguno |
+
+Pista en DevTools: en `window.dataLayer`, un comando procesado se ve como
+objeto (`{0:'config',1:'G-…'}`). Si se ve como array (`['config','G-…']`),
+gtag.js no lo ha procesado.
+
+### 10.2 Consent Mode v2 avanzado (sustituye a §9)
+
+`ESSENTIAL_ONLY` vuelve a tener las cuatro señales en `denied`. Es a la vez el
+estado de partida y el resultado de "Solo necesarias". gtag.js sigue cargando
+siempre y, mientras no haya consentimiento, envía **pings sin cookies**
+(`gcs=G100`). Con "Aceptar todas" pasa a `G111` y el `page_view` se reemite
+una vez (§9.5).
+
+El coste, por si §8.10 no lo dejaba claro: los pings sin cookies **no aparecen
+como usuarios** ni en Tiempo real ni en los informes estándar. GA4 sólo los
+usa para el modelado de comportamiento, que exige volumen (unos 1000 eventos
+diarios con consentimiento denegado durante 7 días, entre otros umbrales). Con
+poco tráfico, en la práctica sólo se ve a quien acepta.
+
+### 10.3 El Measurement ID
+
+La propiedad que se consulta en la interfaz (stream "CorosDev",
+`https://corosdev.com`, stream ID `14930256421`) tiene el ID **`G-0BBYWL11BW`**.
+El fallback de producción vuelve a ese valor; la afirmación de §1 de que
+`G-V5BRG0MELC` era el ID "real" no se sostiene. Si la variable
+`NUXT_PUBLIC_GA_MEASUREMENT_ID` está definida en Vercel, sobrescribe el
+fallback y debe valer `G-0BBYWL11BW` (o borrarse).

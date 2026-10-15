@@ -14,14 +14,15 @@ export interface ConsentState {
 export const CONSENT_STORAGE_KEY = 'corosdev-consent'
 
 /**
- * Estado de partida Y resultado de "Solo necesarias": se mide el tráfico,
- * no se concede nada de publicidad. Ver docs/GA4_CSP_FIX.md §9.
+ * Estado de partida Y resultado de "Solo necesarias" (Consent Mode v2
+ * avanzado): todo denegado, pero gtag.js sigue cargando y emite pings sin
+ * cookies. Ver docs/GA4_CSP_FIX.md §10.
  */
 export const ESSENTIAL_ONLY: ConsentState = {
   ad_storage: 'denied',
   ad_user_data: 'denied',
   ad_personalization: 'denied',
-  analytics_storage: 'granted',
+  analytics_storage: 'denied',
 }
 
 export const GRANTED_ALL: ConsentState = {

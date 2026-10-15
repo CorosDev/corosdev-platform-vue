@@ -5,7 +5,7 @@ import type { ConsentState } from '~/utils/consent'
 
 declare global {
   interface Window {
-    dataLayer: unknown[][]
+    dataLayer: unknown[]
     gtag?: (...args: unknown[]) => void
   }
 }
@@ -48,9 +48,14 @@ export default defineNuxtPlugin(() => {
 
   window.dataLayer = window.dataLayer || []
 
-  const gtag = ((...args: unknown[]) => {
-    window.dataLayer.push(args)
-  }) as Gtag
+  // Tiene que ser `function` + `arguments`, como el snippet oficial: gtag.js
+  // sólo procesa objetos Arguments y descarta en silencio los arrays, así que
+  // `(...args) => push(args)` dejaba consent/config/page_view sin ejecutar y
+  // no salía ni un hit /g/collect (docs/GA4_CSP_FIX.md §10).
+  const gtag = function () {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer.push(arguments)
+  } as unknown as Gtag
   window.gtag = gtag
 
   gtag('consent', 'default', { ...ESSENTIAL_ONLY, wait_for_update: 500 })
