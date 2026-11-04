@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
- * Ultra-light stand-in for the WebGL globe (GlobalGlobe.vue) — shown instead
- * of ever importing globe.gl/three.js on mobile/small screens or when the
- * visitor prefers reduced motion (see GlobalGlobe.vue's onMounted). Pure
- * inline SVG: no image request, no WebGL context, a few hundred bytes of
- * markup. It's the single biggest lever on mobile TBT/bootup-time, since it
- * means the ~1.9MB globe.gl chunk and its ~4s of mobile CPU time are simply
- * never paid unless the visitor explicitly asks for it.
+ * Ultra-light stand-in for the WebGL globe (GlobalGlobe.vue) — the placeholder
+ * on small screens until the real globe has scrolled into view and loaded, and
+ * the tap-to-activate entry point when the visitor prefers reduced motion (see
+ * GlobalGlobe.vue's onMounted). Pure inline SVG: no image request, no WebGL
+ * context, a few hundred bytes of markup, so the ~1.9MB globe.gl chunk and its
+ * ~4s of mobile CPU time stay out of the initial page load.
  *
  * Styled to loosely resemble the real globe at its default camera angle
  * (`pointOfView({ lat: 15, lng: -42 })` in GlobalGlobe.vue's buildGlobe()) so
@@ -17,16 +16,12 @@
  * `<circle>` coordinates need a manual update too (see geoLocations in
  * GlobalGlobe.vue for the source lat/lng values).
  *
- * `interactive` (pedido explícito: en pantallas chicas el globo 3D
- * desaparece del todo — "sólo un mapa mundi con los puntos de las 4
- * oficinas", nunca tappable hacia la versión pesada): `false` en
- * GlobalGlobe.vue cuando `isSmallScreen`, `true` (el comportamiento
- * ORIGINAL, sin cambios) para el caso de escritorio con
- * `prefers-reduced-motion` — ese visitante sí sigue pudiendo tocar para
- * explorar el globo real, sólo sin animación de cámara. `false` renderiza
- * un `<div>` en vez de un `<button>` (nada que tocar, sin cursor de mano, sin
- * estados hover/focus) y esconde la etiqueta CTA "Tap to explore..." — no
- * tiene sentido invitar a un tap que no hace nada.
+ * `interactive`: `true` sólo con `prefers-reduced-motion`, donde el visitante
+ * toca para explorar el globo real, sin animación de cámara. `false` mientras
+ * el globo carga solo en pantallas chicas: renderiza un `<div>` en vez de un
+ * `<button>` (nada que tocar, sin cursor de mano, sin estados hover/focus) y
+ * esconde la etiqueta CTA "Tap to explore..." — no tiene sentido invitar a un
+ * tap que no hace nada.
  */
 withDefaults(defineProps<{ loading: boolean; interactive?: boolean }>(), { interactive: true })
 const emit = defineEmits<{ activate: [] }>()

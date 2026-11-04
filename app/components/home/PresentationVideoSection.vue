@@ -1,28 +1,17 @@
 <script setup lang="ts">
 /**
- * Dos grabaciones separadas del mismo video de presentación — una en
- * español, otra en inglés (sin subtítulos/doblaje, son tomas distintas) —
- * así que el embed tiene que seguir el idioma ACTIVO del sitio en vez de
- * mostrar siempre el mismo id. Pedido explícito del usuario tras notar que
- * el sitio en inglés seguía mostrando la versión en español.
+ * Un único video de presentación para español e inglés — antes había una toma
+ * por idioma, ahora el embed es el mismo sin importar el locale activo.
  *
- * `:key="videoId"` en el `<iframe>` de abajo fuerza a Vue a remontarlo (no
- * sólo mutar el atributo `src`) al cambiar de idioma — con un simple cambio
- * de `src` el navegador SÍ navega el iframe al nuevo video, pero forzar el
- * remount es más robusto ante cualquier estado interno que el reproductor
- * de YouTube pudiera retener entre navegaciones.
+ * `rel=0` limita los videos relacionados al final al canal de CorosDev;
+ * `playsinline=1` evita que iOS abra el reproductor a pantalla completa.
  */
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
-// IDs literales de YouTube (el slug que sigue a youtu.be/ o al `v=` de la
-// URL larga), no la URL completa.
-const VIDEO_IDS: Record<string, string> = {
-  es: 'haRpSox-c1Q',
-  en: 'zK5vJHY2xec',
-}
-
-const videoId = computed(() => VIDEO_IDS[locale.value] ?? VIDEO_IDS.es)
-const embedSrc = computed(() => `https://www.youtube.com/embed/${videoId.value}`)
+// ID literal de YouTube (el slug que sigue a youtu.be/ o al `v=` de la URL
+// larga), no la URL completa.
+const VIDEO_ID = 'ipQGuaae-LM'
+const embedSrc = `https://www.youtube.com/embed/${VIDEO_ID}?rel=0&playsinline=1`
 </script>
 
 <template>
@@ -43,7 +32,6 @@ const embedSrc = computed(() => `https://www.youtube.com/embed/${videoId.value}`
       >
         <div class="relative aspect-video w-full overflow-hidden rounded-[1.5rem] border border-hairline bg-brand-900">
           <iframe
-            :key="videoId"
             class="absolute inset-0 h-full w-full"
             :src="embedSrc"
             title="CorosDev Presentation Video"

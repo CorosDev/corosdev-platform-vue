@@ -386,16 +386,14 @@ export default defineNuxtConfig({
   // platform/reverse-proxy in front of Nitro (Vercel, Netlify, Cloudflare,
   // nginx), which is also why this specific gap only shows up testing
   // directly against the bare `npm run preview` server.
-  // GlobalGlobe.vue import()s globe.gl only when the visitor actually asks for
-  // the 3D globe — but Nuxt still emitted <link rel="prefetch"> for that chunk
-  // on every page load, so mobile downloaded ~1.9MB in the background even
-  // though it renders GlobeStaticPoster.vue and never boots WebGL unless the
-  // poster is tapped. The prefetch never hurt CPU/TBT (it does not execute),
-  // it just burned mobile data for nothing.
+  // GlobalGlobe.vue import()s globe.gl only once the stage is in view — but
+  // Nuxt still emitted <link rel="prefetch"> for that chunk on every page load,
+  // so mobile downloaded ~1.9MB in the background even for visitors who never
+  // scroll down to the globe. The prefetch never hurt CPU/TBT (it does not
+  // execute), it just burned mobile data for nothing.
   //
   // Flipping the manifest entry off stops the link tag; the dynamic import()
-  // itself is untouched, so tapping the poster still loads the chunk on
-  // demand. Desktop loses a small head start (it auto-loads the globe on idle
+  // itself is untouched, so the chunk still loads on demand. Desktop loses a small head start (it auto-loads the globe on idle
   // anyway, so the prefetch was only ever marginally ahead of the import).
   hooks: {
     'build:manifest'(manifest) {

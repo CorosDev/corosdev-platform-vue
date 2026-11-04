@@ -29,9 +29,9 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
   <section v-vanish class="relative pb-12 pt-28 sm:pb-20 md:pt-36">
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-center gap-12 md:grid-cols-2">
-        <!-- Copy — tilt magnético aislado a esta columna: el globo WebGL de la
-             derecha ya es un objeto 3D interactivo y no debe inclinarse. -->
-        <div v-tilt="5">
+        <!-- Copy — tarjeta estática a propósito (sin `v-tilt` ni glow): el hero
+             es la presentación ejecutiva del sitio, sólo borde y sombra suaves. -->
+        <div class="rounded-3xl border border-hairline bg-surface/40 p-6 shadow-[0_8px_30px_rgb(0_0_0/0.12)] sm:p-8">
           <p class="text-sm font-medium uppercase tracking-wide text-ink opacity-90">
             {{ t('home.hero.tag') }}
           </p>
@@ -84,12 +84,6 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
           <HomeGlobalGlobe />
           <template #fallback>
             <div class="relative mx-auto w-full max-w-2xl">
-              <div
-                class="absolute inset-[10%] -z-10 rounded-full opacity-70 blur-3xl"
-                style="background: radial-gradient(circle at 50% 50%, rgb(31 127 255 / 0.35), transparent 65%)"
-                aria-hidden="true"
-              />
-
               <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-ink-muted sm:text-[12px]">
                 {{ t('home.hero.globeLabel') }}
               </p>

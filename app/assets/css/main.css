@@ -182,6 +182,35 @@
        hex, so nothing changes visually until Light mode is actually toggled. */
     background-color: var(--color-surface);
   }
+
+  /* Flecha sobre texto, manito sólo sobre lo clicable. Va en `@layer base` para
+     que las utilidades `cursor-*` y los estilos scoped sigan ganando. Los
+     selectores de descendientes son imprescindibles: `span`/`div` reciben aquí
+     un valor explícito en vez de heredarlo, así que sin ellos el texto dentro
+     de un link o botón mostraría la flecha. */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  span,
+  div {
+    cursor: default;
+  }
+
+  a,
+  a *,
+  button:not(:disabled),
+  button:not(:disabled) *,
+  [role='button'],
+  [role='button'] *,
+  input[type='submit'],
+  summary,
+  summary * {
+    cursor: pointer;
+  }
 }
 
 /* View Transitions API — ColorModeToggle.vue wraps the .dark/.light class

@@ -89,22 +89,17 @@ const cardOpen = ref(false)
 const fallback = ref(false)
 const bannerError = ref(false)
 
-// Mobile/small-screen or reduced-motion visitors get GlobeStaticPoster.vue
-// (an inline-SVG stand-in) instead of ever importing globe.gl/three.js —
-// `activateGlobe()` is the only path that flips this off, in response to an
-// explicit tap. Desktop never sets this true, so its existing idle+viewport
-// auto-init below is unaffected.
+// GlobeStaticPoster.vue (an inline-SVG stand-in) covers the stage whenever the
+// real globe isn't on screen yet: on small screens it's the placeholder until
+// the texture has loaded (see `handleGlobeReady()`), and it simply stays up if
+// globe.gl or the texture fails. Desktop never sets this true.
 const showPoster = ref(false)
 const isActivating = ref(false)
-// Small-screen visitors get a PERMANENT poster (pedido explícito: "en el
-// celular podemos quitar el mapa [el globo 3D] y solo poner un mapa mundi
-// con los puntos de las 4 oficinas") — no tap-to-load, ever, never pays for
-// globe.gl/three.js at all. Reduced-motion visitors on a normal-size screen
-// keep the EXISTING tap-to-activate poster: `prefers-reduced-motion` is an
-// accessibility preference about animation, not a proxy for "small screen
-// with limited CPU/data", so they still get the option to explore the real
-// globe (rendered with 0-duration camera moves — see `animateCameraTo()`).
-const isSmallScreen = ref(false)
+// Reduced-motion visitors never get an auto-loaded globe — they tap the poster
+// to activate it (rendered with 0-duration camera moves, see
+// `animateCameraTo()`). `prefers-reduced-motion` is a preference about
+// animation, so the real globe stays available, just opt-in.
+const tapToActivate = ref(false)
 
 const currentLocation = computed(() => {
   const geo = findGeo(currentId.value ?? '')
@@ -123,6 +118,9 @@ let viewportObserver: IntersectionObserver | null = null
 let idleTimer: ReturnType<typeof setTimeout> | null = null
 let animationToken = 0
 let reducedMotion = false
+// Small screens skip the bump map: ~370KB less to download and decode for
+// relief that isn't perceptible at this size.
+let liteGlobe = false
 // Set by activateGlobe(id) when the tap that requested the globe also named
 // a location (a selector chip, tapped while still in poster mode) — consumed
 // once buildGlobe() resolves and the real `world` instance exists.
@@ -171,13 +169,12 @@ function selectLocation(id: string) {
   // Location chips stay rendered (and functional-looking) even while the
   // poster is showing — tapping one is just as valid an "activate" gesture
   // as tapping the poster itself, it just also carries which office to
-  // focus once the real globe exists. NOT on a small screen, though: there
-  // the poster is permanent (see `isSmallScreen`/`:interactive` above), so a
-  // chip tap falls through to the normal flow below instead — `world` is
-  // still `null` there, which `animateCameraTo()` already handles by
-  // skipping straight to `done()`, so the office info card (banner,
-  // address...) still opens immediately, just without ever loading globe.gl.
-  if (showPoster.value && !isSmallScreen.value) {
+  // focus once the real globe exists. NOT while the globe is auto-loading on
+  // a small screen, though: there a chip tap falls through to the normal flow
+  // below — `world` may still be `null`, which `animateCameraTo()` handles by
+  // skipping straight to `done()`, so the office info card opens immediately
+  // and `handleGlobeReady()` catches the camera up afterwards.
+  if (showPoster.value && tapToActivate.value) {
     activateGlobe(id)
     return
   }
@@ -351,10 +348,11 @@ async function buildGlobe(container: HTMLElement) {
     .height(container.clientHeight)
     .backgroundColor('rgba(0,0,0,0)')
     .globeImageUrl('/globe/earth-day.jpg')
-    .bumpImageUrl('/globe/earth-bump.png')
+    .onGlobeReady(handleGlobeReady)
     .showAtmosphere(true)
     .atmosphereColor('#5fb0ff')
     .atmosphereAltitude(0.16)
+  if (!liteGlobe) world.bumpImageUrl('/globe/earth-bump.png')
 
   await idle()
   const arcs = connections.map((conn) => {
@@ -376,7 +374,13 @@ async function buildGlobe(container: HTMLElement) {
 
   await idle()
   const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1.5 : 2)
-  if (world.renderer) world.renderer().setPixelRatio(dpr)
+  if (world.renderer) {
+    world.renderer().setPixelRatio(dpr)
+    // OrbitControls sets `touch-action: none`, which would trap the page's
+    // vertical scroll on a globe that fills a phone's width. `pan-y` hands
+    // vertical swipes to the browser and keeps horizontal drags rotating it.
+    world.renderer().domElement.style.touchAction = 'pan-y'
+  }
   tuneLighting()
   tuneGlobeMaterial()
 
@@ -400,6 +404,20 @@ async function buildGlobe(container: HTMLElement) {
   resizeObserver.observe(container)
 }
 
+// globe.gl fires this once the earth texture is loaded (the scene stays hidden
+// until then), so the poster is never swapped for a blank sphere. If the
+// texture fails it never fires and the poster just stays up.
+function handleGlobeReady() {
+  if (tapToActivate.value) return // activateGlobe() owns the poster there
+  showPoster.value = false
+  const loc = findGeo(currentId.value ?? '')
+  if (loc) {
+    pauseAutoRotate()
+    world.pointOfView({ lat: loc.lat, lng: loc.lng, altitude: ALT_FOCUS }, 0)
+    scheduleIdleResume()
+  }
+}
+
 function pauseRendering() {
   world?.pauseAnimation?.()
 }
@@ -421,32 +439,29 @@ onMounted(() => {
     return
   }
 
-  // Mobile/small-screen or reduced-motion visitors never get globe.gl/three.js
-  // auto-loaded at all — that ~1.9MB chunk's parse+init cost (confirmed via a
-  // real Lighthouse report at ~4s of mobile CPU time) is the single largest
-  // contributor to mobile TBT/LCP-simulation, dwarfing every other fix from
-  // the perf sprint combined. GlobeStaticPoster.vue stands in for both; on a
-  // small screen it now stays up permanently (see `isSmallScreen` above and
-  // `:interactive` below) instead of being tappable into the real globe —
-  // desktop is completely unaffected and keeps the existing idle+viewport
-  // auto-init below.
-  isSmallScreen.value = window.matchMedia?.('(max-width: 767px)').matches ?? window.innerWidth < 768
-  const isSmallOrReducedPower = reducedMotion || isSmallScreen.value
+  const isSmallScreen = window.matchMedia?.('(max-width: 767px)').matches ?? window.innerWidth < 768
+  liteGlobe = isSmallScreen
 
-  if (isSmallOrReducedPower) {
+  if (reducedMotion) {
+    tapToActivate.value = true
     showPoster.value = true
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return
   }
+
+  // The ~1.9MB globe.gl chunk costs ~4s of mobile CPU time (real Lighthouse
+  // report), so small screens must not pay for it during page load: they wait
+  // for the first scroll (see below), with the poster up meanwhile.
+  showPoster.value = isSmallScreen
 
   // Defer the heavy globe.gl import + WebGL init until BOTH conditions hold:
   // the browser is idle after load (so it never competes with the hero
   // text/CTA for load time) AND the stage has actually scrolled into the
   // viewport. The hero usually *is* the first viewport, so on a typical
   // desktop load this behaves exactly as before (idle right after load) —
-  // but on layouts where it isn't (short mobile viewports, a deep link
-  // further down the page), the WebGL cost is only ever paid once it's
-  // actually going to be seen.
+  // but on layouts where it isn't (phones, a deep link further down the
+  // page), the WebGL cost is only ever paid once it's actually going to be
+  // seen.
   let initStarted = false
   let idleReady = false
   let inViewport = false
@@ -454,7 +469,12 @@ onMounted(() => {
   const tryInit = () => {
     if (initStarted || !idleReady || !inViewport) return
     initStarted = true
-    if (globeMount.value) buildGlobe(globeMount.value).catch(() => (fallback.value = true))
+    if (globeMount.value) {
+      buildGlobe(globeMount.value).catch(() => {
+        // The poster is already a complete stand-in, no need for the error note.
+        if (!showPoster.value) fallback.value = true
+      })
+    }
   }
 
   const ric =
@@ -468,7 +488,11 @@ onMounted(() => {
       { timeout: 2000 },
     )
 
-  if (document.readyState === 'complete') kickoff()
+  // The viewport gate alone isn't enough on phones: the top of the stage
+  // already peeks into a 390x844 first viewport, which would start the build
+  // during page load.
+  if (isSmallScreen) window.addEventListener('scroll', kickoff, { once: true, passive: true })
+  else if (document.readyState === 'complete') kickoff()
   else window.addEventListener('load', kickoff, { once: true })
 
   document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -526,7 +550,7 @@ onBeforeUnmount(() => {
           :aria-label="t('home.hero.globe.globeAria')"
         />
         <div v-if="showPoster" class="gp-globe-canvas">
-          <HomeGlobeStaticPoster :loading="isActivating" :interactive="!isSmallScreen" @activate="activateGlobe()" />
+          <HomeGlobeStaticPoster :loading="isActivating" :interactive="tapToActivate" @activate="activateGlobe()" />
         </div>
         <p v-if="fallback" class="gp-fallback-note">
           {{ t('home.hero.globe.fallbackNote') }}
