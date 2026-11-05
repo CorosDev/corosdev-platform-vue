@@ -39,6 +39,7 @@ function findGeo(id: string) {
 }
 
 const { t } = useI18n()
+const colorMode = useColorMode()
 
 interface LocationText {
   short: string
@@ -80,6 +81,15 @@ const ZOOM_IN_MS = 550
 const CARD_SWITCH_MS = 260
 const IDLE_RESUME_MS = 7000
 const ROTATE_SPEED = 0.3
+
+// Per-theme scene lighting. The earth texture's oceans are very dark navy (70%
+// of its pixels, mean luma ~54/255), so light alone can't lift them: `emissive`
+// adds a flat blue that keeps the sphere from reading as a black ball, most of
+// all against the light theme's near-white background.
+const GLOBE_LIGHTING = {
+  dark: { ambient: 3.2, directional: 1.8, emissive: '#06122b' },
+  light: { ambient: 5, directional: 1.6, emissive: '#12386e' },
+}
 
 const stage = ref<HTMLElement | null>(null)
 const globeMount = ref<HTMLElement | null>(null)
@@ -300,17 +310,21 @@ function supportsWebGL() {
 // `three` import (globe.gl bundles its own).
 function tuneLighting() {
   if (!world || typeof world.lights !== 'function') return
+  const { ambient, directional, emissive } = colorMode.value === 'light' ? GLOBE_LIGHTING.light : GLOBE_LIGHTING.dark
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lights = world.lights() || []
   lights.forEach((light: any) => {
     if (light.type === 'AmbientLight') {
-      light.intensity = 1.6
+      light.intensity = ambient
     } else if (light.type === 'DirectionalLight') {
-      light.intensity = 1.5
+      light.intensity = directional
       light.position?.set?.(1, 0.6, 1)
     }
   })
+  world.globeMaterial?.()?.emissive?.set?.(emissive)
 }
+
+watch(() => colorMode.value, tuneLighting)
 
 function tuneGlobeMaterial() {
   if (!world || typeof world.globeMaterial !== 'function') return

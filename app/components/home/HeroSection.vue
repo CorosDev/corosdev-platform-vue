@@ -29,9 +29,9 @@ const bookingUrl = 'https://calendly.com/corosdev-info/30min'
   <section v-vanish class="relative pb-12 pt-28 sm:pb-20 md:pt-36">
     <div class="mx-auto max-w-7xl px-6">
       <div class="grid items-center gap-12 md:grid-cols-2">
-        <!-- Copy — tarjeta estática a propósito (sin `v-tilt` ni glow): el hero
-             es la presentación ejecutiva del sitio, sólo borde y sombra suaves. -->
-        <div class="rounded-3xl border border-hairline bg-surface/40 p-6 shadow-[0_8px_30px_rgb(0_0_0/0.12)] sm:p-8">
+        <!-- Copy — sin `v-tilt`, glow ni marco a propósito: el hero es la
+             presentación ejecutiva del sitio, directo sobre el fondo. -->
+        <div>
           <p class="text-sm font-medium uppercase tracking-wide text-ink opacity-90">
             {{ t('home.hero.tag') }}
           </p>

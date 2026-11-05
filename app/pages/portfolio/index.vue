@@ -77,7 +77,9 @@ function featuredHero(url?: string | null) {
 
 <template>
   <div>
-    <div class="mx-auto max-w-7xl px-6 pt-36 md:pt-44">
+    <!-- `pb-12` es la mitad superior del respiro de la línea divisoria de Snapay;
+         la inferior es el `pt-12` de PortfolioSnapaySpotlightSection.vue. -->
+    <div class="mx-auto max-w-7xl px-6 pb-12 pt-36 md:pt-44">
       <!-- Cabecera -->
       <header class="max-w-2xl">
         <p class="inline-flex items-center gap-2 rounded-md border border-neon-500/25 bg-neon-500/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-neon-300">
